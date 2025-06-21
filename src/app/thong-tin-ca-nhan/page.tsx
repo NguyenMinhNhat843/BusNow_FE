@@ -13,6 +13,7 @@ export default function PersonalInfoPage() {
   const userRedux = useSelector((state: RootState) => state.auth.user);
 
   // state
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState(null as File | null);
   const [userInfo, setUserInfo] = useState({
@@ -58,6 +59,11 @@ export default function PersonalInfoPage() {
 
   const handleSubmit = async () => {
     const formDataSubmit = new FormData();
+
+    formDataSubmit.append("firstName", userInfo.firstName);
+    formDataSubmit.append("lastName", userInfo.lastName);
+    formDataSubmit.append("phoneNumber", userInfo.phoneNumber);
+
     if (avatarFile) {
       formDataSubmit.append("avatar", avatarFile);
     }
@@ -76,8 +82,18 @@ export default function PersonalInfoPage() {
       toast.success("Cập nhật thành công");
       setAvatarPreview(null);
     } catch (error: any) {
-      toast.error("Cập nhật thất bại: ", error.message || "Có lỗi xảy ra");
+      const message =
+        error?.response?.data?.message || error?.message || "Có lỗi xảy ra";
+
+      toast.error("Cập nhật thất bại: " + message);
     }
+    setIsUpdateMode(false);
+    setAvatarFile(null);
+  };
+
+  const handleOnchangeInput = (e: any) => {
+    const { name, value } = e.target;
+    setUserInfo((pre) => ({ ...pre, [name]: value }));
   };
 
   if (!userRedux) {
@@ -107,36 +123,89 @@ export default function PersonalInfoPage() {
             ref={selectAvatarRef}
             onChange={handleChangeFile}
           />
-          <button
-            className="py-2 px-4 rounded-md bg-blue-400 mt-2 hover:bg-blue-500 cursor-pointer"
-            onClick={handleOpenFolder}
-          >
-            Chọn avatar
-          </button>
+          {isUpdateMode && (
+            <button
+              className="py-2 px-4 rounded-md bg-blue-400 mt-2 hover:bg-blue-500 cursor-pointer"
+              onClick={handleOpenFolder}
+            >
+              Chọn avatar
+            </button>
+          )}
         </div>
-        <div className="flex justify-between gap-6 items-center mt-4">
-          <label className="font-bold text-black/80 w-[100px]">Họ và tên</label>
-          <p>
-            {userInfo.firstName} {userInfo.lastName}
-          </p>
+        <div className="flex gap-6 items-center mt-4">
+          <label className="font-bold text-black/80 w-[150px]">
+            Họ và tên đệm
+          </label>
+          {!isUpdateMode ? (
+            <p>{userInfo.firstName}</p>
+          ) : (
+            <input
+              type="text"
+              value={userInfo.firstName}
+              onChange={handleOnchangeInput}
+              name="firstName"
+              className="border border-gray-200 rounded-200 py-1 px-2 grow"
+            />
+          )}
         </div>
-        <div className="flex justify-between gap-6 items-center mt-4">
-          <label className="font-bold text-black/80 w-[100px]">Email</label>
+        <div className="flex gap-6 items-center mt-4">
+          <label className="font-bold text-black/80 w-[150px]">Tên</label>
+          {!isUpdateMode ? (
+            <p>{userInfo.lastName}</p>
+          ) : (
+            <input
+              type="text"
+              value={userInfo.lastName}
+              onChange={handleOnchangeInput}
+              name="lastName"
+              className="border border-gray-200 rounded-200 py-1 px-2 grow"
+            />
+          )}
+        </div>
+        <div className="flex gap-6 items-center mt-4">
+          <label className="font-bold text-black/80 w-[150px]">Email</label>
           <p>{userInfo.email}</p>
         </div>
-        <div className="flex justify-between gap-6 items-center mt-4">
-          <label className="font-bold text-black/80 w-[100px]">
+        <div className="flex gap-6 items-center mt-4">
+          <label className="font-bold text-black/80 w-[150px]">
             Số điện thoại
           </label>
-          <p>{userInfo.phoneNumber}</p>
+          {isUpdateMode ? (
+            <input
+              type="text"
+              name="phoneNumber"
+              className="border border-gray-200 rounded-200 py-1 px-2 grow"
+              value={userInfo.phoneNumber}
+              onChange={handleOnchangeInput}
+            />
+          ) : (
+            <p>{userInfo.phoneNumber}</p>
+          )}
         </div>
         <div className="flex justify-center items-center pt-8 ">
-          <button
-            className="bg-yellow-400 rounded-md px-4 py-2 hover:bg-yellow-500 cursor-pointer"
-            onClick={handleSubmit}
-          >
-            Chỉnh sửa
-          </button>
+          {isUpdateMode ? (
+            <>
+              <button
+                className="bg-yellow-400 rounded-md px-4 py-2 hover:bg-yellow-500 cursor-pointer me-4"
+                onClick={handleSubmit}
+              >
+                Lưu thay đổi
+              </button>
+              <button
+                className="bg-red-400 rounded-md px-4 py-2 hover:bg-red-500 cursor-pointer"
+                onClick={() => setIsUpdateMode(false)}
+              >
+                Hủy
+              </button>
+            </>
+          ) : (
+            <button
+              className="bg-yellow-400 rounded-md px-4 py-2 hover:bg-yellow-500 cursor-pointer"
+              onClick={() => setIsUpdateMode(true)}
+            >
+              Chỉnh sửa
+            </button>
+          )}
         </div>
       </div>
     </div>

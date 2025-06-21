@@ -20,7 +20,7 @@ const tabMenuUser = [
   },
   {
     name: "Đổi mật khẩu",
-    link: "/user/change-password",
+    link: "/doi-mat-khau",
   },
 ];
 
