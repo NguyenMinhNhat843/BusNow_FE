@@ -57,7 +57,10 @@ export default function Header() {
   return (
     <div className="flex justify-between items-center bg-white shadow-lg h-[70px]">
       {/* logo */}
-      <div className="relative h-full aspect-[3/2] mx-4">
+      <div
+        className="relative h-full aspect-[3/2] mx-4 cursor-pointer"
+        onClick={() => router.push("/")}
+      >
         <Image src={logo} alt="logo" fill className="object-cover" />
       </div>
 

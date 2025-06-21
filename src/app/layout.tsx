@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "@/redux/slice/authSlice";
 import UserInitialize from "@/component/layout/UserInitialize";
+import PageLoading from "@/component/layout/PageLoading";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ReduxProvider>
           <UserInitialize />
+          {/* <PageLoading /> */}
           <Toaster
             position="top-right"
             duration={3000}
