@@ -53,6 +53,10 @@ export default function LoginPage() {
     router.push("/");
   };
 
+  const handleNavigateForgotPassword = () => {
+    router.push("/quen-mat-khau");
+  };
+
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <div className="bg-white rounded-lg shadow-lg p-8 w-[500px]">
@@ -80,6 +84,13 @@ export default function LoginPage() {
               placeholder="Nhập mật khẩu"
             />
           </div>
+
+          <p
+            className="text-right text-blue-500 cursor-pointer hover:text-blue-600 hover:underline"
+            onClick={handleNavigateForgotPassword}
+          >
+            Quên mật khẩu
+          </p>
 
           <button className="w-full py-2 bg-yellow-400 rounded-lg my-4 cursor-pointer hover:bg-yellow-500">
             Đăng nhập

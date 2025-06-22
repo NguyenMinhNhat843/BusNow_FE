@@ -41,6 +41,7 @@ export default function Header() {
     const response = await authApi.logout();
     if (response.status === 200) {
       toast.success("Đăng xuất thành công!");
+      localStorage.removeItem("user");
     }
     dispatch(logout());
     router.push("/");
