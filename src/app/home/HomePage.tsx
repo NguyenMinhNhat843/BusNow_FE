@@ -12,9 +12,9 @@ import {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { vi } from "date-fns/locale";
-import { ForwardedRef } from "react";
-import locations from "../../data/location";
 import RoutePopulateItem from "@/component/RoutePopulateItem";
+import { useRouter } from "next/navigation";
+import { locationApi } from "@/api/locationApi";
 
 const vehicle = [
   {
@@ -58,16 +58,41 @@ const CustomDateInput = forwardRef<
 CustomDateInput.displayName = "CustomDateInput";
 
 export default function HomePage() {
+  const router = useRouter();
   const [vehicleTab, setVehicleTab] = useState("Xe khách");
   const [locationSelected, setLocationSelected] = useState({
     from: "Sài Gòn",
-    to: "Nha Trang",
+    to: "Đà Nẵng",
   });
   const [isOpenMenuLocationFrom, setIsOpenMenuLocationFrom] = useState(false);
   const [isOpenMenuLocationTo, setIsOpenMenuLocationTo] = useState(false);
+  const [startDate, setStartDate] = useState(new Date("2025-08-01"));
+  const [locations, setLocations] = useState([]);
   const menuLocationFromRef = useRef<HTMLDivElement>(null);
   const menuLocationToRef = useRef<HTMLDivElement>(null);
-  const [startDate, setStartDate] = useState(new Date());
+
+  // load locations from localstorage
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const locations = await locationApi.getAllLocation();
+        localStorage.setItem("locations", JSON.stringify(locations));
+      } catch (error) {
+        console.log("Error fetching locations:", error);
+      }
+    };
+
+    const stored = localStorage.getItem("locations");
+    if (stored) {
+      try {
+        setLocations(JSON.parse(stored));
+      } catch (error) {
+        console.error("Error parsing locations from localStorage:", error);
+      }
+    } else {
+      fetchLocations();
+    }
+  }, []);
 
   // handle select location
   const handleSeletLocationFrom = (location: any) => {
@@ -125,6 +150,20 @@ export default function HomePage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // handle click button search
+  const handleSearch = async () => {
+    const startDateFormatted = startDate.toISOString().split("T")[0]; // format date to YYYY-MM-DD
+
+    router.push(
+      "/ket-qua-tim-kiem?from=" +
+        locationSelected.from +
+        "&to=" +
+        locationSelected.to +
+        "&date=" +
+        startDateFormatted
+    );
+  };
 
   return (
     <main className="select-none">
@@ -194,15 +233,17 @@ export default function HomePage() {
                   {isOpenMenuLocationFrom && (
                     <div className="absolute top-20 -left-1 w-[240px] bg-white shadow-lg rounded-lg py-4">
                       <ul>
-                        {locations.map((item: any) => (
-                          <li
-                            key={item.id}
-                            className="py-2 px-4 cursor-pointer hover:bg-slate-100 "
-                            onClick={() => handleSeletLocationFrom(item)}
-                          >
-                            {item.name}
-                          </li>
-                        ))}
+                        {locations.map(
+                          (item: { locationId: string; name: string }) => (
+                            <li
+                              key={item.locationId}
+                              className="py-2 px-4 cursor-pointer hover:bg-slate-100 "
+                              onClick={() => handleSeletLocationFrom(item)}
+                            >
+                              {item.name}
+                            </li>
+                          )
+                        )}
                       </ul>
                     </div>
                   )}
@@ -276,7 +317,10 @@ export default function HomePage() {
 
               {/* Nút Tìm kiếm */}
               <div className="bg-yellow-500 cursor-pointer text-white  rounded-lg hover:bg-yellow-700 transition-colors">
-                <p className="text-xl text-center text-black px-4 py-4 w-[200px] ">
+                <p
+                  className="text-xl text-center text-black px-4 py-4 w-[200px] "
+                  onClick={handleSearch} // Thêm sự kiện click để tìm kiếm
+                >
                   Tìm kiếm
                 </p>
               </div>
