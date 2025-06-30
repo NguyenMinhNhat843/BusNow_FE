@@ -6,11 +6,8 @@ import "./globals.css";
 import HeaderWrapper from "@/component/layout/HeadreWrapper";
 import { Toaster } from "sonner";
 import ReduxProvider from "@/redux/provider";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { login } from "@/redux/slice/authSlice";
 import UserInitialize from "@/component/layout/UserInitialize";
-import PageLoading from "@/component/layout/PageLoading";
+import SearchBar from "../component/layout/SearchBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

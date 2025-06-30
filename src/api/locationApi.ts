@@ -5,4 +5,11 @@ export const locationApi = {
     const response = await axiosInstance.get("/location/get-all");
     return response.data;
   },
+
+  async getListLocationDeatil(locationKeyword: string) {
+    const response = await axiosInstance.get("/location/get-location-detail", {
+      params: { locationKeyword },
+    });
+    return response.data;
+  },
 };
