@@ -1,11 +1,19 @@
+import { tripApi } from "@/api/tripApi";
+import {
+  resetCurrentPageToFirst,
+  resetFilterTrips,
+  setSearchParams,
+} from "@/redux/slice/tripSlice";
+import { RootState } from "@/redux/store";
 import { set } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 const sortItem = [
   { label: "Mặc định", value: "default" },
-  { label: "Giờ đi sớm nhất", value: "earliest" },
-  { label: "Giờ đi muộn nhất", value: "latest" },
-  { label: "Đánh giá cao nhất", value: "highest_rating" },
+  { label: "Giờ đi sớm nhất", value: "departTime_asc" },
+  { label: "Giờ đi muộn nhất", value: "departTime_desc" },
   { label: "Giá tăng dần", value: "price_asc" },
   { label: "Giá giảm dần", value: "price_desc" },
 ];
@@ -26,9 +34,9 @@ const filterItem: FilterItem[] = [
     value: "vehicle",
     label: "Nhà xe",
     options: [
-      { label: "Nhà xe A", value: "xe_a" },
-      { label: "Nhà xe B", value: "xe_b" },
-      { label: "Nhà xe C", value: "xe_c" },
+      { label: "Khanh Phong", value: "Khanh Phong" },
+      { label: "Xe Nhà", value: "Xe Nhà" },
+      { label: "Phương Trang", value: "Phương Trang" },
     ],
     type: "checkbox",
   },
@@ -41,25 +49,45 @@ const filterItem: FilterItem[] = [
     value: "vehicle_type",
     label: "Loại xe",
     options: [
-      { label: "Xe giường nằm", value: "bed" },
-      { label: "Xe ghế ngồi", value: "seat" },
-      { label: "Xe limousine", value: "limousine" },
+      { label: "Xe thường", value: "STANDARD" },
+      { label: "Xe VIP", value: "VIP" },
+      { label: "Xe limousine", value: "LIMOUSINE" },
     ],
     type: "checkbox",
   },
 ];
 
-export default function FilterSideBar() {
+type FilterSideBarProps = {
+  setTrips: (trips: any[]) => void;
+};
+
+export default function FilterSideBar({ setTrips }: FilterSideBarProps) {
+  // Lấy searchParams từ redux
+  const dispatch = useDispatch();
+  const searchParamsFromRedux = useSelector(
+    (state: RootState) => state.trip.searchParams
+  );
+  const currentpage = useSelector((state: RootState) => state.trip.currentPage);
+
   // state
   const [sortSelected, setSortSelected] = useState("default");
   const [filterVehicle, setFilterVehicle] = useState<string[]>([]);
   const [filterPrice, setFilterPrice] = useState<number>(0);
+  // state để kiểm tra xem có đang trượt thanh trượt giá hay không
+  const [isSliding, setIsSliding] = useState(false);
   const [filterVehicleType, setFilterVehicleType] = useState<string[]>([]);
 
   // handle sort change
-  const handleSortChange = (value: string) => {
+  const handleSortChange = async (value: string) => {
     setSortSelected(value);
-    console.log("Selected sort option:", value);
+
+    // dispatch sang searchParams trong redux
+    dispatch(
+      setSearchParams({
+        sortBy: value,
+      })
+    );
+    dispatch(resetCurrentPageToFirst());
   };
 
   // handle resetFilter
@@ -67,17 +95,21 @@ export default function FilterSideBar() {
     setFilterVehicle([]);
     setFilterPrice(0);
     setFilterVehicleType([]);
+    dispatch(resetFilterTrips());
+    dispatch(resetCurrentPageToFirst());
   };
 
-  // handle change filterVehicle
-  const handleVehicleChange = (value: string) => {
-    setFilterVehicle((prev) => {
-      if (prev.includes(value)) {
-        return prev.filter((item) => item !== value);
-      } else {
-        return [...prev, value];
-      }
-    });
+  // handle change filter providerName
+  const handleVehicleChange = async (value: string) => {
+    let newVehicle = [...filterVehicle];
+    if (newVehicle.includes(value)) {
+      newVehicle = newVehicle.filter((item) => item !== value);
+    } else {
+      newVehicle.push(value);
+    }
+    setFilterVehicle(newVehicle);
+    dispatch(setSearchParams({ providerName: newVehicle }));
+    dispatch(resetCurrentPageToFirst());
   };
 
   // handle change filter price
@@ -86,15 +118,29 @@ export default function FilterSideBar() {
     setFilterPrice(value);
   };
 
-  // handle change filterVehicleType
-  const handleVehicleTypeChange = (value: string) => {
-    setFilterVehicleType((prev) => {
-      if (prev.includes(value)) {
-        return prev.filter((item) => item !== value);
-      } else {
-        return [...prev, value];
+  useEffect(() => {
+    if (isSliding) return; // Nếu đang trượt thì không thực hiện gì
+    const delayDebounce = setTimeout(async () => {
+      if (filterPrice > 0) {
+        dispatch(setSearchParams({ minPrice: 0, maxPrice: filterPrice }));
       }
-    });
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [filterPrice, dispatch, isSliding]);
+
+  // handle change filterVehicleSubType
+  const handleVehicleTypeChange = async (value: string) => {
+    let newVehicleSubType = [...filterVehicleType];
+    if (newVehicleSubType.includes(value)) {
+      newVehicleSubType = newVehicleSubType.filter((item) => item !== value);
+    } else {
+      newVehicleSubType.push(value);
+    }
+
+    setFilterVehicleType(newVehicleSubType);
+    dispatch(setSearchParams({ vehicleSubType: newVehicleSubType }));
+    dispatch(resetCurrentPageToFirst());
   };
 
   return (
@@ -183,6 +229,8 @@ export default function FilterSideBar() {
                       step={50000}
                       value={filterPrice}
                       onChange={() => handlePriceChange(event)}
+                      onMouseUp={() => setIsSliding(false)}
+                      onTouchEnd={() => setIsSliding(false)}
                       className="w-full cursor-pointer"
                     />
                   </div>
