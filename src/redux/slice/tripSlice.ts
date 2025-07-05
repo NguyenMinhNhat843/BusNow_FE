@@ -14,6 +14,7 @@ interface searchParams {
 
 interface TripState {
   trips: any[];
+  tripItemSelected: any | null;
   totalPage: number;
   currentPage: number;
   searchParams: searchParams;
@@ -21,6 +22,8 @@ interface TripState {
 
 const initialState: TripState = {
   trips: [],
+  // Dùng trong trường hợp chọn 1 tríp và truyền nó sang trang thanh toán
+  tripItemSelected: null,
   totalPage: 0,
   currentPage: 1,
   searchParams: {
@@ -64,6 +67,9 @@ const tripSlice = createSlice({
         page: 1,
       };
     },
+    setSelectedTrip: (state, action) => {
+      state.tripItemSelected = action.payload;
+    },
   },
 });
 
@@ -73,6 +79,7 @@ export const {
   resetCurrentPageToFirst,
   increaseCurrentPage,
   descreaseCurrentPage,
+  setSelectedTrip,
 } = tripSlice.actions;
 
 export default tripSlice.reducer;

@@ -2,6 +2,10 @@ import { locationApi } from "@/api/locationApi";
 import { set } from "date-fns";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import format from "@/utils/format";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { setSelectedTrip } from "@/redux/slice/tripSlice";
 
 interface TripItemProps {
   tripId: string;
@@ -69,38 +73,132 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
     year: "numeric",
   });
 
+  // common
+  const dispatch = useDispatch();
+  const router = useRouter();
+
   // state
   const [openDetailInfo, setOpenDetailInfo] = useState(false);
   const [tabDetailInfoSelected, setTabDetailInfoSelected] = useState("dontra");
   const [fromLocationDetails, setFromLocationDetails] = useState<any>(null);
   const [toLocationDetails, setToLocationDetails] = useState<any>(null);
+  // Có đang đặt vé không
+  const [isBookingTicket, setIsBookingTicket] = useState(false);
+  // stage booking ticket
+  // 1: chọn điểm đón/trả
+  // 2: chọn ghế
+  // 3: thanh toán
+  const [stageBookingTicket, setStageBookingTicket] = useState(1);
+  const [locationSelectedBooking, setLocationSelectedBooking] = useState({
+    departLocation: "",
+    arriveLocation: "",
+  });
+  const [isLoadedLocationDetail, setIsLoadedLocationDetail] = useState(false);
+  const [chairSelected, setChairSelected] = useState<string[]>([]);
+  const [totalAmout, setTotalAmount] = useState(0);
 
-  // handle chang tab detail info
-  const handleDetailInfoTabChange = (tab: string) => {
-    setTabDetailInfoSelected(tab);
+  // handle select fromlocation/to location to booking ticket
+  const handleSelectLocationBooking = ({
+    key,
+    value,
+  }: {
+    key: string;
+    value: string;
+  }) => {
+    setLocationSelectedBooking((prev) => {
+      return {
+        ...prev,
+        [key]: value,
+      };
+    });
   };
 
-  useEffect(() => {
-    const fetchLocationDetailByLocationKeyword = async () => {
-      try {
-        const response = await locationApi.getListLocationDeatil(
-          fromLocationName
-        );
-        setFromLocationDetails(response.locationDetails);
+  const fetchTripDetails = async () => {
+    if (isLoadedLocationDetail) return;
+    try {
+      const response = await locationApi.getListLocationDeatil(
+        fromLocationName
+      );
+      setFromLocationDetails(response.locationDetails);
 
-        const responseTo = await locationApi.getListLocationDeatil(
-          toLocationName
-        );
-        setToLocationDetails(responseTo.locationDetails);
-      } catch (error) {
-        console.error("Error fetching location details:", error);
-      }
-    };
+      const responseTo = await locationApi.getListLocationDeatil(
+        toLocationName
+      );
+      setToLocationDetails(responseTo.locationDetails);
+
+      setIsLoadedLocationDetail(true);
+    } catch (error) {
+      console.error("Error fetching location details:", error);
+    }
+  };
+
+  // handle click "Thông tin chi tiết"
+  const handleDetailInfoClick = () => {
+    // Mở cái này thì đogns cái kia
+    setOpenDetailInfo(!openDetailInfo);
+    setIsBookingTicket(false);
 
     if (tabDetailInfoSelected === "dontra") {
-      fetchLocationDetailByLocationKeyword();
+      fetchTripDetails();
     }
-  }, [tabDetailInfoSelected, fromLocationName, toLocationName]);
+  };
+
+  // handle change tab detail info
+  const handleDetailInfoTabChange = async (tab: string) => {
+    setTabDetailInfoSelected(tab);
+
+    if (tab === "dontra") {
+      fetchTripDetails();
+    }
+  };
+
+  // handle click đặt vé
+  const handleBookingTicket = async () => {
+    // Mở cái này thì đóng cái kia
+    setIsBookingTicket(!isBookingTicket);
+    setOpenDetailInfo(false);
+
+    fetchTripDetails();
+  };
+
+  // handle click next button
+  const handleNextBookingStage = () => {
+    // Chuyển sang trang thanh toán nếu stage = 2
+    if (stageBookingTicket === 2) {
+      const data = {
+        tripId,
+        departLocation: fromLocationName,
+        arriveLocation: toLocationName,
+        departDetailLocation: locationSelectedBooking.departLocation,
+        arriveDetailLocation: locationSelectedBooking.arriveLocation,
+        departTime: departTimeFormatted,
+        arriveTime: arriveTimeFormatted,
+        seats: [...chairSelected],
+      };
+
+      dispatch(setSelectedTrip(data));
+      router.push("/thanh-toan");
+      return;
+    }
+    setStageBookingTicket((prev) => prev + 1);
+  };
+
+  // handle previousStageBooking
+  const handlePreviousBookingStage = () => {
+    if (stageBookingTicket === 1) return;
+    setStageBookingTicket((prev) => (prev > 1 ? prev - 1 : prev));
+  };
+
+  // handle select chair
+  const handleSelectChair = (chair: string) => {
+    const newChairSelected = chairSelected.includes(chair)
+      ? chairSelected.filter((c) => c !== chair)
+      : [...chairSelected, chair];
+    setChairSelected(newChairSelected);
+
+    // tính total amount
+    setTotalAmount(newChairSelected.length * price);
+  };
 
   return (
     <div className="bg-white border border-gray-200 p-4 mb-4 rounded-lg shadow-sm hover:shadow-2xl transition-all">
@@ -132,7 +230,7 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
           </p>
           <span
             className="text-blue-400 hover:underline cursor-pointer"
-            onClick={() => setOpenDetailInfo(!openDetailInfo)}
+            onClick={handleDetailInfoClick}
           >
             Thông tin chi tiết
           </span>
@@ -144,13 +242,17 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
             {price.toLocaleString()} đ
           </p>
           <p className="text-sm text-gray-600">Còn {availableSeat} chỗ trống</p>
-          <button className="cursor-pointer px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-black/70 font-bold text-sm rounded-md transition-all">
+          <button
+            className="cursor-pointer px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-black/70
+           font-bold text-sm rounded-md transition-all"
+            onClick={handleBookingTicket}
+          >
             Đặt vé
           </button>
         </div>
       </div>
 
-      {/* detail info model */}
+      {/* model "Thông tin chi tiết" */}
       {openDetailInfo && (
         <div className="bg-white p-4">
           <div className="py-2 flex items-center justify-center gap-4">
@@ -202,6 +304,156 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
           )}
         </div>
       )}
+      {/* end: model "thông tin chi tiết" */}
+
+      {/* model "Đặt vé" */}
+      {isBookingTicket && (
+        <div className="pt-4">
+          <div className="max-w-xl mx-auto">
+            {/* Thanh giai đoạn */}
+            <div className="flex justify-center items-center gap-8 mb-4">
+              <p
+                className={`text-lg text-slate-500 ${
+                  stageBookingTicket === 1 && "text-yellow-400 font-bold"
+                }`}
+              >
+                Chọn điểm đón/trả
+              </p>
+              <p className="border border-yellow-300 h-2 w-[200px] bg-yellow-300"></p>
+              <p
+                className={`text-lg text-slate-700 ${
+                  stageBookingTicket === 2 && "text-yellow-400 font-bold"
+                }`}
+              >
+                Chọn ghế
+              </p>
+            </div>
+
+            {/* Chọn điểm đón/trả */}
+            {stageBookingTicket === 1 && (
+              <div className="flex justify-between gap-8 border p-4 rounded-lg shadow-sm bg-white">
+                {/* Cột điểm đón */}
+                <div className="w-1/2">
+                  <h3 className="font-semibold text-blue-600 pb-2 border-b">
+                    Điểm đón
+                  </h3>
+                  <div className=" text-gray-700 mt-2">
+                    {fromLocationDetails?.map((locationDetail: any) => (
+                      <p
+                        key={locationDetail.locationDetailId}
+                        className="flex items-center gap-2 pb-4"
+                      >
+                        <input
+                          type="radio"
+                          value={locationDetail.name}
+                          name="departLocation"
+                          onChange={(e) =>
+                            handleSelectLocationBooking({
+                              key: "departLocation",
+                              value: e.target.value,
+                            })
+                          }
+                          className="w-6 h-6 cursor-pointer"
+                        />
+                        <label htmlFor="">{locationDetail.name}</label>
+                      </p>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Cột điểm trả */}
+                <div className="w-1/2">
+                  <h3 className="font-semibold text-green-600 pb-2 border-b">
+                    Điểm trả
+                  </h3>
+                  <div className=" text-gray-700 mt-2">
+                    {toLocationDetails?.map((locationDetail: any) => (
+                      <p
+                        key={locationDetail.locationDetailId}
+                        className="flex items-center gap-2 pb-4"
+                      >
+                        <input
+                          type="radio"
+                          name="arriveLocation"
+                          value={locationDetail.name}
+                          onChange={(e) =>
+                            handleSelectLocationBooking({
+                              key: "arriveLocation",
+                              value: e.target.value,
+                            })
+                          }
+                          className="w-6 h-6 cursor-pointer"
+                        />
+                        <label htmlFor="">{locationDetail.name}</label>
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+            {/* end: stage 1 */}
+
+            {/* Chọn ghế */}
+            {stageBookingTicket === 2 && (
+              <div className="flex justify-between gap-8">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Chọn ghế
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Vui lòng chọn ghế bạn muốn đặt.
+                  </p>
+                  <div className="grid grid-cols-5 gap-4">
+                    {Array.from({ length: totalSeat }, (_, index) => (
+                      <button
+                        key={index}
+                        className={`cursor-pointer w-full h-12 bg-gray-200 rounded-md hover:bg-yellow-300 transition-colors ${
+                          chairSelected.includes(`A${index + 1}`)
+                            ? "bg-yellow-400"
+                            : ""
+                        }`}
+                        onClick={() => handleSelectChair(`A${index + 1}`)}
+                      >
+                        A{index + 1}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Cột tổng tiền */}
+                <div>
+                  <p className="font-bold text-lg">Tổng tiền</p>
+                  <p className="text-red-400 font-bold text-2xl">
+                    {format.formatMoneyVND(totalAmout)} VND
+                  </p>
+                </div>
+              </div>
+            )}
+            {/* end: Chọn ghế */}
+
+            {/* Button next stage + previous stage */}
+            <div className="flex justify-between pt-8">
+              <button
+                className={`text-right py-2 px-4 bg-yellow-400 rounded-md ${
+                  stageBookingTicket === 1
+                    ? "opacity-50 cursor-not-allowed"
+                    : "cursor-pointer hover:bg-yellow-500"
+                }`}
+                onClick={handlePreviousBookingStage}
+              >
+                Bước trước
+              </button>
+              <button
+                className={`text-right py-2 px-4 bg-yellow-400 rounded-md cursor-pointer hover:bg-yellow-500`}
+                onClick={handleNextBookingStage}
+              >
+                Tiếp theo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* end: model "Đặt vé" */}
     </div>
   );
 }
