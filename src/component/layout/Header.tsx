@@ -55,6 +55,14 @@ export default function Header() {
     );
   }
 
+  // handle click "Đơn hàng của tôi"
+  const handleMyOrdersClick = () => {
+    if (!user) {
+      toast.error("Vui lòng đăng nhập để xem đơn hàng của bạn!");
+    } else {
+      router.push("/don-hang-cua-toi");
+    }
+  };
   return (
     <div className="flex justify-between items-center bg-white shadow-lg h-[70px]">
       {/* logo */}
@@ -67,8 +75,12 @@ export default function Header() {
 
       {/* menu */}
       <div className="h-[50px] flex items-center justify-between gap-4 p-4">
-        <p className="cursor-pointer hover:text-shadow-2xs">Đơn hàng của tôi</p>
-        <p className="cursor-pointer">Mở bán vé</p>
+        <p
+          className="cursor-pointer hover:text-shadow-2xs"
+          onClick={() => handleMyOrdersClick()}
+        >
+          Đơn hàng của tôi
+        </p>
         {/* menu user */}
         <div className="flex items-center gap-4">
           {user ? (

@@ -13,8 +13,8 @@ interface FormOrderInfoProps {
   phoneNumber: string;
   departLocation: string;
   arriveLocation: string;
-  departDetailLocation: string;
-  arriveDetailLocation: string;
+  departLocatioDetailName: string;
+  arriveLocationDetailName: string;
   departTime: string;
   arriveTime: string;
   seats: string[];
@@ -26,20 +26,18 @@ export default function FormOrderInfo() {
 
   // state
   const { stage, setStage } = useOrderContext();
-
-  // state
   const [formData, setFormData] = useState<FormOrderInfoProps>({
-    firstName: "asdasd",
-    lastName: "adasd",
-    email: "asdas@gmail.com",
-    phoneNumber: "0147258369",
-    departLocation: "Nha Trang",
-    arriveLocation: "Hồ Chí Minh",
-    departDetailLocation: "Bến xe Nha Trang",
-    arriveDetailLocation: "Bến Xe Miền Đông",
-    departTime: "04h 02/08",
-    arriveTime: "04h 02/08",
-    seats: ["A12", "A13"],
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    departLocation: "",
+    arriveLocation: "",
+    departLocatioDetailName: "",
+    arriveLocationDetailName: "",
+    departTime: "",
+    arriveTime: "",
+    seats: [],
   });
 
   //redux
@@ -47,11 +45,24 @@ export default function FormOrderInfo() {
     (state: RootState) => state.trip.tripItemSelected
   );
   useEffect(() => {
-    if (dataTrip) {
-      const newData = { ...formData, ...dataTrip };
-      setFormData(newData);
+    const storedUser = localStorage.getItem("user");
+    const user = storedUser ? JSON.parse(storedUser) : null;
+
+    if (user || dataTrip) {
+      const mergedData = {
+        firstName: user?.firstName || "",
+        lastName: user?.lastName || "",
+        email: user?.email || "",
+        phoneNumber: user?.phoneNumber || "",
+        ...dataTrip, // merge sau để ghi đè những gì cần từ trip
+      };
+
+      setFormData((prev) => ({
+        ...prev,
+        ...mergedData,
+      }));
     }
-  }, [dataTrip]);
+  }, []);
 
   const onChangeValue = (e: any) => {
     const { name, value } = e.target;
@@ -124,7 +135,7 @@ export default function FormOrderInfo() {
               {formData.departLocation}
             </p>
             <p className="text-sm text-gray-500">
-              Điểm đón: {formData.departDetailLocation}
+              Điểm đón: {formData.departLocatioDetailName}
             </p>
             <p className="text-sm text-gray-500">Lúc: {formData.departTime}</p>
           </div>
@@ -141,7 +152,7 @@ export default function FormOrderInfo() {
               {formData.arriveLocation}
             </p>
             <p className="text-sm text-gray-500">
-              Điểm đón: {formData.arriveDetailLocation}
+              Điểm đón: {formData.arriveLocationDetailName}
             </p>
             <p className="text-sm text-gray-500">Lúc: {formData.arriveTime}</p>
           </div>

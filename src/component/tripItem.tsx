@@ -6,6 +6,8 @@ import format from "@/utils/format";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setSelectedTrip } from "@/redux/slice/tripSlice";
+import { seatApi } from "@/api/seatApi";
+import { toast } from "sonner";
 
 interface TripItemProps {
   tripId: string;
@@ -80,8 +82,20 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
   // state
   const [openDetailInfo, setOpenDetailInfo] = useState(false);
   const [tabDetailInfoSelected, setTabDetailInfoSelected] = useState("dontra");
-  const [fromLocationDetails, setFromLocationDetails] = useState<any>(null);
-  const [toLocationDetails, setToLocationDetails] = useState<any>(null);
+  const [fromLocationDetails, setFromLocationDetails] = useState<
+    | {
+        locationDetailId: string;
+        name: string;
+      }[]
+    | null
+  >(null);
+  const [toLocationDetails, setToLocationDetails] = useState<
+    | {
+        locationDetailId: string;
+        name: string;
+      }[]
+    | null
+  >(null);
   // Có đang đặt vé không
   const [isBookingTicket, setIsBookingTicket] = useState(false);
   // stage booking ticket
@@ -90,25 +104,33 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
   // 3: thanh toán
   const [stageBookingTicket, setStageBookingTicket] = useState(1);
   const [locationSelectedBooking, setLocationSelectedBooking] = useState({
+    departLocationId: "",
     departLocation: "",
+    arriveLocationId: "",
     arriveLocation: "",
   });
   const [isLoadedLocationDetail, setIsLoadedLocationDetail] = useState(false);
   const [chairSelected, setChairSelected] = useState<string[]>([]);
   const [totalAmout, setTotalAmount] = useState(0);
+  const [seatsIsBooked, setSeatsIsBooked] = useState<any>([]);
 
   // handle select fromlocation/to location to booking ticket
   const handleSelectLocationBooking = ({
     key,
+    keyId,
     value,
+    id,
   }: {
     key: string;
     value: string;
+    keyId: string;
+    id: string;
   }) => {
     setLocationSelectedBooking((prev) => {
       return {
         ...prev,
         [key]: value,
+        [keyId]: id,
       };
     });
   };
@@ -129,6 +151,18 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
       setIsLoadedLocationDetail(true);
     } catch (error) {
       console.error("Error fetching location details:", error);
+    }
+  };
+
+  // Lấy danh sách ghế đã đặt trong chuyến đi này
+  const fetchSeatIsBookedByTripId = async () => {
+    try {
+      const response = await seatApi.getSeatIsBookedByTripId(tripId);
+      if (response.status === "success") {
+        setSeatsIsBooked(response.data);
+      }
+    } catch (error) {
+      toast.error("Lỗi khi lấy danh sách ghế đã đặt, vui lòng thử lại sau.");
     }
   };
 
@@ -169,18 +203,22 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
         tripId,
         departLocation: fromLocationName,
         arriveLocation: toLocationName,
-        departDetailLocation: locationSelectedBooking.departLocation,
-        arriveDetailLocation: locationSelectedBooking.arriveLocation,
+        departLocationDetailId: locationSelectedBooking.departLocationId,
+        departLocatioDetailName: locationSelectedBooking.departLocation,
+        arriveLocationDetailId: locationSelectedBooking.arriveLocationId,
+        arriveLocationDetailName: locationSelectedBooking.arriveLocation,
         departTime: departTimeFormatted,
         arriveTime: arriveTimeFormatted,
         seats: [...chairSelected],
       };
+      console.log("data booking ticket", data);
 
       dispatch(setSelectedTrip(data));
       router.push("/thanh-toan");
       return;
     }
     setStageBookingTicket((prev) => prev + 1);
+    fetchSeatIsBookedByTripId();
   };
 
   // handle previousStageBooking
@@ -350,7 +388,9 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
                           onChange={(e) =>
                             handleSelectLocationBooking({
                               key: "departLocation",
+                              keyId: "departLocationId",
                               value: e.target.value,
+                              id: locationDetail.locationDetailId,
                             })
                           }
                           className="w-6 h-6 cursor-pointer"
@@ -379,6 +419,8 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
                           onChange={(e) =>
                             handleSelectLocationBooking({
                               key: "arriveLocation",
+                              keyId: "arriveLocationId",
+                              id: locationDetail.locationDetailId,
                               value: e.target.value,
                             })
                           }
@@ -404,19 +446,38 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
                     Vui lòng chọn ghế bạn muốn đặt.
                   </p>
                   <div className="grid grid-cols-5 gap-4">
-                    {Array.from({ length: totalSeat }, (_, index) => (
-                      <button
-                        key={index}
-                        className={`cursor-pointer w-full h-12 bg-gray-200 rounded-md hover:bg-yellow-300 transition-colors ${
-                          chairSelected.includes(`A${index + 1}`)
-                            ? "bg-yellow-400"
-                            : ""
-                        }`}
-                        onClick={() => handleSelectChair(`A${index + 1}`)}
-                      >
-                        A{index + 1}
-                      </button>
-                    ))}
+                    {Array.from({ length: totalSeat }, (_, index) => {
+                      const seatCode = `A${(index + 1)
+                        .toString()
+                        .padStart(2, "0")}`; // "A01", "A02"...
+                      const isBooked = seatsIsBooked.some(
+                        (seat: any) =>
+                          seat.seatCode === seatCode && seat.isBooked
+                      );
+
+                      return (
+                        <button
+                          key={index}
+                          disabled={isBooked}
+                          className={`
+                            w-full h-12 rounded-md transition-colors
+                            ${
+                              isBooked
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-gray-200 hover:bg-yellow-300 cursor-pointer"
+                            }
+                            ${
+                              chairSelected.includes(seatCode)
+                                ? "bg-yellow-400"
+                                : ""
+                            }
+                          `}
+                          onClick={() => handleSelectChair(seatCode)}
+                        >
+                          {seatCode}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
