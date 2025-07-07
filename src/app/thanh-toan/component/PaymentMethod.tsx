@@ -44,7 +44,7 @@ export default function PaymentMethod() {
     try {
       const dataApi = {
         tripId: dataTrip.tripId,
-        seatCode: "A01",
+        seatCode: dataTrip.seats[0],
         departLocationDetailId: dataTrip.departLocationDetailId,
         arriveLocationDetailId: dataTrip.arriveLocationDetailId,
         methodPayment: "CASH",

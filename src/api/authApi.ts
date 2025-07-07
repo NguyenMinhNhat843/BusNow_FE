@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosInstance";
+import { RequestRegisterProviderDTO } from "./DTO/authApiDTO";
 
 export const authApi = {
   login: async (email: string, password: string) => {
@@ -46,6 +47,11 @@ export const authApi = {
       lastName,
       otp,
     });
+    return response.data;
+  },
+
+  registerProvider: async (body: RequestRegisterProviderDTO) => {
+    const response = await axiosInstance.post("/auth/register-provider", body);
     return response.data;
   },
 

@@ -63,6 +63,12 @@ export default function Header() {
       router.push("/don-hang-cua-toi");
     }
   };
+
+  // handle click "Hợp tác với chúng tôi"
+  const handleCooperateClick = () => {
+    router.push("/hop-tac-voi-chung-toi");
+  };
+
   return (
     <div className="flex justify-between items-center bg-white shadow-lg h-[70px]">
       {/* logo */}
@@ -81,6 +87,12 @@ export default function Header() {
         >
           Đơn hàng của tôi
         </p>
+        <p
+          className="cursor-pointer hover:text-shadow-2xs"
+          onClick={() => handleCooperateClick()}
+        >
+          Hợp tác với chúng tôi
+        </p>
         {/* menu user */}
         <div className="flex items-center gap-4">
           {user ? (
@@ -98,7 +110,9 @@ export default function Header() {
                     className="object-cover"
                   />
                 </div>
-                <span>Nguyễn Minh Nhật</span>
+                <span>
+                  {user.firstName} {user.lastName}
+                </span>
 
                 {isOpenMenuUser && (
                   <div className="absolute top-[calc(100%+12px)] right-0 rounded-lg bg-white shadow-2xl shadow-black w-[200px] z-50">

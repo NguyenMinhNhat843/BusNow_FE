@@ -27,6 +27,19 @@ export default function DonHangCuaToiPage() {
     fetchMyTickets();
   }, []);
 
+  // handle click "Hủy vé"
+  const handleCancleTicket = async (ticketId: string) => {
+    try {
+      const response = await ticketApi.cancleTicket(ticketId);
+      toast.success("Hủy vé thành công!");
+      setMyTickets((prevTickets) =>
+        prevTickets.filter((ticket: any) => ticket.ticketId !== ticketId)
+      );
+    } catch (error) {
+      toast.error("Lỗi khi hủy vé. Vui lòng thử lại sau.");
+    }
+  };
+
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Đơn hàng của tôi</h1>
@@ -37,32 +50,43 @@ export default function DonHangCuaToiPage() {
         <p className="text-gray-500">Bạn chưa có đơn hàng nào.</p>
       ) : (
         <div className="grid gap-4">
-          {myTickets.map((ticket: any) => (
-            <div
-              key={ticket.ticketId}
-              className="border border-gray-300 rounded-md p-4 shadow-sm"
-            >
-              <p>
-                <strong>Mã vé:</strong> {ticket.ticketId}
-              </p>
-              <p>
-                <strong>Chuyến đi:</strong> {ticket.trip.fromLocationName} →{" "}
-                {ticket.trip.toLocationName}
-              </p>
-              <p>
-                <strong>Thời gian:</strong> {ticket.trip.departTime}
-              </p>
-              <p>
-                <strong>Ghế:</strong> {ticket.seat.seatCode}
-              </p>
-              <p>
-                <strong>Trạng thái thanh toán:</strong> {ticket.status}
-              </p>
-              <p>
-                <strong>Phương thức thanh toán:</strong> {ticket.payment.status}
-              </p>
-            </div>
-          ))}
+          {myTickets
+            .filter((ticket: any) => ticket.status !== "CANCELLED")
+            .map((ticket: any) => (
+              <div
+                key={ticket.ticketId}
+                className="border border-gray-300 rounded-md p-4 shadow-sm"
+              >
+                <p>
+                  <strong>Mã vé:</strong> {ticket.ticketId}
+                </p>
+                <p>
+                  <strong>Chuyến đi:</strong> {ticket.trip.fromLocationName} →{" "}
+                  {ticket.trip.toLocationName}
+                </p>
+                <p>
+                  <strong>Thời gian:</strong> {ticket.trip.departTime}
+                </p>
+                <p>
+                  <strong>Ghế:</strong> {ticket.seat.seatCode}
+                </p>
+                <p>
+                  <strong>Trạng thái thanh toán:</strong> {ticket.status}
+                </p>
+                <p>
+                  <strong>Phương thức thanh toán:</strong>{" "}
+                  {ticket.payment.status}
+                </p>
+                <div className="flex justify-center">
+                  <button
+                    className="px-4 py-2 bg-red-400 rounded-md cursor-pointer font-bold text-white"
+                    onClick={() => handleCancleTicket(ticket.ticketId)}
+                  >
+                    Hủy vé
+                  </button>
+                </div>
+              </div>
+            ))}
         </div>
       )}
     </div>

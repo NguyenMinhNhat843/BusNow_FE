@@ -35,7 +35,11 @@ export default function LoginPage() {
         toast.success("Đăng nhập thành công!", {
           duration: 2000,
         });
-        router.push("/");
+        if (response.user.role === "PROVIDER") {
+          router.push("provider-dashboard");
+        } else {
+          router.push("/");
+        }
       }
     } catch (error: any) {
       toast.error(
