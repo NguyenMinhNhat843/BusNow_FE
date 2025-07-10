@@ -1,6 +1,7 @@
 "use client";
 
 import { authApi } from "@/api/authApi";
+import { RoleEnum } from "@/api/Enum/RoleEnum";
 import { login } from "@/redux/slice/authSlice";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -30,14 +31,15 @@ export default function LoginPage() {
     try {
       const response = await authApi.login(formData.email, formData.password);
       if (response.status === 200) {
-        localStorage.setItem("user", JSON.stringify(response.user));
-        dispatch(login({ user: response.user }));
         toast.success("Đăng nhập thành công!", {
           duration: 2000,
         });
-        if (response.user.role === "PROVIDER") {
+        if (response.user.role === RoleEnum.PROVIDER) {
+          localStorage.setItem("user", JSON.stringify(response.user));
           router.push("provider-dashboard");
         } else {
+          localStorage.setItem("user", JSON.stringify(response.user));
+          dispatch(login({ user: response.user }));
           router.push("/");
         }
       }

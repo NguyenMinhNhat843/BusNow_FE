@@ -1,5 +1,5 @@
 import axiosInstance from "./axiosInstance";
-import { RequestRegisterProviderDTO } from "./DTO/authApiDTO";
+import { RequestRegisterDTO } from "./DTO/authApiDTO";
 
 export const authApi = {
   login: async (email: string, password: string) => {
@@ -32,26 +32,13 @@ export const authApi = {
     return response.data;
   },
 
-  register: async (body: {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    otp: string;
-  }) => {
-    const { email, password, firstName, lastName, otp } = body;
-    const response = await axiosInstance.post("/auth/register", {
-      email,
-      password,
-      firstName,
-      lastName,
-      otp,
-    });
+  register: async (body: RequestRegisterDTO) => {
+    const response = await axiosInstance.post("/auth/register", body);
     return response.data;
   },
 
-  registerProvider: async (body: RequestRegisterProviderDTO) => {
-    const response = await axiosInstance.post("/auth/register-provider", body);
+  registerProvider: async (body: RequestRegisterDTO) => {
+    const response = await axiosInstance.post("/auth/register", body);
     return response.data;
   },
 

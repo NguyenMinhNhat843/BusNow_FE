@@ -1,9 +1,16 @@
-interface RequestRegisterProviderDTO {
-  lastName: string;
+import { RoleEnum } from "../Enum/RoleEnum";
+
+interface RequestRegisterDTO {
   email: string;
-  phoneNumber: string;
   password: string;
-  address: string;
+  firstName: string;
+  lastName: string;
+  role: RoleEnum;
+  otp?: string;
+  phoneNumber?: string;
+  address?: string;
+  type?: string; // optional
+  isInternalAdminCreate?: boolean; // optional
 }
 
-export type { RequestRegisterProviderDTO };
+export type { RequestRegisterDTO };

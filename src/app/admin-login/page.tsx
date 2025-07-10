@@ -53,7 +53,7 @@ export default function AdminLoginPage() {
           </label>
           <input
             type="text"
-            name="username"
+            name="email"
             className="p-2 rounded-md w-full border border-salte-200"
             value={formData.email}
             onChange={(e) => handleChangeFormData(e)}

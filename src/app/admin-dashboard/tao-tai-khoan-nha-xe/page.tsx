@@ -1,18 +1,24 @@
 "use client";
 
 import { authApi } from "@/api/authApi";
-import { RequestRegisterProviderDTO } from "@/api/DTO/authApiDTO";
+import { RequestRegisterDTO } from "@/api/DTO/authApiDTO";
+import { RoleEnum } from "@/api/Enum/RoleEnum";
+import { VehicleTypeEnum } from "@/api/Enum/VehicleEnum";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function CreateAccountProvicer() {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<RequestRegisterProviderDTO>({
+  const [formData, setFormData] = useState<RequestRegisterDTO>({
+    firstName: "Nhà xe",
     lastName: "Liên Hưng",
     email: "lienhung@gmail.com",
     phoneNumber: "0159368245",
     password: "Pass@123",
     address: "123 Gò Vấp, Hồ Chí Minh",
+    type: VehicleTypeEnum.BUS,
+    role: RoleEnum.PROVIDER,
+    isInternalAdminCreate: true,
   });
 
   const handleOnChangeInput = (e: any) => {
@@ -23,23 +29,28 @@ export default function CreateAccountProvicer() {
     }));
   };
 
+  const resetFormData = () => {
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+      password: "",
+      address: "",
+      role: RoleEnum.PROVIDER,
+      isInternalAdminCreate: true,
+    });
+  };
+
   const handleRegisterApi = async (e: any) => {
     setLoading(true);
     e.preventDefault();
     try {
       const response = await authApi.registerProvider(formData);
-      if (response.status === "success") {
-        toast.success("Đăng ký nhà xe thành công!!!");
-        setFormData({
-          lastName: "",
-          email: "",
-          phoneNumber: "",
-          password: "",
-          address: "",
-        });
-      }
-    } catch (error) {
-      toast.error("Có lỗi xảy ra!!!");
+      toast.success("Đăng ký nhà xe thành công!!!");
+      resetFormData();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message);
     } finally {
       setLoading(false);
     }

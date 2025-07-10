@@ -1,5 +1,7 @@
 "use client";
 import { authApi } from "@/api/authApi";
+import { RequestRegisterDTO } from "@/api/DTO/authApiDTO";
+import { RoleEnum } from "@/api/Enum/RoleEnum";
 import { set } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -52,12 +54,13 @@ export default function RegisterPage() {
     setIsOtpForm(false);
     setIsLoading(true);
     try {
-      const data = {
+      const data: RequestRegisterDTO = {
         email: formData.email,
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
         otp: otp,
+        role: RoleEnum.USER,
       };
       await authApi.register(data);
       toast.success("Đăng ký thành công!");
