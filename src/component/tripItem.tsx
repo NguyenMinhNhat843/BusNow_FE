@@ -8,21 +8,22 @@ import { useDispatch } from "react-redux";
 import { setSelectedTrip } from "@/redux/slice/tripSlice";
 import { seatApi } from "@/api/seatApi";
 import { toast } from "sonner";
+import { BusTypeEnum } from "@/api/Enum/BusTypeEnum";
 
-interface TripItemProps {
+export interface TripResponse {
   tripId: string;
   price: number;
-  departTime: string;
-  arriveTime: string;
   availableSeat: number;
-  fromLocationName: string;
-  toLocationName: string;
-  codeNumber: string;
-  logo: string;
-  typeVehicle: string;
-  subTypeVehicle?: string;
-  nameProvider: string;
   totalSeat: number;
+  codeNumber: string;
+  vehicleName: string;
+  busType: "VIP" | "STANDARD" | "LIMOUSINE"; // hoặc: BusTypeEnum nếu bạn đã định nghĩa enum
+  fromId: string;
+  fromname: string;
+  departTime: string | Date; // kiểu tùy thuộc bạn dùng Date hay ISO string
+  toId: string;
+  toName: string;
+  arriveTime: string | Date;
 }
 
 const tabDetaiInfoItem = [
@@ -40,22 +41,23 @@ const tabDetaiInfoItem = [
   },
 ];
 
-export default function TripItem({ trip }: { trip: TripItemProps }) {
+export default function TripItem({ trip }: { trip: TripResponse }) {
   const {
     tripId,
     price,
-    departTime,
-    arriveTime,
     availableSeat,
-    fromLocationName,
-    toLocationName,
-    codeNumber,
-    nameProvider,
-    typeVehicle,
-    subTypeVehicle,
     totalSeat,
-    logo,
+    codeNumber,
+    vehicleName,
+    busType,
+    fromId,
+    fromname,
+    toId,
+    toName,
+    arriveTime,
+    departTime,
   } = trip;
+  console.log(departTime);
 
   const departTimeFormatted = new Date(departTime).toLocaleDateString("vi-VN", {
     timeZone: "Asia/Ho_Chi_Minh",
@@ -138,14 +140,10 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
   const fetchTripDetails = async () => {
     if (isLoadedLocationDetail) return;
     try {
-      const response = await locationApi.getListLocationDeatil(
-        fromLocationName
-      );
+      const response = await locationApi.getListLocationDeatil(fromname);
       setFromLocationDetails(response.locationDetails);
 
-      const responseTo = await locationApi.getListLocationDeatil(
-        toLocationName
-      );
+      const responseTo = await locationApi.getListLocationDeatil(toName);
       setToLocationDetails(responseTo.locationDetails);
 
       setIsLoadedLocationDetail(true);
@@ -201,8 +199,8 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
     if (stageBookingTicket === 2) {
       const data = {
         tripId,
-        departLocation: fromLocationName,
-        arriveLocation: toLocationName,
+        departLocation: fromname,
+        arriveLocation: toName,
         departLocationDetailId: locationSelectedBooking.departLocationId,
         departLocatioDetailName: locationSelectedBooking.departLocation,
         arriveLocationDetailId: locationSelectedBooking.arriveLocationId,
@@ -255,13 +253,17 @@ export default function TripItem({ trip }: { trip: TripItemProps }) {
         {/* Trip Info */}
         <div className="flex flex-col justify-between grow">
           <p className="text-lg font-semibold text-gray-800">
-            {`${nameProvider} - ${
-              subTypeVehicle === "VIP" ? subTypeVehicle : ""
+            {`${vehicleName} - ${
+              busType === BusTypeEnum.VIP
+                ? "VIP"
+                : busType === BusTypeEnum.LIMOUSINE
+                ? "LIMOUSINE"
+                : ""
             } ${totalSeat} chỗ`}
           </p>
           <p className="text-sm text-gray-500">Biển số: {codeNumber}</p>
           <p className="text-sm text-gray-600">
-            {fromLocationName} → {toLocationName}
+            {fromname} → {toName}
           </p>
           <p className="text-sm text-gray-600">
             {departTimeFormatted} → {arriveTimeFormatted}

@@ -2,7 +2,7 @@ import axiosInstance from "./axiosInstance";
 import { RequestCreateRoute, RequestGetRoutes } from "./DTO/routeApiDTO";
 
 export const routeApi = {
-  async createRoute(data: RequestCreateRoute) {
+  async createRoute(data: any) {
     const response = await axiosInstance.post("/route/create", data);
     return response.data;
   },

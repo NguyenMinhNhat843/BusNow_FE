@@ -62,8 +62,10 @@ type FilterSideBarProps = {
 };
 
 export default function FilterSideBar({ setTrips }: FilterSideBarProps) {
-  // Lấy searchParams từ redux
+  // common
   const dispatch = useDispatch();
+
+  // Lấy searchParams từ redux
   const searchParamsFromRedux = useSelector(
     (state: RootState) => state.trip.searchParams
   );

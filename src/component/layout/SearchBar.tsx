@@ -14,6 +14,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { vi } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import { locationApi } from "@/api/locationApi";
+import { toast } from "sonner";
 
 // Component tuỳ biến hiển thị ngày
 const CustomDateInput = forwardRef<
@@ -34,56 +35,73 @@ const CustomDateInput = forwardRef<
 CustomDateInput.displayName = "CustomDateInput";
 
 export default function HomePage() {
+  // common
   const router = useRouter();
-  const [locationSelected, setLocationSelected] = useState({
-    from: "Sài Gòn",
-    to: "Đà Nẵng",
-  });
+
+  // state
   const [isOpenMenuLocationFrom, setIsOpenMenuLocationFrom] = useState(false);
   const [isOpenMenuLocationTo, setIsOpenMenuLocationTo] = useState(false);
-  const [startDate, setStartDate] = useState(new Date("2025-08-01"));
-  const [locations, setLocations] = useState([]);
+  const [startDate, setStartDate] = useState(new Date());
+  const [locations, setLocations] = useState<ResponseGetAllLocations[]>([]);
   const menuLocationFromRef = useRef<HTMLDivElement>(null);
   const menuLocationToRef = useRef<HTMLDivElement>(null);
+  const [locationSelected, setLocationSelected] = useState({
+    fromId: "",
+    from: "",
+    toId: "",
+    to: "",
+  });
 
-  // load locations from localstorage
+  // fetch locations
+  const fetchLocations = async () => {
+    try {
+      const response: ResponseGetAllLocations[] =
+        await locationApi.getAllLocation();
+      setLocations(response);
+      setLocationSelected({
+        fromId: response[0].locationId,
+        from: response[0].name,
+        toId: response[1].locationId,
+        to: response[1].name,
+      });
+      localStorage.setItem("locations", JSON.stringify(response));
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    }
+  };
   useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const locations = await locationApi.getAllLocation();
-        localStorage.setItem("locations", JSON.stringify(locations));
-      } catch (error) {
-        console.log("Error fetching locations:", error);
-      }
-    };
-
-    const stored = localStorage.getItem("locations");
-    if (stored) {
-      try {
-        setLocations(JSON.parse(stored));
-      } catch (error) {
-        console.error("Error parsing locations from localStorage:", error);
-      }
-    } else {
+    const locationsStorage = localStorage.getItem("locations");
+    if (locationsStorage === null) {
       fetchLocations();
+    } else {
+      const locationsJsonArray = JSON.parse(locationsStorage);
+      setLocations(locationsJsonArray);
     }
   }, []);
 
   // handle select location
   const handleSeletLocationFrom = (location: any) => {
-    setLocationSelected((prev) => ({ ...prev, from: location.name }));
+    setLocationSelected((prev) => ({
+      ...prev,
+      from: location.name,
+      fromId: location.locationId,
+    }));
     setIsOpenMenuLocationFrom(false); // close menu after selecting
   };
 
   // handle select location
   const handleSeletLocationTo = (location: any) => {
-    setLocationSelected((prev) => ({ ...prev, to: location.name }));
+    setLocationSelected((prev) => ({
+      ...prev,
+      to: location.name,
+      toId: location.locationId,
+    }));
     setIsOpenMenuLocationTo(false); // close menu after selecting
   };
 
   // handle swap location
   const handleSwapLocation = () => {
-    setLocationSelected((prev) => ({ from: prev.to, to: prev.from }));
+    setLocationSelected((prev) => ({ ...prev, from: prev.to, to: prev.from }));
   };
 
   // handle cick outside to close menu location - location from
@@ -132,9 +150,9 @@ export default function HomePage() {
 
     router.push(
       "/ket-qua-tim-kiem?from=" +
-        locationSelected.from +
+        locationSelected.fromId +
         "&to=" +
-        locationSelected.to +
+        locationSelected.toId +
         "&date=" +
         startDateFormatted
     );
@@ -164,7 +182,7 @@ export default function HomePage() {
           {isOpenMenuLocationFrom && (
             <div className="absolute top-20 -left-1 w-[240px] bg-white shadow-lg rounded-lg py-4">
               <ul>
-                {locations.map((item: { locationId: string; name: string }) => (
+                {locations.map((item) => (
                   <li
                     key={item.locationId}
                     className="py-2 px-4 cursor-pointer hover:bg-slate-100 "
@@ -205,9 +223,9 @@ export default function HomePage() {
           {isOpenMenuLocationTo && (
             <div className="absolute top-20 w-[240px] bg-white shadow-lg rounded-lg py-4">
               <ul>
-                {locations.map((item: any) => (
+                {locations.map((item) => (
                   <li
-                    key={item.id}
+                    key={item.locationId}
                     className="py-2 px-4 cursor-pointer hover:bg-slate-100 "
                     onClick={() => handleSeletLocationTo(item)}
                   >
@@ -230,7 +248,7 @@ export default function HomePage() {
           />
           <div className="cursor-pointer">
             <p className="text-sm text-slate-500">Ngày đi</p>
-            <div>
+            <div className="">
               <DatePicker
                 selected={startDate}
                 onChange={(date) => setStartDate(date as Date)}
@@ -238,6 +256,7 @@ export default function HomePage() {
                 dateFormat={"eeee, dd/MM/yyyy"}
                 className="border px-3 py-1 rounded-md"
                 customInput={<CustomDateInput />}
+                minDate={new Date()}
               />
             </div>
           </div>

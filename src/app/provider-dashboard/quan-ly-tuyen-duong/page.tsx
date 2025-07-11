@@ -10,6 +10,8 @@ import { locationApi } from "@/api/locationApi";
 import { routeApi } from "@/api/routeApi";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import RouteItem from "../components/RouteItem";
+import SelectStopPoint from "../components/SelectStopPoint";
 
 export default function ManagerRoute() {
   // common
@@ -54,7 +56,7 @@ export default function ManagerRoute() {
     }));
   };
 
-  // handle load routes
+  // fetch routes
   const fetchRoutesPagination = async (page: number, limit: number) => {
     setLoading(true);
     try {
@@ -112,7 +114,7 @@ export default function ManagerRoute() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-4xl mx-auto bg-slate-100">
       {loading && (
         <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
           <div className="w-12 h-12 border-4 border-white border-t-blue-500 rounded-full animate-spin"></div>
@@ -122,99 +124,16 @@ export default function ManagerRoute() {
       <h2 className="text-xl font-bold mb-4">Quản lý tuyến đường</h2>
 
       {/* Form thêm route */}
-      <div className="bg-gray-100 p-4 rounded-lg shadow mb-6">
-        <h3 className="font-semibold mb-2">Thêm tuyến đường mới</h3>
-        <div className="grid grid-cols-3 gap-4">
-          <select
-            value={dataSubmit.originId}
-            name="originId"
-            onChange={(e) => handleChangeDataSubmit(e)}
-            className="bg-white rounded-md p-2 cursor-pointer"
-          >
-            <option value="">-- Chọn điểm gốc --</option>
-            {locations.map((l) => {
-              return (
-                <option key={l.locationId} value={l.locationId}>
-                  {l.name}
-                </option>
-              );
-            })}
-          </select>
-          <select
-            value={dataSubmit.destinationId}
-            name="destinationId"
-            onChange={(e) => handleChangeDataSubmit(e)}
-            className="bg-white rounded-md p-2 cursor-pointer"
-          >
-            <option value="">-- Chọn điểm đến --</option>
-            {locations.map((l) => {
-              return (
-                <option key={l.locationId} value={l.locationId}>
-                  {l.name}
-                </option>
-              );
-            })}
-          </select>
+      <SelectStopPoint />
 
-          <input
-            type="number"
-            name="duration"
-            placeholder="Thời gian (giờ)"
-            className="p-2 border rounded bg-white"
-            value={dataSubmit.duration}
-            onChange={handleChangeDataSubmit}
-          />
-        </div>
-        <div className="">
-          <div className="pt-4">
-            <label htmlFor="" className="inline-block w-[400px]">
-              Khi đến đích tài xế được nghỉ:{" "}
-            </label>
-            <input
-              type="number"
-              name="restAtDestination"
-              placeholder="Thời gian nghỉ"
-              className="p-2 border rounded"
-              value={dataSubmit.restAtDestination}
-              onChange={handleChangeDataSubmit}
-            />
+      {/* Danh sách tuyến đường */}
+      <div>
+        {routes.map((route, index) => (
+          <div key={index}>
+            <RouteItem route={route} />
           </div>
-        </div>
-
-        <button
-          onClick={handleAddRoute}
-          className="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          Thêm tuyến
-        </button>
+        ))}
       </div>
-
-      {/* Danh sách tuyến */}
-      <table className="w-full border shadow rounded-lg">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="p-3 text-left">STT</th>
-            <th className="p-3 text-left">Xuất phát</th>
-            <th className="p-3 text-left">Điểm đến</th>
-            <th className="p-3 text-left">Thời gian (giờ)</th>
-            <th className="p-3 text-left">Thời gian nghỉ</th>
-          </tr>
-        </thead>
-        <tbody>
-          {routes &&
-            routes.map((route: ResponseGetRoutes, index) => (
-              <tr key={route.routeId} className="border-t">
-                <td className="p-3">
-                  {(pagination?.page - 1) * pagination.limit + index + 1}
-                </td>
-                <td className="p-3">{route.origin.name}</td>
-                <td className="p-3">{route.destination.name}</td>
-                <td className="p-3">{route.duration}</td>
-                <td className="p-3">{route.restAtDestination}</td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
 
       {/* Pagination */}
       <div className="flex justify-end mt-4 items-center space-x-4">

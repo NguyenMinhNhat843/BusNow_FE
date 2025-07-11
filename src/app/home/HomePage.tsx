@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import RoutePopulateItem from "@/component/RoutePopulateItem";
 import Image from "next/image";
 import SearchBar from "../../component/layout/SearchBar";
+import { toast } from "sonner";
+import { locationApi } from "@/api/locationApi";
 
 const vehicle = [
   {
@@ -29,8 +31,15 @@ const vehicle = [
   },
 ];
 
+interface Location {
+  locationId: string;
+  name: string;
+}
+
 export default function HomePage() {
+  // state
   const [vehicleTab, setVehicleTab] = useState("Xe khách");
+
   return (
     <main className="select-none">
       {/* SearchBar */}
