@@ -9,6 +9,12 @@ export interface ResponseVehicle {
     duration: number;
     restAtDestination: number;
     repeatsDay: number;
+    origin: {
+      name: string;
+    };
+    destination: {
+      name: string;
+    };
   };
   departHour: string; // dạng "HH:mm"
 }

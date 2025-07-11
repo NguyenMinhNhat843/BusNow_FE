@@ -1,13 +1,15 @@
 import axiosInstance from "./axiosInstance";
 
 export const busApi = {
-  async getVehicles(page: number, limit: number) {
+  async getVehicles(data: any) {
     const response = await axiosInstance.get("/vehicle/list", {
-      params: {
-        page,
-        limit,
-      },
+      params: { ...data },
     });
+    return response.data;
+  },
+
+  async createVehicle(data: any) {
+    const response = await axiosInstance.post("/vehicle/create", data);
     return response.data;
   },
 };

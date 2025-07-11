@@ -1,6 +1,12 @@
 import axiosInstance from "./axiosInstance";
 import qs from "qs";
 
+interface RequestGetTripByVehicleId {
+  vehicleId: string;
+  page?: number;
+  limit?: number;
+}
+
 export const tripApi = {
   async searchTrips(parmas: any) {
     const response = await axiosInstance.get("/trip/search-trip", {
@@ -11,6 +17,20 @@ export const tripApi = {
         });
       },
     });
+    return response.data;
+  },
+
+  async getTripByVehicleId(data: RequestGetTripByVehicleId) {
+    const response = await axiosInstance.get("/trip/vehicle", {
+      params: {
+        ...data,
+      },
+    });
+    return response.data;
+  },
+
+  async genTrip(data: any) {
+    const response = await axiosInstance.post("/trip/gen-trips", data);
     return response.data;
   },
 };

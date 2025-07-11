@@ -10,7 +10,7 @@ const sideBarItems = [
     link: "/provider-dashboard/quan-ly-xe",
   },
   {
-    value: "quan-ly-chuyen-di",
+    value: "quan_ly_chuyen_di",
     name: "Quản lý chuyến đi",
     link: "/provider-dashboard/quan-ly-chuyen-di",
   },
@@ -25,8 +25,11 @@ export default function SideBar() {
   // common
   const router = useRouter();
   const path = usePathname();
-  const endPoint = path.split("/")[2];
-  const endPointDormatted = "";
+  let endPoint = null;
+  if (path.split("/").length >= 2) {
+    endPoint = path.split("/")[2];
+  }
+  const endPointDormatted = endPoint?.replaceAll("-", "_");
 
   // state
   const [tabSelected, setTabSelected] = useState("");
