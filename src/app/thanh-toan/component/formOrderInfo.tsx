@@ -3,8 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { useOrderContext } from "../orderContext";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import format from "@/utils/format";
 
 interface FormOrderInfoProps {
   firstName: string;
@@ -23,6 +24,10 @@ interface FormOrderInfoProps {
 export default function FormOrderInfo() {
   // common
   const router = useRouter();
+  const dispatch = useDispatch();
+
+  // redux
+  const bookingInfo = useSelector((state: RootState) => state.booking);
 
   // state
   const { stage, setStage } = useOrderContext();
@@ -132,12 +137,14 @@ export default function FormOrderInfo() {
           <div className="flex-1 rounded-xl bg-yellow-100 border border-yellow-300 p-4 shadow-sm">
             <p className="text-sm text-gray-600 font-medium">Đi từ:</p>
             <p className="text-lg font-semibold text-gray-800">
-              {formData.departLocation}
+              {bookingInfo?.from.name || "Có lỗi"}
             </p>
             <p className="text-sm text-gray-500">
-              Điểm đón: {formData.departLocatioDetailName}
+              Điểm đón: {bookingInfo.from.stopPoint}
             </p>
-            <p className="text-sm text-gray-500">Lúc: {formData.departTime}</p>
+            <p className="text-sm text-gray-500">
+              Lúc: {format.formatDate(bookingInfo.from.time)}
+            </p>
           </div>
 
           {/* Đường nét đứt biểu tượng chuyển tiếp */}
@@ -149,12 +156,14 @@ export default function FormOrderInfo() {
           <div className="flex-1 rounded-xl bg-yellow-100 border border-yellow-300 p-4 shadow-sm">
             <p className="text-sm text-gray-600 font-medium">Đến:</p>
             <p className="text-lg font-semibold text-gray-800">
-              {formData.arriveLocation}
+              {bookingInfo.to.name}
             </p>
             <p className="text-sm text-gray-500">
-              Điểm đón: {formData.arriveLocationDetailName}
+              Điểm đón: {bookingInfo.to.stopPoint}
             </p>
-            <p className="text-sm text-gray-500">Lúc: {formData.arriveTime}</p>
+            <p className="text-sm text-gray-500">
+              Lúc: {format.formatDate(bookingInfo.to.time)}
+            </p>
           </div>
         </div>
 
@@ -162,10 +171,10 @@ export default function FormOrderInfo() {
         <div className="flex flex-col gap-2 pb-4 pt-4">
           <label htmlFor="">Ghế đã đặt</label>
           <div className="flex items-center gap-4">
-            {formData.seats.length === 0 ? (
+            {bookingInfo.selectedSeats.length === 0 ? (
               <span className="text-red-500">Chưa có ghế nào được đặt</span>
             ) : (
-              formData.seats.map((seat, index) => (
+              bookingInfo.selectedSeats.map((seat, index) => (
                 <div
                   key={index}
                   className="py-2 px-4 bg-yellow-400 text-slate-700 rounded-md"
@@ -180,7 +189,9 @@ export default function FormOrderInfo() {
         {/* Tổng tiền */}
         <div className="flex items-center gap-4">
           <p className="text-lg">Tổng tiền: </p>
-          <span className="font-bold text-2xl text-red-400">300.000 VND</span>
+          <span className="font-bold text-2xl text-red-400">
+            {format.formatMoneyVND(bookingInfo.totalAmount)} VND
+          </span>
         </div>
 
         {/* button submit */}

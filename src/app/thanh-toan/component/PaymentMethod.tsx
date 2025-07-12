@@ -5,29 +5,33 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { tripApi } from "@/api/tripApi";
 import { ticketApi } from "@/api/ticketApi";
+import { useRouter } from "next/navigation";
 
 const methodItems = [
   {
-    value: "cash",
+    value: "CASH",
     name: "Thanh toán tại quầy bán",
   },
   {
-    value: "banking",
+    value: "BANKING",
     name: "Thanh toán qua ngân hàng",
   },
 ];
 
 export default function PaymentMethod() {
+  // common
+  const router = useRouter();
   // context
   const { stage, setStage } = useOrderContext();
 
   // state
-  const [selectedMethod, setSelectedMethod] = useState<string>("");
+  const [selectedMethod, setSelectedMethod] = useState<string>("CASH");
 
   // redux
   const dataTrip = useSelector(
     (state: RootState) => state.trip.tripItemSelected
   );
+  const bookingInfo = useSelector((state: RootState) => state.booking);
 
   // handle previos stage
   const handlePreviousStage = () => {
@@ -41,16 +45,19 @@ export default function PaymentMethod() {
 
   // handle call api create ticket
   const handleCreateTicket = () => {
+    if (!selectedMethod) {
+      toast.error("Vui lòng chọn phương thức thanh toán!!!");
+      return;
+    }
     try {
       const dataApi = {
-        tripId: dataTrip.tripId,
-        seatCode: dataTrip.seats[0],
-        departLocationDetailId: dataTrip.departLocationDetailId,
-        arriveLocationDetailId: dataTrip.arriveLocationDetailId,
-        methodPayment: "CASH",
+        tripId: bookingInfo.tripId,
+        seatCode: bookingInfo.selectedSeats,
+        methodPayment: selectedMethod,
       };
       const response = ticketApi.createTicket(dataApi);
       toast.success("Tạo vé thành công!");
+      router.push("/");
     } catch (error) {
       toast.error("Lỗi khi tạo vé, vui lòng thử lại sau.");
     }
@@ -71,6 +78,7 @@ export default function PaymentMethod() {
               type="radio"
               name="method_payment"
               className="w-6 h-6 cursor-pointer"
+              checked={selectedMethod === item.value}
             />
             <label htmlFor={item.value} className="cursor-pointer">
               {item.name}

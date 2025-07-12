@@ -9,4 +9,9 @@ export const stopPointApi = {
     });
     return response.data;
   },
+
+  async getSPByRoute(routeId: string) {
+    const res = await axiosInstance.get(`/stop-point/by-route/${routeId}`);
+    return res.data;
+  },
 };

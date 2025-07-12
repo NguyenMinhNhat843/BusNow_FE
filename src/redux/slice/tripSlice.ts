@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import { stat } from "fs";
 
 interface searchParams {
-  fromLocationName: string | null;
-  toLocationName: string | null;
+  fromLocationId: string | null;
+  toLocationId: string | null;
   departTime: string | null;
   page?: number;
   limit: number;
@@ -27,8 +27,8 @@ const initialState: TripState = {
   totalPage: 0,
   currentPage: 1,
   searchParams: {
-    fromLocationName: null,
-    toLocationName: null,
+    fromLocationId: null,
+    toLocationId: null,
     departTime: null,
     limit: 5, // Default limit for pagination
   },
@@ -56,12 +56,12 @@ const tripSlice = createSlice({
     },
     resetFilterTrips: (state) => {
       // Giữ nguyên các tham số tìm kiếm ban đầu
-      const { fromLocationName, toLocationName, departTime, limit } =
+      const { fromLocationId, toLocationId, departTime, limit } =
         state.searchParams;
 
       state.searchParams = {
-        fromLocationName,
-        toLocationName,
+        fromLocationId,
+        toLocationId,
         departTime,
         limit,
         page: 1,

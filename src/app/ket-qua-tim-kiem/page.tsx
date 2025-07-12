@@ -1,8 +1,8 @@
 "use client";
 
 import { tripApi } from "@/api/tripApi";
-import TripItem from "@/component/tripItem";
-import { useSearchParams } from "next/navigation";
+import TripItem from "./components/TripItem";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import FilterSideBar from "./filterSideBar";
@@ -22,13 +22,15 @@ import { set } from "date-fns";
 const itemPerPage = 5;
 
 export default function SearchResultsPage() {
+  // common
   const dispatch = useDispatch();
+  const router = useRouter();
 
-  // Lấy searchParams từ redux store
-  const searchParamsFromRedux = useSelector(
-    (state: RootState) => state.trip.searchParams
-  );
-  const currentPage = useSelector((state: RootState) => state.trip.currentPage);
+  // state
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [params, setParams] = useState<any>({});
+  const [trips, setTrips] = useState<any[]>([]);
+  const [totalPage, setTotalPage] = useState(0);
 
   // lấy search params từ url
   const searchParams = useSearchParams();
@@ -36,57 +38,26 @@ export default function SearchResultsPage() {
   const to = searchParams.get("to");
   const date = searchParams.get("date");
 
-  // state
-  const [trips, setTrips] = useState<any[]>([]);
-  const [totalPage, setTotalPage] = useState(0);
-
-  // dispatch để cập nhật search params vào redux store
-  useEffect(() => {
-    if (from && to && date) {
-      dispatch(
-        setSearchParams({
-          fromLocationName: from,
-          toLocationName: to,
-          departTime: date,
-        })
-      );
-    }
-
-    dispatch(resetCurrentPageToFirst());
-  }, [from, to, date, dispatch]);
-
-  // Mỗi khi searchParamsFromRedux thay đổi thì quay lại trang 1
-  useEffect(() => {
-    dispatch(resetCurrentPageToFirst());
-  }, [searchParamsFromRedux, dispatch]);
-
   // call api fetch trips
   useEffect(() => {
     const fetchTrips = async () => {
       try {
-        const response = await tripApi.searchTrips({
-          ...searchParamsFromRedux,
+        const body = {
+          fromLocationId: from,
+          toLocationId: to,
+          departTime: date,
           page: currentPage,
-        });
-        if (response.status === "success") {
-          setTrips(response.trips);
-          setTotalPage(response.pagination.totalPage);
-        }
-      } catch (error) {
-        console.log("Error fetching trips:", error);
+          limit: itemPerPage,
+        };
+        const res = await tripApi.searchTrips(body);
+        setTrips(res.trips);
+      } catch (error: any) {
+        toast.error(error.response.data.message);
       }
     };
 
-    // Kiểm tra đã có đủ dữ liệu để tìm kiếm chưa
-    const isReaddy =
-      searchParamsFromRedux.fromLocationName &&
-      searchParamsFromRedux.toLocationName &&
-      searchParamsFromRedux.departTime;
-
-    if (isReaddy) {
-      fetchTrips();
-    }
-  }, [searchParamsFromRedux, currentPage]);
+    fetchTrips();
+  }, [from, to, date]);
 
   // render search result page
   const handleNextPage = async () => {

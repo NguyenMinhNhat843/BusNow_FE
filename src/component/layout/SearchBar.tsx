@@ -12,7 +12,7 @@ import {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { vi } from "date-fns/locale";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { locationApi } from "@/api/locationApi";
 import { toast } from "sonner";
 
@@ -52,6 +52,11 @@ export default function HomePage() {
     to: "",
   });
 
+  // search params
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
+  const to = searchParams.get("to");
+
   // fetch locations
   const fetchLocations = async () => {
     try {
@@ -71,11 +76,52 @@ export default function HomePage() {
   };
   useEffect(() => {
     const locationsStorage = localStorage.getItem("locations");
+
+    const initFromURL = (locationsJsonArray: any[]) => {
+      // Nếu có param from/to thì tìm name tương ứng
+      if (from && to) {
+        const fromLocation = locationsJsonArray.find(
+          (loc: any) => loc.locationId === from
+        );
+        const toLocation = locationsJsonArray.find(
+          (loc: any) => loc.locationId === to
+        );
+
+        if (fromLocation && toLocation) {
+          setLocationSelected({
+            fromId: fromLocation.locationId,
+            from: fromLocation.name,
+            toId: toLocation.locationId,
+            to: toLocation.name,
+          });
+          return;
+        }
+      }
+
+      // Không có param thì set mặc định
+      setLocationSelected({
+        fromId: locationsJsonArray[0].locationId,
+        from: locationsJsonArray[0].name,
+        toId: locationsJsonArray[1].locationId,
+        to: locationsJsonArray[1].name,
+      });
+    };
+
     if (locationsStorage === null) {
-      fetchLocations();
+      // Nếu localStorage rỗng, fetch API
+      fetchLocations().then(() => {
+        const newLocations = JSON.parse(
+          localStorage.getItem("locations") || "[]"
+        );
+        if (newLocations.length) {
+          setLocations(newLocations);
+          initFromURL(newLocations);
+        }
+      });
     } else {
       const locationsJsonArray = JSON.parse(locationsStorage);
       setLocations(locationsJsonArray);
+      initFromURL(locationsJsonArray);
     }
   }, []);
 

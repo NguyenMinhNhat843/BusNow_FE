@@ -137,6 +137,12 @@ export default function TripItem({ trip }: { trip: TripResponse }) {
     });
   };
 
+  // Lấy stopppints
+  const fetchStopPoints = async () => {
+    try {
+    } catch (error) {}
+  };
+
   const fetchTripDetails = async () => {
     if (isLoadedLocationDetail) return;
     try {
