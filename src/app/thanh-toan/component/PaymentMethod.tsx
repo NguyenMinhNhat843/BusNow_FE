@@ -21,6 +21,11 @@ const methodItems = [
 export default function PaymentMethod() {
   // common
   const router = useRouter();
+
+  // locastorage
+  const storedUser = localStorage.getItem("guest");
+  const user = storedUser ? JSON.parse(storedUser) : null;
+
   // context
   const { stage, setStage } = useOrderContext();
 
@@ -44,9 +49,15 @@ export default function PaymentMethod() {
   };
 
   // handle call api create ticket
-  const handleCreateTicket = () => {
+  const handleCreateTicket = async () => {
     if (!selectedMethod) {
       toast.error("Vui lòng chọn phương thức thanh toán!!!");
+      return;
+    }
+    if (user === null) {
+      toast.error(
+        "Bạn hãy nhập đủ thông tin firstname, lastName, phone, email"
+      );
       return;
     }
     try {
@@ -54,12 +65,18 @@ export default function PaymentMethod() {
         tripId: bookingInfo.tripId,
         seatCode: bookingInfo.selectedSeats,
         methodPayment: selectedMethod,
+        phone: user.phoneNumber,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
       };
-      const response = ticketApi.createTicket(dataApi);
-      toast.success("Tạo vé thành công!");
-      router.push("/");
-    } catch (error) {
-      toast.error("Lỗi khi tạo vé, vui lòng thử lại sau.");
+      const response = await ticketApi.createTicket(dataApi);
+      if (response.message) {
+        toast.success("Tạo vé thành công!");
+        router.push("/");
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.message);
     }
   };
 
@@ -79,6 +96,7 @@ export default function PaymentMethod() {
               name="method_payment"
               className="w-6 h-6 cursor-pointer"
               checked={selectedMethod === item.value}
+              onChange={() => handleSelectPaymentMethod(item.value)}
             />
             <label htmlFor={item.value} className="cursor-pointer">
               {item.name}

@@ -40,15 +40,15 @@ export default function SideBar() {
     router.push(tabItem.link);
   };
   return (
-    <div className="rounded-md shadow-md min-h-[500px] ">
+    <div className="flex justify-around rounded-md shadow-md">
       {sideBarItems.map((item) => (
         <div key={item.value}>
           <p
-            className={`px-4 py-4 border-b border-b-slate-200 cursor-pointer hover:bg-yellow-500 ${
+            className={`px-4 py-4 border-b-slate-100 transition-all cursor-pointer border-b-4 hover:border-b-yellow-500 ${
               tabSelected === item.value
-                ? "bg-yellow-500"
+                ? "border-b-yellow-500"
                 : endPointDormatted === item.value
-                ? "bg-yellow-500"
+                ? "border-b-yellow-500"
                 : ""
             }`}
             onClick={() => handleSelectTab(item)}

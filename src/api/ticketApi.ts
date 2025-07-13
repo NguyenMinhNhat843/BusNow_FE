@@ -54,4 +54,9 @@ export const ticketApi = {
     );
     return response.data;
   },
+
+  async findTicketByTrip(tripId: string) {
+    const response = await axiosInstance.get(`/ticket/by-trip/${tripId}`);
+    return response.data;
+  },
 };

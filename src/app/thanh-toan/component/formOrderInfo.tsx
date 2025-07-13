@@ -50,7 +50,7 @@ export default function FormOrderInfo() {
     (state: RootState) => state.trip.tripItemSelected
   );
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = localStorage.getItem("guest");
     const user = storedUser ? JSON.parse(storedUser) : null;
 
     if (user || dataTrip) {
@@ -77,16 +77,28 @@ export default function FormOrderInfo() {
     }));
   };
 
-  const handleNextStage = () => {
+  const handleNextStage = (e: any) => {
+    e.preventDefault();
     setStage((prev) => prev + 1);
+
+    localStorage.setItem(
+      "guest",
+      JSON.stringify({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        type: "guest",
+      })
+    );
   };
 
   return (
     <div>
-      <div className="pt-4">
+      <form onSubmit={handleNextStage} className="pt-4">
         {/* firstName name */}
         <div className="flex flex-col gap-2 pb-4">
-          <label htmlFor="">Họ và tên</label>
+          <label htmlFor="">Họ và tên đệm</label>
           <input
             type="text"
             placeholder="Nhập họ"
@@ -94,11 +106,12 @@ export default function FormOrderInfo() {
             name="firstName"
             value={`${formData.firstName}`}
             onChange={onChangeValue}
+            required
           />
         </div>
         {/* lastName */}
         <div className="flex flex-col gap-2 pb-4">
-          <label htmlFor="">Họ và tên</label>
+          <label htmlFor="">Tên</label>
           <input
             type="text"
             placeholder="Nhập tên"
@@ -106,6 +119,7 @@ export default function FormOrderInfo() {
             name="lastName"
             value={`${formData.lastName}`}
             onChange={onChangeValue}
+            required
           />
         </div>
         {/* email */}
@@ -118,6 +132,7 @@ export default function FormOrderInfo() {
             name="email"
             value={formData.email}
             onChange={onChangeValue}
+            required
           />
         </div>
         <div className="flex flex-col gap-2 pb-4">
@@ -129,6 +144,7 @@ export default function FormOrderInfo() {
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={onChangeValue}
+            required
           />
         </div>
         {/* Thông tin chuyến xe */}
@@ -198,12 +214,13 @@ export default function FormOrderInfo() {
         <div className="flex justify-center pt-6">
           <button
             className="py-2 px-16 rounded-md bg-yellow-400 font-bold text-xl cursor-pointer hover:bg-yellow-500 transition-colors duration-300"
-            onClick={handleNextStage}
+            // onClick={handleNextStage}
+            type="submit"
           >
             Tiếp theo
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
