@@ -11,13 +11,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import {
-  descreaseCurrentPage,
-  increaseCurrentPage,
-  resetCurrentPageToFirst,
-  setSearchParams,
-} from "@/redux/slice/tripSlice";
-import { set } from "date-fns";
 import { setFilter } from "@/redux/slice/filterTripSlice";
 
 const itemPerPage = 5;
@@ -27,15 +20,11 @@ export default function SearchResultsPage() {
   const dispatch = useDispatch();
 
   // state
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [trips, setTrips] = useState<any[]>([]);
   const [totalPage, setTotalPage] = useState(0);
 
   // redux
   const filterObject = useSelector((state: RootState) => state.filterTrip);
-  useEffect(() => {
-    console.log(JSON.stringify(filterObject));
-  }, [filterObject]);
 
   // lấy search params từ url
   const searchParams = useSearchParams();

@@ -1,10 +1,5 @@
 import { tripApi } from "@/api/tripApi";
-import { setFilter } from "@/redux/slice/filterTripSlice";
-import {
-  resetCurrentPageToFirst,
-  resetFilterTrips,
-  setSearchParams,
-} from "@/redux/slice/tripSlice";
+import { resetFilter, setFilter } from "@/redux/slice/filterTripSlice";
 import { RootState } from "@/redux/store";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -52,7 +47,6 @@ export default function FilterSideBar() {
 
   // state
   const [sortSelected, setSortSelected] = useState("default");
-  const [filterVehicle, setFilterVehicle] = useState<string[]>([]);
   const [filterPrice, setFilterPrice] = useState<number>(0);
   // state để kiểm tra xem có đang trượt thanh trượt giá hay không
   const [isSliding, setIsSliding] = useState(false);
@@ -113,11 +107,9 @@ export default function FilterSideBar() {
 
   // handle resetFilter
   const handleResetFilter = () => {
-    setFilterVehicle([]);
     setFilterPrice(0);
     setFilterVehicleType([]);
-    dispatch(resetFilterTrips());
-    dispatch(resetCurrentPageToFirst());
+    dispatch(resetFilter());
   };
 
   return (

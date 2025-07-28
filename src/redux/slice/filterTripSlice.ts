@@ -4,7 +4,6 @@ interface FilterTripState {
   fromLocationId: string;
   toLocationId: string;
   departTime: string;
-  providerName?: string[];
   busType?: string[];
   minPrice?: number;
   maxPrice?: number;
@@ -28,8 +27,19 @@ const filterTripSlice = createSlice({
     setFilter: (state, action: PayloadAction<Partial<FilterTripState>>) => {
       return { ...state, ...action.payload };
     },
+    resetFilter: (state) => {
+      return {
+        ...state,
+        busType: undefined,
+        minPrice: undefined,
+        maxPrice: undefined,
+        sortBy: undefined,
+        page: 1,
+        limit: 5,
+      };
+    },
   },
 });
 
-export const { setFilter } = filterTripSlice.actions;
+export const { setFilter, resetFilter } = filterTripSlice.actions;
 export default filterTripSlice.reducer;
