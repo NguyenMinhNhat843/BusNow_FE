@@ -58,7 +58,7 @@ export default function Header() {
   // handle click "Đơn hàng của tôi"
   const handleMyOrdersClick = () => {
     if (!user) {
-      toast.error("Vui lòng đăng nhập để xem đơn hàng của bạn!");
+      router.push("/tra-cuu-don-hang");
     } else {
       router.push("/don-hang-cua-toi");
     }

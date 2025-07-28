@@ -147,7 +147,13 @@ export default function HomePage() {
 
   // handle swap location
   const handleSwapLocation = () => {
-    setLocationSelected((prev) => ({ ...prev, from: prev.to, to: prev.from }));
+    setLocationSelected((prev) => ({
+      ...prev,
+      from: prev.to,
+      to: prev.from,
+      fromId: prev.toId,
+      toId: prev.fromId,
+    }));
   };
 
   // handle cick outside to close menu location - location from

@@ -5,31 +5,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import RoutePopulateItem from "@/component/RoutePopulateItem";
 import Image from "next/image";
 import SearchBar from "../../component/layout/SearchBar";
-import { toast } from "sonner";
-import { locationApi } from "@/api/locationApi";
-
-const vehicle = [
-  {
-    id: 1,
-    name: "Xe khách",
-    // icon:
-  },
-  {
-    id: 2,
-    name: "Máy bay",
-    // icon:
-  },
-  {
-    id: 3,
-    name: "Tàu hỏa",
-    // icon:
-  },
-  {
-    id: 4,
-    name: "Thuê xe",
-    // icon:
-  },
-];
 
 interface Location {
   locationId: string;
@@ -63,29 +38,7 @@ export default function HomePage() {
             action=""
             className="bg-white rounded-2xl shadow-lg px-4 py-4 max-w-5xl w-full mx-auto"
           >
-            {/* Tab vehicle */}
-            <div className="flex justify-center items-center gap-6 pb-4">
-              {vehicle.map((item, index) => {
-                return (
-                  <div
-                    key={index}
-                    className={`cursor-pointer ${
-                      item.name === vehicleTab
-                        ? "font-bold border-b-2 border-blue-500"
-                        : ""
-                    }`}
-                    onClick={() => setVehicleTab(item.name)}
-                  >
-                    <p>{item.name}</p>
-                  </div>
-                );
-              })}
-            </div>
-            {/* end: Tab vehicle */}
-
-            {/* SearchBar content */}
             <SearchBar />
-            {/* end: SearchBar content */}
           </form>
         </div>
       </div>

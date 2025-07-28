@@ -25,6 +25,7 @@ export interface TripResponse {
   toId: string;
   toName: string;
   arriveTime: string;
+  type: "return" | "go";
 }
 
 export interface StopPointInterface {
@@ -53,6 +54,7 @@ export default function TripItem({ trip }: { trip: TripResponse }) {
     toName,
     arriveTime,
     departTime,
+    type,
   } = trip;
   const router = useRouter();
 
@@ -108,7 +110,9 @@ export default function TripItem({ trip }: { trip: TripResponse }) {
           </p>
           <p className="text-sm text-gray-500">Biển số: {codeNumber}</p>
           <p className="text-sm text-gray-600">
-            {fromname} → {toName}
+            {type === "go"
+              ? `${fromname} -> ${toName}`
+              : `${toName} -> ${fromname}`}
           </p>
           <p className="text-sm text-gray-600">
             {format.formatDate(departTime)} → {format.formatDate(arriveTime)}

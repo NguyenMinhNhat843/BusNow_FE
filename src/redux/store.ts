@@ -8,12 +8,14 @@ import storage from "redux-persist/lib/storage"; // Sử dụng localStorage
 import authReducer from "./slice/authSlice";
 import tripReducer from "./slice/tripSlice";
 import bookingReducer from "./slice/bookingSlice";
+import filterTripReducer from "./slice/filterTripSlice";
 
 // Combine all reducers
 const rootReducer = combineReducers({
   auth: authReducer,
   trip: tripReducer,
   booking: bookingReducer,
+  filterTrip: filterTripReducer,
 });
 
 // Persist config

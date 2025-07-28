@@ -59,4 +59,9 @@ export const ticketApi = {
     const response = await axiosInstance.get(`/ticket/by-trip/${tripId}`);
     return response.data;
   },
+
+  async findTicketByPhone(phone: string) {
+    const response = await axiosInstance.get(`/ticket/by-phone/${phone}`);
+    return response.data;
+  },
 };

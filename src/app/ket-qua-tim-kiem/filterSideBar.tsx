@@ -1,14 +1,13 @@
 import { tripApi } from "@/api/tripApi";
+import { setFilter } from "@/redux/slice/filterTripSlice";
 import {
   resetCurrentPageToFirst,
   resetFilterTrips,
   setSearchParams,
 } from "@/redux/slice/tripSlice";
 import { RootState } from "@/redux/store";
-import { set } from "date-fns";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
 
 const sortItem = [
   { label: "Mặc định", value: "default" },
@@ -31,16 +30,6 @@ interface FilterItem {
 
 const filterItem: FilterItem[] = [
   {
-    value: "vehicle",
-    label: "Nhà xe",
-    options: [
-      { label: "Khanh Phong", value: "Khanh Phong" },
-      { label: "Xe Nhà", value: "Xe Nhà" },
-      { label: "Phương Trang", value: "Phương Trang" },
-    ],
-    type: "checkbox",
-  },
-  {
     value: "price",
     label: "Giá vé",
     type: "range",
@@ -57,19 +46,9 @@ const filterItem: FilterItem[] = [
   },
 ];
 
-type FilterSideBarProps = {
-  setTrips: (trips: any[]) => void;
-};
-
-export default function FilterSideBar({ setTrips }: FilterSideBarProps) {
+export default function FilterSideBar() {
   // common
   const dispatch = useDispatch();
-
-  // Lấy searchParams từ redux
-  const searchParamsFromRedux = useSelector(
-    (state: RootState) => state.trip.searchParams
-  );
-  const currentpage = useSelector((state: RootState) => state.trip.currentPage);
 
   // state
   const [sortSelected, setSortSelected] = useState("default");
@@ -83,35 +62,12 @@ export default function FilterSideBar({ setTrips }: FilterSideBarProps) {
   const handleSortChange = async (value: string) => {
     setSortSelected(value);
 
-    // dispatch sang searchParams trong redux
     dispatch(
-      setSearchParams({
+      setFilter({
         sortBy: value,
+        page: 1,
       })
     );
-    dispatch(resetCurrentPageToFirst());
-  };
-
-  // handle resetFilter
-  const handleResetFilter = () => {
-    setFilterVehicle([]);
-    setFilterPrice(0);
-    setFilterVehicleType([]);
-    dispatch(resetFilterTrips());
-    dispatch(resetCurrentPageToFirst());
-  };
-
-  // handle change filter providerName
-  const handleVehicleChange = async (value: string) => {
-    let newVehicle = [...filterVehicle];
-    if (newVehicle.includes(value)) {
-      newVehicle = newVehicle.filter((item) => item !== value);
-    } else {
-      newVehicle.push(value);
-    }
-    setFilterVehicle(newVehicle);
-    dispatch(setSearchParams({ providerName: newVehicle }));
-    dispatch(resetCurrentPageToFirst());
   };
 
   // handle change filter price
@@ -124,24 +80,43 @@ export default function FilterSideBar({ setTrips }: FilterSideBarProps) {
     if (isSliding) return; // Nếu đang trượt thì không thực hiện gì
     const delayDebounce = setTimeout(async () => {
       if (filterPrice > 0) {
-        dispatch(setSearchParams({ minPrice: 0, maxPrice: filterPrice }));
+        dispatch(
+          setFilter({
+            minPrice: 0,
+            maxPrice: filterPrice,
+            page: 1,
+          })
+        );
       }
     }, 500);
 
     return () => clearTimeout(delayDebounce);
   }, [filterPrice, dispatch, isSliding]);
 
-  // handle change filterVehicleSubType
+  // handle change busType
   const handleVehicleTypeChange = async (value: string) => {
-    let newVehicleSubType = [...filterVehicleType];
-    if (newVehicleSubType.includes(value)) {
-      newVehicleSubType = newVehicleSubType.filter((item) => item !== value);
+    let newVehicleType = [...filterVehicleType];
+    if (newVehicleType.includes(value)) {
+      newVehicleType = newVehicleType.filter((item) => item !== value);
     } else {
-      newVehicleSubType.push(value);
+      newVehicleType.push(value);
     }
 
-    setFilterVehicleType(newVehicleSubType);
-    dispatch(setSearchParams({ vehicleSubType: newVehicleSubType }));
+    setFilterVehicleType(newVehicleType);
+    dispatch(
+      setFilter({
+        busType: newVehicleType,
+        page: 1,
+      })
+    );
+  };
+
+  // handle resetFilter
+  const handleResetFilter = () => {
+    setFilterVehicle([]);
+    setFilterPrice(0);
+    setFilterVehicleType([]);
+    dispatch(resetFilterTrips());
     dispatch(resetCurrentPageToFirst());
   };
 
@@ -193,31 +168,6 @@ export default function FilterSideBar({ setTrips }: FilterSideBarProps) {
             return (
               <div key={filterKey.value} className="pt-2">
                 <p className="font-bold">{filterKey.label}</p>
-                {filterKey.value === "vehicle" && (
-                  <div className="pt-1">
-                    {filterKey.options?.map((option) => {
-                      return (
-                        <div key={option.value}>
-                          <label
-                            htmlFor={option.value}
-                            className="flex items-center gap-2 cursor-pointer"
-                          >
-                            <input
-                              id={option.value}
-                              type="checkbox"
-                              className="w-4 h-4"
-                              value={filterVehicle}
-                              checked={filterVehicle.includes(option.value)}
-                              onChange={() => handleVehicleChange(option.value)}
-                            />
-                            <span>{option.label}</span>
-                          </label>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
                 {filterKey.value === "price" && (
                   <div>
                     <label htmlFor={filterKey.value} className="block pb-1">

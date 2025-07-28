@@ -18,19 +18,24 @@ import {
   setSearchParams,
 } from "@/redux/slice/tripSlice";
 import { set } from "date-fns";
+import { setFilter } from "@/redux/slice/filterTripSlice";
 
 const itemPerPage = 5;
 
 export default function SearchResultsPage() {
   // common
   const dispatch = useDispatch();
-  const router = useRouter();
 
   // state
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [params, setParams] = useState<any>({});
   const [trips, setTrips] = useState<any[]>([]);
   const [totalPage, setTotalPage] = useState(0);
+
+  // redux
+  const filterObject = useSelector((state: RootState) => state.filterTrip);
+  useEffect(() => {
+    console.log(JSON.stringify(filterObject));
+  }, [filterObject]);
 
   // lấy search params từ url
   const searchParams = useSearchParams();
@@ -38,44 +43,58 @@ export default function SearchResultsPage() {
   const to = searchParams.get("to");
   const date = searchParams.get("date");
 
-  // call api fetch trips
   useEffect(() => {
-    const fetchTrips = async () => {
-      try {
-        const body = {
+    if (from && to && date) {
+      dispatch(
+        setFilter({
           fromLocationId: from,
           toLocationId: to,
           departTime: date,
-          page: currentPage,
-          limit: itemPerPage,
-        };
-        const res = await tripApi.searchTrips(body);
+          page: 1, // reset page về 1 khi có filter mới
+        })
+      );
+    }
+  }, [from, to, date, dispatch]);
+
+  useEffect(() => {
+    const fetchTrips = async () => {
+      try {
+        const res = await tripApi.searchTrips(filterObject);
         setTrips(res.trips);
+        setTotalPage(res.pagination.totalPage);
       } catch (error: any) {
-        toast.error(error.response.data.message);
+        toast.error(error.response?.data?.message || "Có lỗi xảy ra");
       }
     };
 
-    fetchTrips();
-  }, [from, to, date]);
+    if (
+      filterObject.fromLocationId &&
+      filterObject.toLocationId &&
+      filterObject.departTime
+    ) {
+      fetchTrips();
+    }
+  }, [filterObject]);
 
   // render search result page
   const handleNextPage = async () => {
-    // Kiểm tra phải trang cuối không
-    if (currentPage >= totalPage) {
-      toast.error("Đã đến trang cuối cùng.");
-      return;
-    }
-    dispatch(increaseCurrentPage());
+    const nextPage =
+      filterObject.page < totalPage ? filterObject.page + 1 : filterObject.page;
+    dispatch(
+      setFilter({
+        page: nextPage,
+      })
+    );
   };
 
   const hanldePreviousPage = async () => {
-    // Kiêm tra phải trang đầu không
-    if (currentPage <= 1) {
-      toast.error("Đã đến trang đầu tiên.");
-      return;
-    }
-    dispatch(descreaseCurrentPage());
+    const prevPage =
+      filterObject.page > 1 ? filterObject.page - 1 : filterObject.page;
+    dispatch(
+      setFilter({
+        page: prevPage,
+      })
+    );
   };
 
   return (
@@ -89,7 +108,7 @@ export default function SearchResultsPage() {
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
         {/* Sidebar */}
         <div className="w-full lg:w-1/4">
-          <FilterSideBar setTrips={setTrips} />
+          <FilterSideBar />
         </div>
 
         {/* Trip Results */}
@@ -120,7 +139,9 @@ export default function SearchResultsPage() {
                 <FontAwesomeIcon icon={faAngleLeft} />
               </div>
               {/* <span className="mx-2">{currentPage}</span> */}
-              <span className="mx-2">{currentPage}</span>
+              <span className="mx-2">
+                {filterObject ? filterObject.page : 1}
+              </span>
               <span>/</span>
               <span className="mx-2">{totalPage}</span>
               <div
