@@ -100,10 +100,7 @@ export default function ManagerBus() {
   // fetch vehicles
   const fetchVehicles = async () => {
     try {
-      const response = await busApi.getVehicles(
-        pagination.page,
-        pagination.limit
-      );
+      const response = await busApi.getVehicles(pagination.page);
       setVehicles(response.data);
     } catch (error: any) {
       toast.error(error.response.data.message);
