@@ -38,7 +38,6 @@ const bookingSlice = createSlice({
       state.tripId = action.payload;
     },
     setSeats: (state, action: PayloadAction<number[]>) => {
-      console.log(action.payload);
       state.selectedSeats = action.payload;
     },
     setTotalAmout: (state, action: PayloadAction<number>) => {

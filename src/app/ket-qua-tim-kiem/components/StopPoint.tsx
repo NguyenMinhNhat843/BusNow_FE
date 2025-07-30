@@ -21,6 +21,7 @@ const DetailInfo = ({
   departTime,
   arriveTime,
   tripId,
+  type,
 }: {
   stopPoints: any[];
   fromId: string;
@@ -30,10 +31,14 @@ const DetailInfo = ({
   departTime: string;
   arriveTime: string;
   tripId: string;
+  type: "go" | "return";
 }) => {
-  // common
   const dispatch = useDispatch();
-  // state
+
+  // Xác định ID cần lọc theo chiều đi/chiều về
+  const pickupId = type === "go" ? fromId : toId;
+  const dropoffId = type === "go" ? toId : fromId;
+
   const [spSelected, setSpSelected] = useState<{
     pickup: StopPointInterface | null;
     dropoff: StopPointInterface | null;
@@ -44,11 +49,10 @@ const DetailInfo = ({
 
   const bookingInfo = useSelector((state: RootState) => state.booking);
 
-  // Khi stopPoints thay đổi, set mặc định
   useEffect(() => {
     if (stopPoints.length > 0) {
-      const pickupDefault = stopPoints.find((sp) => sp.city.id === fromId);
-      const dropoffDefault = stopPoints.find((sp) => sp.city.id === toId);
+      const pickupDefault = stopPoints.find((sp) => sp.city.id === pickupId);
+      const dropoffDefault = stopPoints.find((sp) => sp.city.id === dropoffId);
 
       setSpSelected({
         pickup: pickupDefault || null,
@@ -58,7 +62,7 @@ const DetailInfo = ({
       if (pickupDefault) {
         dispatch(
           setFrom({
-            name: fromName,
+            name: type === "go" ? fromName : toName,
             stopPoint: pickupDefault.name,
             time: departTime,
           })
@@ -68,14 +72,14 @@ const DetailInfo = ({
       if (dropoffDefault) {
         dispatch(
           setTo({
-            name: toName,
+            name: type === "go" ? toName : fromName,
             stopPoint: dropoffDefault.name,
             time: arriveTime,
           })
         );
       }
     }
-  }, [stopPoints, fromId, toId]);
+  }, [stopPoints, pickupId, dropoffId]);
 
   const handleSelectSP = (type: "pickup" | "dropoff", sp: any) => {
     setSpSelected((prev) => ({ ...prev, [type]: sp }));
@@ -87,27 +91,26 @@ const DetailInfo = ({
       <div className="w-1/2">
         <h3 className="font-semibold text-blue-600 pb-2 border-b">Điểm đón</h3>
         <ul className="list-disc list-inside text-gray-700 mt-2">
-          {stopPoints.length > 0 &&
-            stopPoints
-              .filter((sp) => sp.city.id === fromId)
-              .map((sp) => (
-                <li key={sp.id} className="flex items-center">
-                  <input
-                    type="radio"
-                    className="w-5 h-5 text-blue-600"
-                    name="pickup"
-                    checked={spSelected.pickup?.name === sp.name}
-                    onChange={() => handleSelectSP("pickup", sp)}
-                  />
-                  <label
-                    htmlFor={`pickup-${sp.id}`}
-                    className="ml-2 cursor-pointer"
-                    title={sp.address}
-                  >
-                    {sp.name}
-                  </label>
-                </li>
-              ))}
+          {stopPoints
+            .filter((sp) => sp.city.id === pickupId)
+            .map((sp) => (
+              <li key={sp.id} className="flex items-center">
+                <input
+                  type="radio"
+                  className="w-5 h-5 text-blue-600"
+                  name="pickup"
+                  checked={spSelected.pickup?.name === sp.name}
+                  onChange={() => handleSelectSP("pickup", sp)}
+                />
+                <label
+                  htmlFor={`pickup-${sp.id}`}
+                  className="ml-2 cursor-pointer"
+                  title={sp.address}
+                >
+                  {sp.name}
+                </label>
+              </li>
+            ))}
         </ul>
       </div>
 
@@ -115,28 +118,27 @@ const DetailInfo = ({
       <div className="w-1/2">
         <h3 className="font-semibold text-green-600 pb-2 border-b">Điểm trả</h3>
         <ul className="list-disc list-inside text-gray-700 mt-2">
-          {stopPoints.length > 0 &&
-            stopPoints
-              .filter((sp) => sp.city.id === toId)
-              .map((sp) => (
-                <li key={sp.id} className="flex items-center">
-                  <input
-                    id={`dropoff-${sp.id}`}
-                    type="radio"
-                    className="w-5 h-5 text-blue-600"
-                    name="dropoff"
-                    checked={spSelected.dropoff?.name === sp.name}
-                    onChange={() => handleSelectSP("dropoff", sp)}
-                  />
-                  <label
-                    htmlFor={`dropoff-${sp.id}`}
-                    className="ml-2 cursor-pointer"
-                    title={sp.address}
-                  >
-                    {sp.name}
-                  </label>
-                </li>
-              ))}
+          {stopPoints
+            .filter((sp) => sp.city.id === dropoffId)
+            .map((sp) => (
+              <li key={sp.id} className="flex items-center">
+                <input
+                  id={`dropoff-${sp.id}`}
+                  type="radio"
+                  className="w-5 h-5 text-blue-600"
+                  name="dropoff"
+                  checked={spSelected.dropoff?.name === sp.name}
+                  onChange={() => handleSelectSP("dropoff", sp)}
+                />
+                <label
+                  htmlFor={`dropoff-${sp.id}`}
+                  className="ml-2 cursor-pointer"
+                  title={sp.address}
+                >
+                  {sp.name}
+                </label>
+              </li>
+            ))}
         </ul>
       </div>
     </div>

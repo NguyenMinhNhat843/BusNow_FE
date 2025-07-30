@@ -176,6 +176,7 @@ export default function TripItem({ trip }: { trip: TripResponse }) {
             toName={toName}
             departTime={departTime}
             arriveTime={arriveTime}
+            type={type}
           />
         )}
         {openModelBooking && tabSelected === "seat" && (
