@@ -8,10 +8,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { logout } from "@/redux/slice/authSlice";
+import { logout, setUser } from "@/redux/slice/authSlice";
 import { set } from "date-fns";
 import { authApi } from "@/api/authApi";
 import { toast } from "sonner";
+import { userApi } from "@/api/userApi";
 
 const tabMenuUser = [
   {
@@ -25,8 +26,28 @@ const tabMenuUser = [
 ];
 
 export default function Header() {
+  // common
   const router = useRouter();
   const dispatch = useDispatch();
+
+  // redux
+  useEffect(() => {
+    const getMe = async () => {
+      try {
+        const res = await userApi.getProfileMe();
+
+        if (res.userId) {
+          dispatch(setUser(res));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getMe();
+  }, []);
+
+  // state
   const [isOpenMenuUser, setIsOpenMenuUser] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);

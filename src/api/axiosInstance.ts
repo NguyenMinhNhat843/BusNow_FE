@@ -2,6 +2,7 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:3000",
+  // baseURL: "https://busnow-api.onrender.com",
   timeout: 10000, // Tự động hủy yêu cầu sau 10 giây neu không có phản hồi
   withCredentials: true, // Cho phép gửi cookie trong yêu cầu
   headers: {

@@ -9,34 +9,48 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 
 export default function PersonalInfoPage() {
+  // common
   const dispatch = useDispatch();
+
+  // redux
   const userRedux = useSelector((state: RootState) => state.auth.user);
 
   // state
   const [isUpdateMode, setIsUpdateMode] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(
+    "/avatar_default.png"
+  );
   const [avatarFile, setAvatarFile] = useState(null as File | null);
   const [userInfo, setUserInfo] = useState({
     firstName: "Đang tải",
     lastName: "Đang tải",
     email: "Đang tải",
     phoneNumber: "Đang tải",
+    role: "",
+    userId: "",
   });
 
   useEffect(() => {
+    console.log(userRedux);
     if (userRedux) {
-      setAvatarPreview(userRedux.avatar || null);
+      setAvatarPreview(userRedux.avatar || "/avatar_default.png");
       setUserInfo({
         firstName: userRedux.firstName || "Chưa cập nhật",
         lastName: userRedux.lastName || "Chưa cập nhật",
         email: userRedux.email || "Chưa cập nhật",
         phoneNumber: userRedux.phoneNumber || "Chưa cập nhật",
+        role: userRedux.role || "",
+        userId: userRedux.userId || "",
       });
     }
   }, [userRedux]);
 
+  useEffect(() => {
+    console.log(avatarPreview);
+  }, [avatarPreview]);
+
+  // ref
   const selectAvatarRef = useRef(null as HTMLInputElement | null);
-  console.log("userRedux", userRedux);
 
   // handle
   const handleOpenFolder = () => {
@@ -70,30 +84,45 @@ export default function PersonalInfoPage() {
 
     try {
       const response = await userApi.updateProfileMe(formDataSubmit);
-      dispatch(
-        updateProfile({
-          user: { ...userInfo, avatar: avatarPreview as string },
-        })
-      );
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ ...userInfo, avatar: avatarPreview as string })
-      );
-      toast.success("Cập nhật thành công");
-      setAvatarPreview(null);
+      if (response.status === "success") {
+        dispatch(
+          updateProfile({
+            user: { ...userInfo, avatar: avatarPreview as string },
+          })
+        );
+        toast.success("Cập nhật thành công");
+        setAvatarPreview(null);
+        setIsUpdateMode(false);
+        setAvatarFile(null);
+      }
     } catch (error: any) {
       const message =
         error?.response?.data?.message || error?.message || "Có lỗi xảy ra";
 
       toast.error("Cập nhật thất bại: " + message);
     }
-    setIsUpdateMode(false);
-    setAvatarFile(null);
   };
 
   const handleOnchangeInput = (e: any) => {
     const { name, value } = e.target;
     setUserInfo((pre) => ({ ...pre, [name]: value }));
+  };
+
+  const onClickButtonCancle = () => {
+    if (!userRedux) {
+      toast.error("Có lỗi xảy ra vui lòng thử lại!!!");
+      return;
+    }
+    setIsUpdateMode(false);
+    setAvatarPreview(userRedux.avatar || "/avatar_default.png");
+    setUserInfo({
+      firstName: userRedux.firstName || "Chưa cập nhật",
+      lastName: userRedux.lastName || "Chưa cập nhật",
+      email: userRedux.email || "Chưa cập nhật",
+      phoneNumber: userRedux.phoneNumber || "Chưa cập nhật",
+      role: userRedux.role || "",
+      userId: userRedux.userId || "",
+    });
   };
 
   if (!userRedux) {
@@ -193,7 +222,7 @@ export default function PersonalInfoPage() {
               </button>
               <button
                 className="bg-red-400 rounded-md px-4 py-2 hover:bg-red-500 cursor-pointer"
-                onClick={() => setIsUpdateMode(false)}
+                onClick={onClickButtonCancle}
               >
                 Hủy
               </button>

@@ -66,7 +66,7 @@ export default function OrderLookup() {
         </div>
       </div>
 
-      {/* Modal nhập tài khoản để haonf tiền */}
+      {/* Modal nhập tài khoản để hoàn tiền */}
       {openModalCancelled && (
         <CancelTicketModal
           onClose={() => setOpenModalCancelled(false)}

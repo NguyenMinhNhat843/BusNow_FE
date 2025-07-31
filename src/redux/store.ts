@@ -22,7 +22,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["trip"], // ✅ chỉ lưu những slice cần thiết (vd: 'trip')
+  whitelist: ["trip", "auth"], // ✅ chỉ lưu những slice cần thiết (vd: 'trip')
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -5,6 +5,9 @@ import "react-datepicker/dist/react-datepicker.css";
 import RoutePopulateItem from "@/component/RoutePopulateItem";
 import Image from "next/image";
 import SearchBar from "../../component/layout/SearchBar";
+import { userApi } from "@/api/userApi";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/slice/authSlice";
 
 interface Location {
   locationId: string;
@@ -12,8 +15,8 @@ interface Location {
 }
 
 export default function HomePage() {
-  // state
-  const [vehicleTab, setVehicleTab] = useState("Xe khách");
+  // common
+  const dispatch = useDispatch();
 
   return (
     <main className="select-none">

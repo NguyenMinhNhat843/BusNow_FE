@@ -3,6 +3,7 @@
 import { authApi } from "@/api/authApi";
 import { RoleEnum } from "@/api/Enum/RoleEnum";
 import { login } from "@/redux/slice/authSlice";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -44,6 +45,7 @@ export default function LoginPage() {
         }
       }
     } catch (error: any) {
+      console.log(error);
       toast.error(
         error.response?.data?.message || "Đăng nhập thất bại. Vui lòng thử lại."
       );
@@ -61,6 +63,10 @@ export default function LoginPage() {
 
   const handleNavigateForgotPassword = () => {
     router.push("/quen-mat-khau");
+  };
+
+  const handleLoginWithGoogle = async () => {
+    window.location.href = "http://localhost:3000/auth/google";
   };
 
   return (
@@ -121,6 +127,31 @@ export default function LoginPage() {
               Vào trang chính
             </span>
           </p>
+
+          {/* Đăngg nhập với google */}
+          <div className="relative my-2">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-2 text-gray-500">hoặc</span>
+            </div>
+          </div>
+          <div
+            className="flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-md py-2 px-4 mb-4 cursor-pointer hover:bg-gray-100 transition"
+            onClick={handleLoginWithGoogle}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 640 640"
+              className="w-10 h-10"
+            >
+              <path d="M564 325.8C564 467.3 467.1 568 324 568C186.8 568 76 457.2 76 320C76 182.8 186.8 72 324 72C390.8 72 447 96.5 490.3 136.9L422.8 201.8C334.5 116.6 170.3 180.6 170.3 320C170.3 406.5 239.4 476.6 324 476.6C422.2 476.6 459 406.2 464.8 369.7L324 369.7L324 284.4L560.1 284.4C562.4 297.1 564 309.3 564 325.8z" />
+            </svg>
+            <span className="text-sm text-gray-700 font-medium">
+              Đăng nhập với Google
+            </span>
+          </div>
         </form>
       </div>
       {isLoading && (
