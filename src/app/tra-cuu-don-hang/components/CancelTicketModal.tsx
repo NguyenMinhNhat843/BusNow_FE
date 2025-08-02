@@ -1,4 +1,6 @@
-import React from "react";
+import { ticketApi } from "@/api/ticketApi";
+import React, { useState } from "react";
+import { toast } from "sonner";
 
 interface CancelTicketModalProps {
   onClose: () => void;
@@ -7,29 +9,68 @@ interface CancelTicketModalProps {
     bankAccountNumber: string;
     bankName: string;
   }) => void;
+  body: {
+    ticketId: string;
+  };
 }
 
 const CancelTicketModal: React.FC<CancelTicketModalProps> = ({
   onClose,
   onSubmit,
+  body,
 }) => {
-  const [bankAccountName, setBankAccountName] = React.useState("");
-  const [bankAccountNumber, setBankAccountNumber] = React.useState("");
-  const [bankName, setBankName] = React.useState("");
+  const [bankAccountName, setBankAccountName] =
+    React.useState("Nguyen Minh Nhat");
+  const [bankAccountNumber, setBankAccountNumber] =
+    React.useState("0123456789");
+  const [bankName, setBankName] = React.useState("Agribank");
+  const [email, setEmail] = useState("minhnhat8843@gmail.com");
+  const [openVerifyOTP, setOpenVerifyOTP] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
-    if (!bankAccountName || !bankAccountNumber || !bankName) {
-      alert("Vui lòng điền đầy đủ thông tin.");
-      return;
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      const response = await ticketApi.cancleTicket(body.ticketId, {
+        bankAccountName,
+        accountNumber: bankAccountNumber,
+        bankName,
+        emailRequest: email,
+      });
+
+      if (response.status === "success") {
+        setOpenVerifyOTP(true);
+      }
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    } finally {
+      setLoading(false);
     }
 
     onSubmit({ bankAccountName, bankAccountNumber, bankName });
-    onClose(); // Đóng modal sau khi submit
+    // onClose(); // Đóng modal sau khi submit
+  };
+
+  const handleConfirmCancel = (e: any) => {
+    e.preventDefault();
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg relative">
+    <div className="fixed inset-0 bg-black/40 bg-opacity-40 flex items-center justify-center">
+      {/* Spinner */}
+      {loading && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-400"></div>
+        </div>
+      )}
+      <form
+        onSubmit={!openVerifyOTP ? handleSubmit : handleConfirmCancel}
+        className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg relative"
+      >
         <button
           onClick={onClose}
           className="absolute top-2 right-2 p-2 rounded-full hover:bg-slate-200 
@@ -48,6 +89,7 @@ const CancelTicketModal: React.FC<CancelTicketModalProps> = ({
             value={bankAccountName}
             onChange={(e) => setBankAccountName(e.target.value)}
             className="w-full border px-3 py-2 rounded-md"
+            required
           />
         </div>
 
@@ -58,6 +100,7 @@ const CancelTicketModal: React.FC<CancelTicketModalProps> = ({
             value={bankAccountNumber}
             onChange={(e) => setBankAccountNumber(e.target.value)}
             className="w-full border px-3 py-2 rounded-md"
+            required
           />
         </div>
 
@@ -68,18 +111,48 @@ const CancelTicketModal: React.FC<CancelTicketModalProps> = ({
             value={bankName}
             onChange={(e) => setBankName(e.target.value)}
             className="w-full border px-3 py-2 rounded-md"
+            required
           />
         </div>
 
-        <div className="flex justify-end gap-2">
+        {/* Xác nhận chính chủ */}
+        <div className="mb-4">
+          <label className="block mb-1 text-red-400 font-bold">
+            Nhập Email để xác minh *:
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border px-3 py-2 rounded-md"
+            required
+          />
+        </div>
+
+        {openVerifyOTP && (
+          <div className="mb-4">
+            <label className="block mb-1 text-red-400 font-bold">
+              Nhập OTP đã gửi qua gmail để xác thực thông tin
+            </label>
+            <input
+              type="text"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              className="w-full border px-3 py-2 rounded-md"
+              required
+            />
+          </div>
+        )}
+
+        <div className="flex justify-center gap-2">
           <button
+            type="submit"
             className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
-            onClick={handleSubmit}
           >
-            Xác nhận hủy
+            {openVerifyOTP ? "hủy vé" : "Xác minh"}
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

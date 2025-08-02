@@ -12,13 +12,6 @@ export const ticketApi = {
     return response.data;
   },
 
-  async cancleTicket(ticketId: string) {
-    const response = await axiosInstance.put("/ticket/cancle-ticket", {
-      ticketId,
-    });
-    return response.data;
-  },
-
   async filterTickets(data: requestFilterTicketApi) {
     // Xử lý dữ liệu, bỏ các filed rỗng hoặc không có:
     const cleanedData: requestFilterTicketApi = {
@@ -62,6 +55,17 @@ export const ticketApi = {
 
   async findTicketByPhone(phone: string) {
     const response = await axiosInstance.get(`/ticket/by-phone/${phone}`);
+    return response.data;
+  },
+
+  async cancleTicket(ticketId: string, bankingInfo: any) {
+    const response = await axiosInstance.put(
+      `/ticket/send-mail-cancle-ticket`,
+      {
+        ticketId,
+        bankingInfo,
+      }
+    );
     return response.data;
   },
 };

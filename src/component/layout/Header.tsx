@@ -38,8 +38,11 @@ export default function Header() {
 
         if (res.userId) {
           dispatch(setUser(res));
+        } else {
+          dispatch(logout());
         }
       } catch (error) {
+        dispatch(logout());
         console.log(error);
       }
     };
@@ -78,11 +81,11 @@ export default function Header() {
 
   // handle click "Đơn hàng của tôi"
   const handleMyOrdersClick = () => {
-    if (!user) {
-      router.push("/tra-cuu-don-hang");
-    } else {
-      router.push("/don-hang-cua-toi");
-    }
+    router.push("/tra-cuu-don-hang");
+    // if (!user) {
+    // } else {
+    //   router.push("/don-hang-cua-toi");
+    // }
   };
 
   // handle click "Hợp tác với chúng tôi"
@@ -106,7 +109,7 @@ export default function Header() {
           className="cursor-pointer hover:text-shadow-2xs"
           onClick={() => handleMyOrdersClick()}
         >
-          Đơn hàng của tôi
+          Quản lý đơn hàng
         </p>
         <p
           className="cursor-pointer hover:text-shadow-2xs"

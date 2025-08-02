@@ -1,12 +1,18 @@
 import { BusTypeEnum } from "@/api/Enum/BusTypeEnum";
-import { ButtonCancelled } from "./ButtonCancelled";
+
+interface TicketItemProps {
+  ticket: any; // hoặc bạn tạo kiểu cụ thể `TicketType`
+  setOpenModalCancelled: (value: boolean) => void;
+  setTicketIdCancelled: (value: string) => void;
+}
 
 export default function TicketItem({
   ticket,
-  openModalCancelled,
   setOpenModalCancelled,
-}: any) {
+  setTicketIdCancelled,
+}: TicketItemProps) {
   const onClickuttonCancelled = () => {
+    setTicketIdCancelled(ticket.ticketId);
     setOpenModalCancelled(true);
   };
 
