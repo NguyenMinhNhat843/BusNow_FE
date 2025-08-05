@@ -1,4 +1,5 @@
 import { ticketApi } from "@/api/ticketApi";
+import { error } from "console";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
@@ -55,8 +56,27 @@ const CancelTicketModal: React.FC<CancelTicketModalProps> = ({
     // onClose(); // Đóng modal sau khi submit
   };
 
-  const handleConfirmCancel = (e: any) => {
+  const handleConfirmCancel = async (e: any) => {
     e.preventDefault();
+    try {
+      const response = await ticketApi.confirmCancle(
+        body.ticketId,
+        {
+          bankAccountName,
+          accountNumber: bankAccountNumber,
+          bankName,
+          emailRequest: email,
+        },
+        otp
+      );
+      if (response.status === "success") {
+        toast.success("Hủy vé thành công, tiền sẽ được hoàn trả trong 3 ngày");
+        onClose();
+      }
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    }
   };
 
   return (

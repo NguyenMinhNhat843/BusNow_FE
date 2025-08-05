@@ -68,4 +68,14 @@ export const ticketApi = {
     );
     return response.data;
   },
+
+  async confirmCancle(ticketId: string, bankingInfo: any, otp: string) {
+    const response = await axiosInstance.post("/ticket/confirm-cancle", {
+      ticketId,
+      bankingInfo,
+      otp,
+    });
+
+    return response.data;
+  },
 };
