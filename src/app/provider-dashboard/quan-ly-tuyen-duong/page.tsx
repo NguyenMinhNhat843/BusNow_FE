@@ -114,20 +114,22 @@ export default function ManagerRoute() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-slate-100">
+    <div className="p-2">
       {loading && (
         <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
           <div className="w-12 h-12 border-4 border-white border-t-blue-500 rounded-full animate-spin"></div>
         </div>
       )}
 
-      <h2 className="text-xl font-bold mb-4">Quản lý tuyến đường</h2>
+      <h2 className="text-2xl font-bold mb-4 text-blue-600">
+        Quản lý tuyến đường
+      </h2>
 
       {/* Form thêm route */}
       <SelectStopPoint />
 
       {/* Danh sách tuyến đường */}
-      <div>
+      <div className="grid grid-cols-2 gap-4">
         {routes.map((route, index) => (
           <div key={index}>
             <RouteItem route={route} />
@@ -137,21 +139,13 @@ export default function ManagerRoute() {
 
       {/* Pagination */}
       <div className="flex justify-end mt-4 items-center space-x-4">
-        <button
-          // disabled={currentPage === 1}
-          // onClick={() => setCurrentPage((prev) => prev - 1)}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-        >
+        <button className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50">
           &lt;
         </button>
         <span>
           {pagination.page} / <span>{pagination.totalPage}</span>
         </span>
-        <button
-          // disabled={currentPage === totalPages}
-          // onClick={() => setCurrentPage((prev) => prev + 1)}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-        >
+        <button className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50">
           &gt;
         </button>
       </div>
