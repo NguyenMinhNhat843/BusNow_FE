@@ -10,7 +10,7 @@ export default function Page() {
   const [shouldShowHomePage, setShouldShowHomePage] = useState(false);
 
   useEffect(() => {
-    const userLocal = localStorage.getItem("user"); //ádasd
+    const userLocal = localStorage.getItem("user");
 
     if (!userLocal) {
       setShouldShowHomePage(true);

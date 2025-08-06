@@ -1,5 +1,3 @@
-import SideBar from "./components/sideBar";
-
 export default function ProviderDashBoard() {
   return (
     <div className="flex justify-center items-center h-full">

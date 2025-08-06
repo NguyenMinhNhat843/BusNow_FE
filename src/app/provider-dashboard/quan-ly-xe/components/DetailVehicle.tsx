@@ -6,7 +6,8 @@ import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ticketApi } from "@/api/ticketApi";
-import TicketItem from "./components/TicketItem";
+import TicketItem from "./TicketItem";
+import { TabCurrentEnum } from "../enum/TabCurrentEnum";
 
 interface TicketItemProps {
   ticketId: string;
@@ -25,13 +26,15 @@ interface TicketItemProps {
   paymentStatus: string;
 }
 
-export default function ManagerTripPage() {
-  // common
-  const searchparams = useSearchParams();
+interface DetailVehicleProps {
+  vehicleId: string;
+  setTabCurrent: any;
+}
 
-  // Lấy vehicleId từ query
-  const vehicleId = searchparams.get("vehicleId");
-
+export default function DetailVehicle({
+  vehicleId,
+  setTabCurrent,
+}: DetailVehicleProps) {
   // state
   const [loading, setLoading] = useState(false);
   const [vehicle, setVehicle] = useState<any>(null);
@@ -110,7 +113,6 @@ export default function ManagerTripPage() {
 
   // fetch tickets
   const onClickTrip = async (tripId: string) => {
-    console.log("Asdasdas");
     try {
       const res = await ticketApi.findTicketByTrip(tripId);
       setSelectedTripId(tripId);
@@ -122,83 +124,117 @@ export default function ManagerTripPage() {
     }
   };
 
+  // back to manager vehicle
+  const handleBackToManagerVehicle = () => {
+    setTabCurrent(TabCurrentEnum.VEHICLE);
+  };
+
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-md space-y-6 min-w-3xl max-w-7xl mx-auto">
+    <div className="bg-white p-6 shadow-md space-y-6">
+      {/* button back manager vehicle */}
+      <div
+        className="cursor-pointer p-2 rounded-full hover:bg-slate-200 w-[10em] flex"
+        onClick={handleBackToManagerVehicle}
+      >
+        <button className="flex gap-2 font-bold text-2xl items-center cursor-pointer justify-between">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            className="size-6"
+          >
+            <path
+              strokeWidth="2.5"
+              d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
+            />
+          </svg>
+          <span>Quay lại</span>
+        </button>
+      </div>
       {/* Thông tin xe */}
       {!loading && vehicle && (
-        <div>
-          <h2 className="text-xl font-bold text-blue-600 mb-4">Thông tin xe</h2>
+        <div className="">
+          {/* Biển số */}
+          <div className="flex items-center pb-4">
+            <span className="font-bold text-3xl text-blue-600 pe-4">
+              {vehicle.code}
+            </span>
 
-          <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm text-gray-700">
-            {/* Thông tin cơ bản */}
-            <div>
-              <span className="text-gray-500">Biển số:</span>
-              <div className="font-semibold">{vehicle.code}</div>
+            {/* Trạng thái */}
+            <span
+              className={`font-semibold ${
+                vehicle.isActive ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {vehicle.isActive ? "(Đang hoạt động)" : "(Ngưng hoạt động)"}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-sm text-gray-700">
+            {/* Loại xe */}
+            <div className="flex flex-col">
+              <span className="text-gray-500 font-medium">Loại xe</span>
+              <span className="font-semibold">{vehicle.busType}</span>
             </div>
 
-            <div>
-              <span className="text-gray-500">Loại xe:</span>
-              <div className="font-semibold">{vehicle.busType}</div>
+            {/* Tổng số ghế */}
+            <div className="flex flex-col">
+              <span className="text-gray-500 font-medium">Tổng số ghế</span>
+              <span className="font-semibold">{vehicle.totalSeat}</span>
             </div>
 
-            <div>
-              <span className="text-gray-500">Tổng số ghế:</span>
-              <div className="font-semibold">{vehicle.totalSeat}</div>
+            {/* Giờ khởi hành */}
+            <div className="flex flex-col">
+              <span className="text-gray-500 font-medium">Giờ khởi hành</span>
+              <span className="font-semibold">{vehicle.departHour}</span>
             </div>
 
-            <div>
-              <span className="text-gray-500">Giờ khởi hành:</span>
-              <div className="font-semibold">{vehicle.departHour}</div>
-            </div>
-
-            <div>
-              <span className="text-gray-500">Trạng thái:</span>
-              <div
-                className={`font-semibold ${
-                  vehicle.isActive ? "text-green-600" : "text-red-600"
-                }`}
-              >
-                {vehicle.isActive ? "Đang hoạt động" : "Ngưng hoạt động"}
-              </div>
-            </div>
-
-            <div>
-              <span className="text-gray-500">Ngày tạo:</span>
-              <div className="font-semibold">
+            {/* Ngày tạo */}
+            <div className="flex flex-col">
+              <span className="text-gray-500 font-medium">Ngày tạo</span>
+              <span className="font-semibold">
                 {new Date(vehicle.createdAt).toLocaleString()}
-              </div>
+              </span>
             </div>
 
-            {/* Thông tin tuyến */}
+            {/* Nếu có tuyến */}
             {vehicle.route && (
               <>
-                <div>
-                  <span className="text-gray-500">Tuyến xe:</span>
-                  <div className="font-semibold">
+                <div className="flex flex-col">
+                  <span className="text-gray-500 font-medium">Tuyến xe</span>
+                  <span className="font-semibold">
                     {vehicle.route.origin.name} →{" "}
                     {vehicle.route.destination.name}
-                  </div>
+                  </span>
                 </div>
 
-                <div>
-                  <span className="text-gray-500">Thời gian di chuyển:</span>
-                  <div className="font-semibold">
+                <div className="flex flex-col">
+                  <span className="text-gray-500 font-medium">
+                    Thời gian di chuyển
+                  </span>
+                  <span className="font-semibold">
                     {vehicle.route.duration} giờ
-                  </div>
+                  </span>
                 </div>
 
-                <div>
-                  <span className="text-gray-500">Nghỉ tại điểm đến:</span>
-                  <div className="font-semibold">
+                <div className="flex flex-col">
+                  <span className="text-gray-500 font-medium">
+                    Nghỉ tại điểm đến
+                  </span>
+                  <span className="font-semibold">
                     {vehicle.route.restAtDestination} giờ
-                  </div>
+                  </span>
                 </div>
 
-                <div>
-                  <span className="text-gray-500">Chu kỳ lặp lại vé:</span>
-                  <div className="font-semibold">
+                <div className="flex flex-col">
+                  <span className="text-gray-500 font-medium">
+                    Chu kỳ lặp lại vé
+                  </span>
+                  <span className="font-semibold">
                     {vehicle.route.repeatsDay} ngày
-                  </div>
+                  </span>
                 </div>
               </>
             )}
@@ -208,8 +244,8 @@ export default function ManagerTripPage() {
 
       {/* Form tạo chuyến */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">
-          Tạo chuyến xe mới
+        <h2 className="text-2xl font-bold mb-4 text-blue-600">
+          Lên lịch cho các chuyến đi trong:
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:items-end">

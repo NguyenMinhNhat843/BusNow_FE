@@ -94,7 +94,7 @@ export default function Header() {
   };
 
   return (
-    <div className="flex justify-between items-center bg-white shadow-lg h-[70px]">
+    <div className="relative flex justify-between items-center bg-white shadow-lg h-[70px] z-[999]">
       {/* logo */}
       <div
         className="relative h-full aspect-[3/2] mx-4 cursor-pointer"
