@@ -23,40 +23,27 @@ const sideBarItems = [
 
 export default function SideBar() {
   // common
-  const router = useRouter();
-  const path = usePathname();
-  let endPoint = null;
-  if (path.split("/").length >= 2) {
-    endPoint = path.split("/")[2];
-  }
-  const endPointDormatted = endPoint?.replaceAll("-", "_");
-
-  // state
-  const [tabSelected, setTabSelected] = useState("");
-
-  // handle
-  const handleSelectTab = (tabItem: any) => {
-    setTabSelected(tabItem.value);
-    router.push(tabItem.link);
-  };
+  const pathname = usePathname();
   return (
     <div className="flex flex-col justify-around rounded-md">
-      {sideBarItems.map((item) => (
-        <div key={item.value}>
-          <p
-            className={`px-4 py-4 transition-all cursor-pointer hover:bg-yellow-500 ${
-              tabSelected === item.value
-                ? "bg-yellow-500"
-                : endPointDormatted === item.value
-                ? "bg-yellow-500"
-                : ""
-            }`}
-            onClick={() => handleSelectTab(item)}
-          >
-            {item.name}
-          </p>
-        </div>
-      ))}
+      {sideBarItems.map((item) => {
+        const isActive = pathname.startsWith(item.link); // hoặc dùng === nếu cần khớp tuyệt đối
+
+        return (
+          <div key={item.value}>
+            <p
+              className={`px-4 py-4 transition-all cursor-pointer hover:bg-yellow-500 ${
+                isActive ? "bg-yellow-500" : ""
+              }`}
+              onClick={() => {
+                window.location.href = item.link;
+              }}
+            >
+              {item.name}
+            </p>
+          </div>
+        );
+      })}
     </div>
   );
 }
