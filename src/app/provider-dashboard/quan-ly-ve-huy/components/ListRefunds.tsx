@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import RefundCard from "./RefundCard";
 import FilterBar from "./FilterBar";
-import ModalDetail from "./modalDetail";
+import ModalDetail from "./ModalDetail1";
 
 export default function ListRefunds() {
   const [refundsRequest, setRefundsRequest] = useState([]);
@@ -55,9 +55,12 @@ export default function ListRefunds() {
         <ModalDetail
           isOpen={openModal}
           onClose={() => setOpenModal(false)}
-          refundInfo={selectedRefundCard ? selectedRefundCard : null}
-          user={selectedRefundCard ? selectedRefundCard.requestBy : null}
+          ticketId={
+            selectedRefundCard ? selectedRefundCard.ticket.ticketId : ""
+          }
+          user={selectedRefundCard ? selectedRefundCard.requestedBy : null}
           bank={selectedRefundCard ? selectedRefundCard : null}
+          requestId={selectedRefundCard ? selectedRefundCard.id : ""}
         />
       )}
     </div>

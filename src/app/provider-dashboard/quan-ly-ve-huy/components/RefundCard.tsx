@@ -19,7 +19,7 @@ export default function RefundCard({
     switch (status) {
       case "PENDING":
         return "bg-yellow-100 text-yellow-800";
-      case "APPROVED":
+      case "COMPLETED":
         return "bg-green-100 text-green-800";
       case "REJECTED":
         return "bg-red-100 text-red-800";
@@ -43,17 +43,13 @@ export default function RefundCard({
         <h2 className="text-lg font-semibold text-gray-800">
           Yêu cầu hoàn tiền
         </h2>
-        <select
-          // value={refund.status}
-          // onChange={(e) => handleChangeStatus(refund.id, e.target.value)}
-          className={`px-3 py-1 rounded-full text-xs font-semibold appearance-none ${getStatusColor(
+        <p
+          className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
             refund.status
           )}`}
         >
-          <option value="PENDING">PENDING</option>
-          <option value="COMPLETED">COMPLETED</option>
-          <option value="REJECTED">REJECTED</option>
-        </select>
+          {refund.status}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">

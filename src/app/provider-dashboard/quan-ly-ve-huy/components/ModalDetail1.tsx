@@ -1,4 +1,5 @@
-import React from "react";
+import { ticketApi } from "@/api/ticketApi";
+import React, { useEffect, useState } from "react";
 
 interface Seat {
   seatNumber: string;
@@ -19,10 +20,10 @@ interface Ticket {
 interface ModalDetailProps {
   isOpen: boolean;
   onClose: () => void;
-  refundInfo: any | null;
   user: any | null;
   bank: any | null;
-  //   ticket: Ticket | null;
+  ticketId: string;
+  requestId: string;
 }
 
 const ModalDetail: React.FC<ModalDetailProps> = ({
@@ -30,8 +31,35 @@ const ModalDetail: React.FC<ModalDetailProps> = ({
   onClose,
   user,
   bank,
-  //   ticket,
+  ticketId,
+  requestId,
 }) => {
+  const [ticket, setTicket] = useState<any>(null);
+  // Load thông tin vé
+  useEffect(() => {
+    // Fetch ticket information here
+    const fetchTicketInfoById = async () => {
+      try {
+        const result = await ticketApi.getTicketById(ticketId);
+        if (result.status === "success") {
+          setTicket(result.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchTicketInfoById();
+  }, []);
+
+  const handleClickConfirmRefund = async () => {
+    try {
+      await ticketApi.confirmRefund(requestId);
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -52,13 +80,13 @@ const ModalDetail: React.FC<ModalDetailProps> = ({
           <h3 className="font-semibold text-lg mb-2">Thông tin người dùng</h3>
           <div className="space-y-1 text-sm">
             <p>
-              <strong>Họ tên:</strong> {user.lastName}
+              <strong>Họ tên:</strong> {user.firstName + " " + user.lastName}
             </p>
             <p>
               <strong>Email:</strong> {user.email}
             </p>
             <p>
-              <strong>SĐT:</strong> {user.phone}
+              <strong>SĐT:</strong> {user.phoneNumber}
             </p>
           </div>
         </div>
@@ -76,29 +104,34 @@ const ModalDetail: React.FC<ModalDetailProps> = ({
               <strong>Số tài khoản:</strong> {bank.accountNumber}
             </p>
             <p>
-              <strong>Chủ tài khoản:</strong> {bank.accountHolder}
+              <strong>Chủ tài khoản:</strong> {bank.accountHolderName}
             </p>
           </div>
         </div>
 
         {/* Thông tin vé */}
-        {/* <div className="mb-4">
-          <h3 className="font-semibold text-lg mb-2">Thông tin vé</h3>
-          <div className="space-y-1 text-sm">
-            <p>
-              <strong>Mã vé:</strong> {ticket.code}
-            </p>
-            <p>
-              <strong>Ghế:</strong> {ticket.seat.seatNumber}
-            </p>
-            <p>
-              <strong>Chuyến đi:</strong> {ticket.trip.from} → {ticket.trip.to}
-            </p>
-            <p>
-              <strong>Giờ khởi hành:</strong> {ticket.trip.departureTime}
-            </p>
+        {ticket && (
+          <div className="mb-4">
+            <h3 className="font-semibold text-lg mb-2">Thông tin vé</h3>
+            <div className="space-y-1 text-sm">
+              <p>
+                <strong>Mã vé:</strong> {ticket.ticketId}
+              </p>
+              <p>
+                <strong>Ghế:</strong> {ticket.seat.seatCode}
+              </p>
+              <p>
+                <strong>Chuyến đi:</strong>{" "}
+                {ticket.trip.vehicle.route.origin.name} →{" "}
+                {ticket.trip.vehicle.route.destination.name}
+              </p>
+              <p>
+                <strong>Giờ khởi hành:</strong>{" "}
+                {new Date(ticket.trip.departDate).toLocaleString("vi-VN")}
+              </p>
+            </div>
           </div>
-        </div> */}
+        )}
 
         {/* Footer */}
         <div className="flex justify-end border-t pt-3">
@@ -107,6 +140,12 @@ const ModalDetail: React.FC<ModalDetailProps> = ({
             className="bg-gray-200 hover:bg-gray-300 text-sm px-4 py-2 rounded"
           >
             Đóng
+          </button>
+          <button
+            onClick={handleClickConfirmRefund}
+            className="bg-red-400 hover:bg-red-600 text-sm px-4 ms-4 py-2 rounded text-black/80"
+          >
+            Xác nhận đã hoàn tiền
           </button>
         </div>
       </div>

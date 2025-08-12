@@ -12,6 +12,13 @@ export const ticketApi = {
     return response.data;
   },
 
+  async getTicketById(ticketId: string) {
+    const response = await axiosInstance.get(
+      `/ticket/ticket-by-id/${ticketId}`
+    );
+    return response.data;
+  },
+
   async filterTickets(data: requestFilterTicketApi) {
     // Xử lý dữ liệu, bỏ các filed rỗng hoặc không có:
     const cleanedData: requestFilterTicketApi = {
@@ -74,6 +81,14 @@ export const ticketApi = {
       ticketId,
       bankingInfo,
       otp,
+    });
+
+    return response.data;
+  },
+
+  async confirmRefund(requestId: string) {
+    const response = await axiosInstance.patch(`/refund-request/${requestId}`, {
+      status: "COMPLETED",
     });
 
     return response.data;
