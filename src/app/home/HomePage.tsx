@@ -19,9 +19,9 @@ export default function HomePage() {
   const dispatch = useDispatch();
 
   return (
-    <main className="select-none">
+    <main className="select-none w-screen h-screen">
       {/* SearchBar */}
-      <div className="relative h-[400px]">
+      <div className="relative w-full h-full">
         <div className="absolute w-full h-full">
           <Image
             src="/bg_searchbar.jpg"
@@ -46,16 +46,6 @@ export default function HomePage() {
         </div>
       </div>
       {/* end: search bar */}
-      {/* Tuyến đường phổ biến */}
-      <div className="max-w-5xl mx-auto py-8">
-        <p className="text-2xl pb-2">Tuyến đường phổ biến</p>
-        <div className="flex justify-between items-center gap-4">
-          {[1, 2, 3, 4].map((item, index) => (
-            <RoutePopulateItem key={index} />
-          ))}
-        </div>
-      </div>
-      {/* end: Tuyến đường phổ biến */}
     </main>
   );
 }

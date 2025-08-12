@@ -9,6 +9,8 @@ import VehicleItem from "../components/VehicleItem";
 import { routeApi } from "@/api/routeApi";
 import DetailVehicle from "./components/DetailVehicle";
 import { TabCurrentEnum } from "./enum/TabCurrentEnum";
+import { tripApi } from "@/api/tripApi";
+import { useRouter } from "next/navigation";
 
 type Vehicle = {
   id: string;
@@ -18,9 +20,9 @@ type Vehicle = {
   subType?: string;
 };
 
-const PER_PAGE = 5;
-
 export default function ManagerBus() {
+  // common
+  const router = useRouter();
   // state
   const [pagination, setPagination] = useState<Pagination>({
     page: 1,
@@ -43,8 +45,6 @@ export default function ManagerBus() {
   const [tabCurrent, setTabCurrent] = useState<TabCurrentEnum>(
     TabCurrentEnum.VEHICLE
   );
-  const [vehicleList, setVehicleList] = useState<Vehicle[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [vehicleSelectedId, setVehicleSelectedId] = useState<string>("");
 
   // handle onClick a vehicleItem - navigate to detail vehicle tab
@@ -91,12 +91,6 @@ export default function ManagerBus() {
     }
   };
 
-  const totalPage = Math.ceil(vehicleList.length / PER_PAGE);
-  const paginated = vehicleList.slice(
-    (currentPage - 1) * PER_PAGE,
-    currentPage * PER_PAGE
-  );
-
   // fetch routes
   const fetchRoutes = async () => {
     try {
@@ -127,6 +121,19 @@ export default function ManagerBus() {
   useEffect(() => {
     fetchVehicles();
   }, []);
+
+  // deelte trips before now
+  const handleDeleteTripsBeforeNow = async () => {
+    try {
+      const response = await tripApi.deleteTripsBeforeNow();
+      if (response.status === "success") {
+        toast.success("Xóa thành công");
+        router.refresh();
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.message || "Có lỗi");
+    }
+  };
 
   return (
     <div>
@@ -214,6 +221,7 @@ export default function ManagerBus() {
               </div>
 
               <div className="col-span-3">
+                {/* Button thêm xe */}
                 <button
                   type="submit"
                   className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
@@ -225,7 +233,18 @@ export default function ManagerBus() {
           </div>
 
           {/* Danh sách xe */}
-          <div className="">
+          <div className="p-4">
+            <div className="flex gap-4 items-center pb-4">
+              <p className="text-2xl font-bold">
+                Danh sách xe ({vehicles.length})
+              </p>
+              <button
+                className="cursor-pointer bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition"
+                onClick={handleDeleteTripsBeforeNow}
+              >
+                Xóa các trip và ticket trước ngày hiện tại
+              </button>
+            </div>
             <div className="grid grid-cols-3 gap-4">
               {vehicles.map((vehicle) => (
                 <div
@@ -237,25 +256,6 @@ export default function ManagerBus() {
                 </div>
               ))}
             </div>
-
-            {/* Pagination */}
-            {totalPage > 1 && (
-              <div className="flex justify-center mt-6 gap-2">
-                {Array.from({ length: totalPage }, (_, i) => (
-                  <button
-                    key={i}
-                    className={`px-3 py-1 rounded border ${
-                      currentPage === i + 1
-                        ? "bg-blue-600 text-white"
-                        : "bg-white text-gray-700 hover:bg-gray-100"
-                    }`}
-                    onClick={() => setCurrentPage(i + 1)}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       ) : (

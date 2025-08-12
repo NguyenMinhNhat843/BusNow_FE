@@ -56,7 +56,7 @@ export default function FilterBar({ setRefund }: FilterBarProps) {
             Số điện thoại
           </label>
           <input
-            value={filters.phoneNumber}
+            value={filters.phoneNumber || ""}
             onChange={handleOnChangeInput}
             type="text"
             name="phoneNumber"

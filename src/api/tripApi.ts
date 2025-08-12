@@ -33,4 +33,11 @@ export const tripApi = {
     const response = await axiosInstance.post("/trip/gen-trips", data);
     return response.data;
   },
+
+  async deleteTripsBeforeNow() {
+    const response = await axiosInstance.delete(
+      "trip/delete-trips-before-date"
+    );
+    return response.data;
+  },
 };

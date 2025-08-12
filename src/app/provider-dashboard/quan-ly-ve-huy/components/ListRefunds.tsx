@@ -5,10 +5,13 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import RefundCard from "./RefundCard";
 import FilterBar from "./FilterBar";
+import ModalDetail from "./modalDetail";
 
 export default function ListRefunds() {
   const [refundsRequest, setRefundsRequest] = useState([]);
   const [filters, setFilters] = useState({});
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRefundCard, setSelectedRefundCard] = useState<any>(null);
 
   useEffect(() => {
     const fetchRefundRequest = async () => {
@@ -40,10 +43,23 @@ export default function ListRefunds() {
       <div className="w-full grid grid-cols-3 gap-4">
         {refundsRequest.map((item, index) => (
           <div key={index}>
-            <RefundCard refund={item} />
+            <RefundCard
+              refund={item}
+              setOpenModal={setOpenModal}
+              setSelectedRefundCard={setSelectedRefundCard}
+            />
           </div>
         ))}
       </div>
+      {openModal && (
+        <ModalDetail
+          isOpen={openModal}
+          onClose={() => setOpenModal(false)}
+          refundInfo={selectedRefundCard ? selectedRefundCard : null}
+          user={selectedRefundCard ? selectedRefundCard.requestBy : null}
+          bank={selectedRefundCard ? selectedRefundCard : null}
+        />
+      )}
     </div>
   );
 }

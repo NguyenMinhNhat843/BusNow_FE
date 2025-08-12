@@ -8,6 +8,7 @@ import {
   faCircleDot,
   faLocationDot,
   faRightLeft,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -43,6 +44,7 @@ export default function HomePage() {
   const [isOpenMenuLocationTo, setIsOpenMenuLocationTo] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [locations, setLocations] = useState<ResponseGetAllLocations[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const menuLocationFromRef = useRef<HTMLDivElement>(null);
   const menuLocationToRef = useRef<HTMLDivElement>(null);
   const [locationSelected, setLocationSelected] = useState({
@@ -198,16 +200,23 @@ export default function HomePage() {
 
   // handle click button search
   const handleSearch = async () => {
+    setIsSearching(true);
     const startDateFormatted = startDate.toISOString().split("T")[0]; // format date to YYYY-MM-DD
 
-    router.push(
-      "/ket-qua-tim-kiem?from=" +
-        locationSelected.fromId +
-        "&to=" +
-        locationSelected.toId +
-        "&date=" +
-        startDateFormatted
-    );
+    try {
+      await router.push(
+        "/ket-qua-tim-kiem?from=" +
+          locationSelected.fromId +
+          "&to=" +
+          locationSelected.toId +
+          "&date=" +
+          startDateFormatted
+      );
+    } catch (error) {
+      console.error("Navigation error:", error);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   return (
@@ -316,13 +325,23 @@ export default function HomePage() {
       </div>
 
       {/* Nút Tìm kiếm */}
-      <div className="bg-yellow-500 cursor-pointer text-white  rounded-lg hover:bg-yellow-700 transition-colors">
-        <p
-          className="text-xl text-center text-black px-4 py-4 w-[200px] "
-          onClick={handleSearch} // Thêm sự kiện click để tìm kiếm
+      <div className="bg-yellow-500 cursor-pointer text-white rounded-lg hover:bg-yellow-700 transition-colors">
+        <div
+          className="text-xl text-center text-black px-4 py-4 w-[200px] flex items-center justify-center gap-2"
+          onClick={isSearching ? undefined : handleSearch}
         >
-          Tìm kiếm
-        </p>
+          {isSearching ? (
+            <>
+              <FontAwesomeIcon
+                icon={faSpinner}
+                className="animate-spin text-lg text-red-600"
+              />
+              <span>Đang tìm...</span>
+            </>
+          ) : (
+            "Tìm kiếm"
+          )}
+        </div>
       </div>
       {/* end */}
     </div>

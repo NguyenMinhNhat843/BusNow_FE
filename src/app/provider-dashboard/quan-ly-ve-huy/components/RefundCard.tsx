@@ -1,10 +1,17 @@
+import { set } from "date-fns";
 import React from "react";
 
 interface RefundCardProps {
   refund: any;
+  setOpenModal: (open: boolean) => void;
+  setSelectedRefundCard: (refund: any) => void;
 }
 
-export default function RefundCard({ refund }: RefundCardProps) {
+export default function RefundCard({
+  refund,
+  setOpenModal,
+  setSelectedRefundCard,
+}: RefundCardProps) {
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleString("vi-VN");
 
@@ -21,20 +28,32 @@ export default function RefundCard({ refund }: RefundCardProps) {
     }
   };
 
+  const handleOnClickCard = () => {
+    setOpenModal(true);
+    setSelectedRefundCard(refund);
+  };
+
   return (
-    <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-200 mb-6 hover:shadow-xl transition-all max-w-3xl w-full mx-auto">
+    <div
+      className="cursor-pointer bg-white shadow-lg rounded-2xl p-6 border border-gray-200 mb-6 hover:shadow-2xl transition-all max-w-3xl w-full mx-auto"
+      onClick={handleOnClickCard}
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-800">
           Yêu cầu hoàn tiền
         </h2>
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+        <select
+          // value={refund.status}
+          // onChange={(e) => handleChangeStatus(refund.id, e.target.value)}
+          className={`px-3 py-1 rounded-full text-xs font-semibold appearance-none ${getStatusColor(
             refund.status
           )}`}
         >
-          {refund.status}
-        </span>
+          <option value="PENDING">PENDING</option>
+          <option value="COMPLETED">COMPLETED</option>
+          <option value="REJECTED">REJECTED</option>
+        </select>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
@@ -70,10 +89,6 @@ export default function RefundCard({ refund }: RefundCardProps) {
         <p className="text-xs text-gray-500">
           Gửi lúc: {formatDate(refund.createdAt)}
         </p>
-
-        <button className="text-sm px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition">
-          Cập nhật trạng thái
-        </button>
       </div>
     </div>
   );

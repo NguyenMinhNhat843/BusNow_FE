@@ -28,6 +28,7 @@ export default function FormOrderInfo() {
 
   // redux
   const bookingInfo = useSelector((state: RootState) => state.booking);
+  const userRedux = useSelector((state: RootState) => state.auth.user);
 
   // state
   const { stage, setStage } = useOrderContext();
@@ -51,7 +52,11 @@ export default function FormOrderInfo() {
   );
   useEffect(() => {
     const storedUser = localStorage.getItem("guest");
-    const user = storedUser ? JSON.parse(storedUser) : null;
+    const user = userRedux
+      ? userRedux
+      : storedUser
+      ? JSON.parse(storedUser)
+      : null;
 
     if (user || dataTrip) {
       const mergedData = {
