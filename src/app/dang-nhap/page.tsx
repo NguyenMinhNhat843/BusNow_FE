@@ -3,7 +3,6 @@
 import { authApi } from "@/api/authApi";
 import { RoleEnum } from "@/api/Enum/RoleEnum";
 import { login } from "@/redux/slice/authSlice";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDispatch } from "react-redux";

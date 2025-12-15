@@ -15,8 +15,8 @@ export default function AdminLoginPage() {
   const router = useRouter();
 
   const [formData, setFormData] = useState<FormData>({
-    email: "minhnhat@gmail.com",
-    password: "Pass@123",
+    email: "provider@example.com",
+    password: "Provider@123",
   });
 
   const handleChangeFormData = (e: any) => {

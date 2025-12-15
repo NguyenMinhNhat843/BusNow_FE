@@ -1,17 +1,13 @@
 "use client";
 
 import logo from "../../../public/logo.webp";
-// import avatarDefault from "../../public/avatar_default.png";
-import avatarDefault from "../../../public/avatar_default.png";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { logout, setUser } from "@/redux/slice/authSlice";
-import { set } from "date-fns";
 import { authApi } from "@/api/authApi";
-import { toast } from "sonner";
 import { userApi } from "@/api/userApi";
 
 const tabMenuUser = [
@@ -52,7 +48,6 @@ export default function Header() {
 
   // state
   const [isOpenMenuUser, setIsOpenMenuUser] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
 
   const handleNaviagteLogin = () => {
@@ -64,28 +59,15 @@ export default function Header() {
   const handleLogout = async () => {
     const response = await authApi.logout();
     if (response.status === 200) {
-      toast.success("Đăng xuất thành công!");
       localStorage.removeItem("user");
     }
     dispatch(logout());
     router.push("/");
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
-
   // handle click "Đơn hàng của tôi"
   const handleMyOrdersClick = () => {
     router.push("/tra-cuu-don-hang");
-    // if (!user) {
-    // } else {
-    //   router.push("/don-hang-cua-toi");
-    // }
   };
 
   // handle click "Hợp tác với chúng tôi"
@@ -94,7 +76,7 @@ export default function Header() {
   };
 
   return (
-    <div className="relative flex justify-between items-center bg-white shadow-lg h-[70px] z-[999]">
+    <div className="flex justify-between items-center bg-white shadow-lg h-16 z-10">
       {/* logo */}
       <div
         className="relative h-full aspect-[3/2] mx-4 cursor-pointer"

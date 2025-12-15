@@ -9,6 +9,7 @@ import authReducer from "./slice/authSlice";
 import tripReducer from "./slice/tripSlice";
 import bookingReducer from "./slice/bookingSlice";
 import filterTripReducer from "./slice/filterTripSlice";
+import quanLyXeReducer from "./slice/QuanLyXeSlice";
 
 // Combine all reducers
 const rootReducer = combineReducers({
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   trip: tripReducer,
   booking: bookingReducer,
   filterTrip: filterTripReducer,
+  quanLyXe: quanLyXeReducer,
 });
 
 // Persist config

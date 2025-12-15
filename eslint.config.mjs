@@ -13,9 +13,9 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
-      "no-unused-vars": "off", // Tắt check biến chưa sử dụng
-      "@typescript-eslint/no-unused-vars": "off", // Tắt no-unused-vars cho TypeScript
-      "@typescript-eslint/no-explicit-any": "off", // ✅ tắt rule cảnh báo any
+      // "no-unused-vars": "off", // Tắt check biến chưa sử dụng
+      // "@typescript-eslint/no-unused-vars": "off", // Tắt no-unused-vars cho TypeScript
+      // "@typescript-eslint/no-explicit-any": "off", // ✅ tắt rule cảnh báo any
     },
   },
 ];

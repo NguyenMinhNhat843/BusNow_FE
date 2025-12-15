@@ -1,44 +1,26 @@
 "use client";
 
-import { busApi } from "@/api/busApi";
-import { ResponseVehicle } from "@/api/DTO/getVehiclesApiDTO";
-import { Pagination } from "@/api/DTO/routeApiDTO";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import VehicleItem from "../components/VehicleItem";
-import { routeApi } from "@/api/routeApi";
 import DetailVehicle from "./components/DetailVehicle";
 import { TabCurrentEnum } from "./enum/TabCurrentEnum";
-import { tripApi } from "@/api/tripApi";
-import { useRouter } from "next/navigation";
-
-type Vehicle = {
-  id: string;
-  code: string;
-  totalSeat: number;
-  type: string;
-  subType?: string;
-};
+import { Input, LoadingOverlay, Select, Text } from "@mantine/core";
+import { useRoute } from "@/hooks/useRoute";
+import { useVehicle } from "@/hooks/useVehicle";
+import { TimeInput } from "@mantine/dates";
+import ModalClean from "./components/ModalClean";
+import { useTrip } from "@/hooks/useTrip";
 
 export default function ManagerBus() {
   // common
-  const router = useRouter();
+  const { routes } = useRoute();
+  const { vehicles, addVehicle, loading } = useVehicle();
+  const { handleDeleteTripsBeforeNow } = useTrip();
   // state
-  const [pagination, setPagination] = useState<Pagination>({
-    page: 1,
-    limit: 5,
-    totalPage: 1,
-    total: 5,
-  });
-  const [vehicles, setVehicles] = useState<ResponseVehicle[]>([]);
-  const [openModelRoutes, setOpenModelRoutes] = useState<boolean>(false);
-  const [routes, setRoutes] = useState<any[]>([]);
-  const [hasFetchedRoutes, setHasFetchedRoutes] = useState(false);
   const [formData, setFormData] = useState({
     totalSeat: "",
     code: "",
-    type: "",
-    subType: "",
+    busType: "",
     routeId: "",
     departHour: "",
   });
@@ -53,10 +35,7 @@ export default function ManagerBus() {
     setVehicleSelectedId(vehicleId);
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
+  const handleChange = (name: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -69,162 +48,88 @@ export default function ManagerBus() {
     const body = {
       code: formData.code,
       totalSeat: Number(formData.totalSeat),
-      busType: formData.subType || formData.type, // tùy cách backend xử lý
+      busType: formData.busType, // tùy cách backend xử lý
       routeId: formData.routeId,
       departHour: formData.departHour,
     };
 
-    try {
-      await busApi.createVehicle(body);
-      toast.success("Thêm xe thành công!");
-      fetchVehicles(); // reload lại list xe
-      setFormData({
-        totalSeat: "",
-        code: "",
-        type: "",
-        subType: "",
-        routeId: "",
-        departHour: "",
-      });
-    } catch (error: any) {
-      toast.error(error.response.data.message);
-    }
-  };
-
-  // fetch routes
-  const fetchRoutes = async () => {
-    try {
-      const response = await routeApi.getRoutes(1, 10);
-      setRoutes(response.data);
-      setHasFetchedRoutes(true); // để không load lại nữa
-    } catch (error) {
-      toast.error("Có lỗi xảy ra khi get routes");
-    }
-  };
-
-  // fetch vehicles
-  const fetchVehicles = async () => {
-    try {
-      const response = await busApi.getVehicles(pagination.page);
-      setVehicles(response.data);
-    } catch (error: any) {
-      toast.error(error.response.data.message);
-    }
-  };
-
-  useEffect(() => {
-    if (openModelRoutes) {
-      fetchRoutes();
-    }
-  }, [openModelRoutes]);
-
-  useEffect(() => {
-    fetchVehicles();
-  }, []);
-
-  // deelte trips before now
-  const handleDeleteTripsBeforeNow = async () => {
-    try {
-      const response = await tripApi.deleteTripsBeforeNow();
-      if (response.status === "success") {
-        toast.success("Xóa thành công");
-        router.refresh();
-      }
-    } catch (error: any) {
-      toast.error(error.response.data.message || "Có lỗi");
-    }
+    addVehicle(body);
   };
 
   return (
     <div>
       {tabCurrent === TabCurrentEnum.VEHICLE ? (
         <div className="">
-          {/* Form */}
           <div className="bg-white p-6 mb-8">
-            <h2 className="text-xl font-bold mb-4">Thêm xe mới</h2>
+            <Text size="lg" fw={700}>
+              Thêm xe mới
+            </Text>
             <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="block mb-1 font-medium">Số ghế</label>
-                <input
+              <Input.Wrapper label="Số ghế">
+                <Input
                   type="number"
-                  name="totalSeat"
+                  placeholder="Số ghế"
                   value={formData.totalSeat}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
-                  required
+                  onChange={(e) =>
+                    handleChange("totalSeat", e.currentTarget.value)
+                  }
                 />
-              </div>
-
-              <div>
-                <label className="block mb-1 font-medium">Biển số xe</label>
-                <input
+              </Input.Wrapper>
+              <Input.Wrapper label="Biển số xe">
+                <Input
                   type="text"
-                  name="code"
+                  placeholder="VD: 29A-125.45"
                   value={formData.code}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
-                  placeholder="VD: 29A-123.45"
-                  required
+                  onChange={(e) => handleChange("code", e.currentTarget.value)}
                 />
-              </div>
-
-              {/* Loại xe */}
-              <div>
-                <label className="block mb-1 font-medium">Loại xe</label>
-                <select
-                  name="type"
-                  value={formData.type}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
-                  required
-                >
-                  <option value="">-- Chọn loại --</option>
-                  <option value="VIP">VIP</option>
-                  <option value="LIMOUSINE">LIMOUSINE</option>
-                  <option value="STANDARD">STANDARD</option>
-                </select>
-              </div>
-
-              {/* routes */}
-              <div className="col-span-3 rounded-md border border-slate-200">
-                <select
-                  name="routeId" // ← sửa ở đây
-                  className="w-full p-2"
-                  value={formData.routeId} // ← thêm cái này để binding đúng
-                  onChange={handleChange}
-                  onClick={() => {
-                    if (!hasFetchedRoutes) fetchRoutes();
-                  }}
-                >
-                  <option value="">Chọn tuyến đường</option>
-                  {routes.map((route) => (
-                    <option key={route.routeId} value={route.routeId}>
-                      {route.origin?.name} → {route.destination?.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Giờ khởi hành */}
-              <div className="col-span-3">
-                <label className="block mb-1 font-medium">Giờ khởi hành</label>
-                <input
-                  type="text"
-                  name="departHour"
-                  placeholder="HH:mm (VD: 14:30)"
-                  pattern="^([01]\d|2[0-3]):([0-5]\d)$"
+              </Input.Wrapper>
+              <Select
+                label="Loại xe"
+                name="type"
+                clearable
+                value={formData.busType}
+                data={[
+                  {
+                    label: "Vip",
+                    value: "VIP",
+                  },
+                  {
+                    label: "LIMOUSINE",
+                    value: "LIMOUSINE",
+                  },
+                  {
+                    label: "STANDARD",
+                    value: "STANDARD",
+                  },
+                ]}
+                onChange={(value) => {
+                  return handleChange("busType", String(value));
+                }}
+              />
+              <Input.Wrapper label="Giờ khởi hành">
+                <TimeInput
                   value={formData.departHour}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
-                  required
+                  onChange={(e) => {
+                    return handleChange("departHour", e.currentTarget.value);
+                  }}
                 />
-              </div>
+              </Input.Wrapper>
 
-              <div className="col-span-3">
-                {/* Button thêm xe */}
+              <Input.Wrapper label="Tuyến đường">
+                <Select
+                  value={formData.routeId}
+                  data={routes.map((route: any) => ({
+                    label: `${route.origin.name} - ${route.destination.name}`,
+                    value: route.routeId,
+                  }))}
+                  onChange={(value) => handleChange("routeId", String(value))}
+                />
+              </Input.Wrapper>
+
+              <div className="col-span-3 flex justify-center">
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+                  className="w-1/2 mx-auto bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
                 >
                   Thêm xe
                 </button>
@@ -233,23 +138,26 @@ export default function ManagerBus() {
           </div>
 
           {/* Danh sách xe */}
-          <div className="p-4">
-            <div className="flex gap-4 items-center pb-4">
-              <p className="text-2xl font-bold">
+          <div className="relative p-4">
+            <LoadingOverlay
+              visible={loading}
+              zIndex={100}
+              overlayProps={{ radius: "sm", blur: 2 }}
+            />
+
+            <div className="flex gap-4 items-center justify-between pb-4">
+              <Text size="lg" fw={700}>
                 Danh sách xe ({vehicles.length})
-              </p>
-              <button
-                className="cursor-pointer bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition"
-                onClick={handleDeleteTripsBeforeNow}
-              >
-                Xóa các trip và ticket trước ngày hiện tại
-              </button>
+              </Text>
+
+              <ModalClean onSubmit={handleDeleteTripsBeforeNow} />
             </div>
+
             <div className="grid grid-cols-3 gap-4">
               {vehicles.map((vehicle) => (
                 <div
                   key={vehicle.vehicleId}
-                  className="mb-4 cursor-pointer"
+                  className="mb-4 cursor-pointer transition-transform duration-200 hover:-translate-y-1"
                   onClick={() => handleOnClickVehicleItem(vehicle.vehicleId)}
                 >
                   <VehicleItem vehicle={vehicle} />

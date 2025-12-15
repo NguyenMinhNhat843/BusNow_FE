@@ -8,7 +8,6 @@ export const routeApi = {
   },
 
   async getRoutes(page: number, limit: number) {
-    console.log(page, limit);
     const response = await axiosInstance.get("/route/list", {
       params: { page, limit },
     });

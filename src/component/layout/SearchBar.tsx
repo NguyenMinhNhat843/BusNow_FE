@@ -1,21 +1,18 @@
 "use client";
 
 import React, { forwardRef, useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendar,
   faCircleDot,
   faLocationDot,
   faRightLeft,
-  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { vi } from "date-fns/locale";
 import { useRouter, useSearchParams } from "next/navigation";
-import { locationApi } from "@/api/locationApi";
-import { toast } from "sonner";
+import { useLocations } from "@/hooks/useLocations";
 
 // Component tuỳ biến hiển thị ngày
 const CustomDateInput = forwardRef<
@@ -32,19 +29,17 @@ const CustomDateInput = forwardRef<
   </button>
 ));
 
-// ✅ Thêm displayName để tránh warning của ESLint
+// Thêm displayName để tránh warning của ESLint
 CustomDateInput.displayName = "CustomDateInput";
 
-export default function HomePage() {
+export default function SearchBar() {
   // common
   const router = useRouter();
-
+  const { locations, setLocations } = useLocations();
   // state
   const [isOpenMenuLocationFrom, setIsOpenMenuLocationFrom] = useState(false);
   const [isOpenMenuLocationTo, setIsOpenMenuLocationTo] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
-  const [locations, setLocations] = useState<ResponseGetAllLocations[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const menuLocationFromRef = useRef<HTMLDivElement>(null);
   const menuLocationToRef = useRef<HTMLDivElement>(null);
   const [locationSelected, setLocationSelected] = useState({
@@ -59,23 +54,6 @@ export default function HomePage() {
   const from = searchParams.get("from");
   const to = searchParams.get("to");
 
-  // fetch locations
-  const fetchLocations = async () => {
-    try {
-      const response: ResponseGetAllLocations[] =
-        await locationApi.getAllLocation();
-      setLocations(response);
-      setLocationSelected({
-        fromId: response[0].locationId,
-        from: response[0].name,
-        toId: response[1].locationId,
-        to: response[1].name,
-      });
-      localStorage.setItem("locations", JSON.stringify(response));
-    } catch (error: any) {
-      toast.error(error.response.data.message);
-    }
-  };
   useEffect(() => {
     const locationsStorage = localStorage.getItem("locations");
 
@@ -199,12 +177,10 @@ export default function HomePage() {
   }, []);
 
   // handle click button search
-  const handleSearch = async () => {
-    setIsSearching(true);
-    const startDateFormatted = startDate.toISOString().split("T")[0]; // format date to YYYY-MM-DD
-
+  const handleSearch = () => {
+    const startDateFormatted = startDate.toISOString().split("T")[0];
     try {
-      await router.push(
+      router.push(
         "/ket-qua-tim-kiem?from=" +
           locationSelected.fromId +
           "&to=" +
@@ -214,8 +190,6 @@ export default function HomePage() {
       );
     } catch (error) {
       console.error("Navigation error:", error);
-    } finally {
-      setIsSearching(false);
     }
   };
 
@@ -328,19 +302,9 @@ export default function HomePage() {
       <div className="bg-yellow-500 cursor-pointer text-white rounded-lg hover:bg-yellow-700 transition-colors">
         <div
           className="text-xl text-center text-black px-4 py-4 w-[200px] flex items-center justify-center gap-2"
-          onClick={isSearching ? undefined : handleSearch}
+          onClick={handleSearch}
         >
-          {isSearching ? (
-            <>
-              <FontAwesomeIcon
-                icon={faSpinner}
-                className="animate-spin text-lg text-red-600"
-              />
-              <span>Đang tìm...</span>
-            </>
-          ) : (
-            "Tìm kiếm"
-          )}
+          Tìm kiếm
         </div>
       </div>
       {/* end */}
