@@ -1,71 +1,85 @@
+import {
+  Card,
+  Divider,
+  Group,
+  ScrollArea,
+  SimpleGrid,
+  Stack,
+  Text,
+  Timeline,
+  Tooltip,
+} from "@mantine/core";
+
 export default function RouteItem({ route }: { route: any }) {
+  const routesConfig = [
+    {
+      label: "🚏 Điểm đón",
+      stopPoints: route.stopPoints.filter(
+        (sp) => sp.city.locationId === route.origin.locationId
+      ),
+    },
+    {
+      label: "📍 Điểm trả",
+      stopPoints: route.stopPoints.filter(
+        (sp) => sp.city.locationId === route.destination.locationId
+      ),
+    },
+  ];
+
   return (
-    <div className="flex flex-col justify-between p-6 rounded-2xl bg-white shadow-lg border border-gray-200 space-y-5 mb-4 max-w-2xl h-[20em]">
-      {/* Header tuyến */}
-      <div className="flex flex-col gap-1">
-        <h2 className="text-2xl font-bold text-blue-700">
-          {route.origin.name} ↔ {route.destination.name}
-        </h2>
-        <div className="text-sm text-gray-600 flex items-center gap-2">
-          <span>⏱️ {route.duration} giờ</span>
-          <span>• 💤 Nghỉ tại điểm đến: {route.restAtDestination} giờ</span>
-        </div>
-        <div className="text-sm text-gray-600">
-          ♻️ Chu kỳ vé: mỗi {route.repeatsDay} ngày
-        </div>
-      </div>
+    <Card radius="xl" withBorder shadow="lg" h="20em">
+      <Stack h="100%" justify="space-between">
+        {/* Header tuyến */}
+        <Stack gap={4}>
+          <Text fw={700} size="xl" c="blue.7">
+            {route.origin.name} ↔ {route.destination.name}
+          </Text>
 
-      {/* Stop Points */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 grow">
-        {/* Điểm đón */}
-        <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl shadow-sm">
-          <h3 className="text-base font-semibold text-blue-600 mb-2 flex items-center gap-1">
-            🚏 Điểm đón
-          </h3>
-          {route.stopPoints.filter(
-            (sp: any) => sp.city.locationId === route.origin.locationId
-          ).length > 0 ? (
-            <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-              {route.stopPoints
-                .filter(
-                  (sp: any) => sp.city.locationId === route.origin.locationId
-                )
-                .map((sp: any, index: number) => (
-                  <li key={index} title={sp.address}>
-                    {sp.name}
-                  </li>
-                ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-gray-400 italic">Không có điểm đón</p>
-          )}
-        </div>
+          <Group gap="md" c="dimmed" fz="sm">
+            <Text>Thời gian chạy: {route.duration} giờ</Text>
+            <Text>Nghỉ tại điểm đến: {route.restAtDestination} giờ</Text>
+            <Text>Chu kỳ vé: {route.repeatsDay} ngày</Text>
+          </Group>
+        </Stack>
 
-        {/* Điểm trả */}
-        <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl shadow-sm">
-          <h3 className="text-base font-semibold text-green-600 mb-2 flex items-center gap-1">
-            📍 Điểm trả
-          </h3>
-          {route.stopPoints.filter(
-            (sp: any) => sp.city.locationId === route.destination.locationId
-          ).length > 0 ? (
-            <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-              {route.stopPoints
-                .filter(
-                  (sp: any) =>
-                    sp.city.locationId === route.destination.locationId
-                )
-                .map((sp: any, index: number) => (
-                  <li key={index} title={sp.address}>
-                    {sp.name}
-                  </li>
-                ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-gray-400 italic">Không có điểm trả</p>
-          )}
-        </div>
-      </div>
-    </div>
+        <Divider />
+
+        {/* Stop Points */}
+        <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg" style={{ flex: 1 }}>
+          {routesConfig.map((config: any) => (
+            <Card key={config.label} radius="lg" withBorder p="md" bg="gray.0">
+              <Stack gap="xs">
+                <Text fw={500} size="md" c="blue.6">
+                  {config.label}
+                </Text>
+
+                {config.stopPoints.length > 0 ? (
+                  <ScrollArea h={100}>
+                    <Timeline lineWidth={1}>
+                      {config.stopPoints.map((sp: any, index: number) => (
+                        <Timeline.Item
+                          key={index}
+                          title={
+                            <Tooltip label={sp.address}>
+                              <span className="font-medium text-slate-500">
+                                {sp.name}
+                              </span>
+                            </Tooltip>
+                          }
+                        ></Timeline.Item>
+                      ))}
+                    </Timeline>
+                  </ScrollArea>
+                ) : (
+                  <Text fz="sm" c="gray.5" fs="italic">
+                    Không có điểm đón
+                  </Text>
+                )}
+              </Stack>
+            </Card>
+          ))}
+        </SimpleGrid>
+      </Stack>
+    </Card>
   );
 }
