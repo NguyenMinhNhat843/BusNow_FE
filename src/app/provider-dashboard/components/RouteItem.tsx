@@ -4,7 +4,7 @@ export default function RouteItem({ route }: { route: any }) {
       {/* Header tuyến */}
       <div className="flex flex-col gap-1">
         <h2 className="text-2xl font-bold text-blue-700">
-          {route.origin.name} → {route.destination.name}
+          {route.origin.name} ↔ {route.destination.name}
         </h2>
         <div className="text-sm text-gray-600 flex items-center gap-2">
           <span>⏱️ {route.duration} giờ</span>

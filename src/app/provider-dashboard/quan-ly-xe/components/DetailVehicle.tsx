@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { ticketApi } from "@/api/ticketApi";
 import TicketItem from "./TicketItem";
 import { TabCurrentEnum } from "../enum/TabCurrentEnum";
-import { useRouter } from "next/navigation";
 
 interface TicketItemProps {
   ticketId: string;
@@ -35,8 +34,6 @@ export default function DetailVehicle({
   vehicleId,
   setTabCurrent,
 }: DetailVehicleProps) {
-  // common
-  const router = useRouter();
   // state
   const [loading, setLoading] = useState(false);
   const [vehicle, setVehicle] = useState<any>(null);

@@ -2,7 +2,7 @@
 
 import { tripApi } from "@/api/tripApi";
 import TripItem from "./components/TripItem";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import FilterSideBar from "./filterSideBar";
@@ -12,8 +12,6 @@ import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { setFilter } from "@/redux/slice/filterTripSlice";
-
-const itemPerPage = 5;
 
 export default function SearchResultsPage() {
   // common

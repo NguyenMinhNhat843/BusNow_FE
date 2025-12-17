@@ -1,230 +1,177 @@
-import { locationApi } from "@/api/locationApi";
 import { routeApi } from "@/api/routeApi";
-import { stopPointApi } from "@/api/stopPointApi";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-
-interface Location {
-  locationId: string;
-  name: string;
-}
+import { useLocations } from "@/hooks/useLocations";
+import { useStopPoint } from "@/hooks/useStopPoint";
+import { Input, Paper, ScrollArea, Select, Text } from "@mantine/core";
+import { useState } from "react";
 
 export default function CreateRouteForm() {
-  const [locations, setLocations] = useState<Location[]>([]);
+  const { locations } = useLocations();
   const [formData, setFormData] = useState({
-    originId: "",
-    destinationId: "",
+    origin: {
+      name: "",
+      id: "",
+    },
+    destination: {
+      name: "",
+      id: "",
+    },
     duration: 0,
     restAtDestination: 0,
     repeatsDay: 0,
   });
-  const [originSP, setOriginSP] = useState<any[]>([]);
-  const [destinationSP, setDestinationSP] = useState<any[]>([]);
-  const [selectedOriginSP, setSelectedOriginSP] = useState<any[]>([]);
-  const [selectedDestinationSP, setSelectedDestinationSP] = useState<any[]>([]);
+  const { stopPoints: originSP } = useStopPoint({
+    locationId: formData.origin.id,
+  });
+  const { stopPoints: destinationSP } = useStopPoint({
+    locationId: formData.destination.id,
+  });
 
-  // fetch locations
-  const fetchLocations = async () => {
-    try {
-      const response = await locationApi.getAllLocation();
-      setLocations(response);
-    } catch (error) {
-      toast.error("Không thể tải danh sách địa điểm!");
-    }
-  };
-  useEffect(() => {
-    fetchLocations();
-  }, []);
-
-  // fetch stopPoint
-  useEffect(() => {
-    const loadStopPoints = async () => {
-      if (formData.originId) {
-        try {
-          const response = await stopPointApi.getStopPintBycityId(
-            formData.originId
-          );
-          setOriginSP(response.data); // ✅ response.data là mảng
-        } catch (error) {
-          toast.error("Lỗi khi lấy điểm đón!");
-          setOriginSP([]);
-        }
-      } else {
-        setOriginSP([]);
-      }
-    };
-
-    loadStopPoints();
-  }, [formData.originId]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (formData.destinationId) {
-        try {
-          const response = await stopPointApi.getStopPintBycityId(
-            formData.destinationId
-          );
-          setDestinationSP(response.data || []); // đảm bảo luôn là array
-        } catch (error) {
-          toast.error("Lỗi khi lấy điểm trả!");
-          setDestinationSP([]);
-        }
-      } else {
-        setDestinationSP([]);
-      }
-    };
-
-    fetchData();
-  }, [formData.destinationId]);
-
-  // handle change form
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
+  const handleInputChange = (name: string, value: any) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // handle select point
-  const handleSelectStopPoint = (
-    id: string,
-    list: any[],
-    setList: (value: any[]) => void,
-    options: any[]
-  ) => {
-    const alreadySelected = list.find((item) => item.id === id);
-    if (alreadySelected) return; // tránh trùng
-    const selected = options.find((item) => item.id === id);
-    if (selected) setList([...list, selected]);
-  };
-
-  // handle remove point
-  const handleRemoveStopPoint = (
-    id: string,
-    list: any[],
-    setList: (value: any[]) => void
-  ) => {
-    setList(list.filter((item) => item.id !== id));
-  };
-
   // handle submit create
-  const handleCreateRouteApi = async () => {
-    const stopPointIds = [...selectedOriginSP, ...selectedDestinationSP].map(
-      (sp) => sp.id
-    );
+  const handleCreateRouteApi = async (e) => {
+    e.preventDefault();
+    const stopPointIds = [...originSP, ...destinationSP].map((sp) => sp.id);
 
     const body = {
-      originId: formData.originId,
-      destinationId: formData.destinationId,
+      originId: formData.origin.id,
+      destinationId: formData.destination.id,
       duration: Number(formData.duration),
       restAtDestination: Number(formData.restAtDestination),
       stopPointIds,
     };
 
     try {
-      const res = await routeApi.createRoute(body); // ← gọi API ở đây
-      toast.success("Tạo tuyến đường thành công!");
+      await routeApi.createRoute(body);
+
       // reset nếu muốn
       setFormData({
-        originId: "",
-        destinationId: "",
+        origin: {
+          id: "",
+          name: "",
+        },
+        destination: {
+          id: "",
+          name: "",
+        },
         duration: 0,
         restAtDestination: 0,
         repeatsDay: 0,
       });
-      setSelectedOriginSP([]);
-      setSelectedDestinationSP([]);
     } catch (error: any) {
-      toast.error("Tạo tuyến đường thất bại!");
-      console.error(error);
+      alert("Có lỗi xảy ra: " + JSON.stringify(error));
     }
   };
 
+  const locationsConfig = [
+    {
+      key: "origin",
+      label: "Điểm đi",
+      value: formData.origin.id,
+      stopPoints: originSP,
+    },
+    {
+      key: "destination",
+      label: "Điểm đến",
+      value: formData.destination.id,
+      stopPoints: destinationSP,
+    },
+  ] as const;
+
   return (
     <form className="p-4 rounded-2xl bg-white shadow-md mb-6 border border-gray-200 mx-auto">
-      <div className="mb-4">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">
-          Tạo tuyến đường
-        </h2>
-        <div className="grid grid-cols-2 gap-4">
-          {/* Điểm đi */}
-          <div>
-            <label className="text-sm font-medium text-gray-700">
-              Điểm đi (Origin)
-            </label>
-            <select
-              name="originId"
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              value={formData.originId}
-              onChange={handleInputChange}
-            >
-              <option value="">-- Chọn địa điểm đi --</option>
-              {locations.map((loc) => (
-                <option key={loc.locationId} value={loc.locationId}>
-                  {loc.name}
-                </option>
-              ))}
-            </select>
-          </div>
+      <Text fw={700} size="lg">
+        Tạo tuyến đường
+      </Text>
 
-          {/* Điểm đến */}
-          <div>
-            <label className="text-sm font-medium text-gray-700">
-              Điểm đến (Destination)
-            </label>
-            <select
-              name="destinationId"
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              value={formData.destinationId}
-              onChange={handleInputChange}
-            >
-              <option value="">-- Chọn địa điểm đến --</option>
-              {locations.map((loc) => (
-                <option key={loc.locationId} value={loc.locationId}>
-                  {loc.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {locationsConfig.map((config) => {
+          return (
+            <div key={config.key}>
+              <Input.Wrapper label={config.label}>
+                <Select
+                  data={locations.map((location) => ({
+                    label: location.name,
+                    value: location.locationId,
+                  }))}
+                  clearable
+                  value={config.value}
+                  onChange={(value, option) =>
+                    handleInputChange(config.key, {
+                      name: option?.label,
+                      id: option?.value,
+                    })
+                  }
+                />
+              </Input.Wrapper>
+
+              {config.value && (
+                <Input.Wrapper label="Danh sách điểm dừng" className="mt-2">
+                  <ScrollArea h={250} scrollbars="y">
+                    <div className="space-y-2">
+                      {config.stopPoints.map((sp) => (
+                        <Paper
+                          key={sp.id}
+                          withBorder
+                          radius="md"
+                          className="p-3 hover:bg-gray-50 cursor-pointer transition"
+                        >
+                          <Text fw={500} size="md">
+                            {sp.name}
+                          </Text>
+                          <Text fw={400} size="sm" color="gray">
+                            {sp.address}
+                          </Text>
+                        </Paper>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </Input.Wrapper>
+              )}
+            </div>
+          );
+        })}
       </div>
+
+      <hr className="my-4 border-dashed" />
 
       {/* Thời gian và nghỉ */}
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <div>
-          <label className="text-sm font-medium text-gray-700">
-            Thời gian di chuyển (giờ)
-          </label>
-          <input
+        <Input.Wrapper label="Thời gian di chuyển">
+          <Input
             type="number"
-            name="duration"
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
             placeholder="VD: 7"
+            rightSection={
+              <span className="text-sm text-gray-500 pr-1">giờ</span>
+            }
             value={formData.duration}
-            onChange={handleInputChange}
+            onChange={(e) =>
+              handleInputChange("duration", e.currentTarget.value)
+            }
           />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-gray-700">
-            Thời gian nghỉ tại điểm đến
-          </label>
-          <input
+        </Input.Wrapper>
+        <Input.Wrapper label="Thời gian nghỉ">
+          <Input
             type="number"
-            name="restAtDestination"
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
             placeholder="VD: 4"
+            rightSection={
+              <span className="text-sm text-gray-500 pr-1">giờ</span>
+            }
             value={formData.restAtDestination}
-            onChange={handleInputChange}
+            onChange={(e) =>
+              handleInputChange("restAtDestination", e.currentTarget.value)
+            }
           />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-gray-700">
-            Lặp lại mỗi (ngày)
-          </label>
-          <input
+        </Input.Wrapper>
+        <Input.Wrapper label="Lặp lại sau">
+          <Input
             type="number"
             name="repeatsDay"
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full cursor-not-allowed"
+            rightSection={
+              <span className="text-sm text-gray-500 pr-1">ngày</span>
+            }
             value={Math.ceil(
               ((Number(formData.duration) || 0) * 2 +
                 (Number(formData.restAtDestination) || 0)) /
@@ -232,118 +179,7 @@ export default function CreateRouteForm() {
             )}
             disabled
           />
-        </div>
-      </div>
-
-      {/* Điểm đón - trả */}
-      <div className="grid grid-cols-2 gap-6">
-        {/* Điểm đón */}
-        <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1">
-            🚏 Chọn điểm đón (Origin)
-          </label>
-          {originSP.length > 0 && (
-            <div className="mt-2">
-              <select
-                className="p-2 border border-gray-300 rounded-md w-full"
-                onChange={(e) =>
-                  handleSelectStopPoint(
-                    e.target.value,
-                    selectedOriginSP,
-                    setSelectedOriginSP,
-                    originSP
-                  )
-                }
-              >
-                <option value="">-- Chọn điểm đón --</option>
-                {originSP.map((sp: any) => (
-                  <option key={sp.id} value={sp.id}>
-                    {sp.name}
-                  </option>
-                ))}
-              </select>
-
-              {/* Hiển thị các điểm đã chọn */}
-              <div className="mt-2 flex flex-wrap gap-2">
-                {selectedOriginSP.map((sp) => (
-                  <span
-                    key={sp.id}
-                    className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm flex items-center gap-2"
-                  >
-                    {sp.name}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleRemoveStopPoint(
-                          sp.id,
-                          selectedOriginSP,
-                          setSelectedOriginSP
-                        )
-                      }
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      ✕
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Điểm trả */}
-        <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1">
-            🎯 Chọn điểm trả (Destination)
-          </label>
-          {destinationSP.length > 0 && (
-            <div className="mt-2">
-              <select
-                className="p-2 border border-gray-300 rounded-md w-full"
-                onChange={(e) =>
-                  handleSelectStopPoint(
-                    e.target.value,
-                    selectedDestinationSP,
-                    setSelectedDestinationSP,
-                    destinationSP
-                  )
-                }
-              >
-                <option value="">-- Chọn điểm trả --</option>
-                {destinationSP.map((sp: any) => (
-                  <option key={sp.id} value={sp.id}>
-                    {sp.name}
-                  </option>
-                ))}
-              </select>
-
-              {/* Hiển thị các điểm đã chọn */}
-              <div className="mt-2 flex flex-wrap gap-2">
-                {selectedDestinationSP.map((sp) => (
-                  <span
-                    key={sp.id}
-                    className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm flex items-center gap-2"
-                  >
-                    {sp.name}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleRemoveStopPoint(
-                          sp.id,
-                          selectedDestinationSP,
-                          setSelectedDestinationSP
-                        )
-                      }
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      ✕
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+        </Input.Wrapper>
       </div>
 
       <div className="mt-6 text-right">
