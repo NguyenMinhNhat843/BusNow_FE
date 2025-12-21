@@ -32,7 +32,7 @@ export interface CreateRouteDTO {
     'destinationId': string;
     'duration': number;
     'restAtDestination': number;
-    'providerId': string;
+    'providerId'?: string;
     'stopPointIds': Array<string>;
 }
 export interface CreateStopPointDto {

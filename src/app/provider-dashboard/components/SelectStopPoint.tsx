@@ -1,5 +1,7 @@
 import { routeApi } from "@/api/routeApi";
+import { CreateRouteDTO } from "@/apiGen/generated";
 import { useLocations } from "@/hooks/useLocations";
+import { useCreateRoute } from "@/hooks/useRoute";
 import { useStopPoint } from "@/hooks/useStopPoint";
 import { IconClean } from "@/type/icon";
 import { StopPointType } from "@/type/stopPointType";
@@ -18,6 +20,7 @@ import { useState } from "react";
 
 export default function CreateRouteForm() {
   const { locations } = useLocations();
+  const { createRoute } = useCreateRoute();
   const [formData, setFormData] = useState({
     origin: {
       name: "",
@@ -80,35 +83,34 @@ export default function CreateRouteForm() {
   const handleCreateRouteApi = async (e) => {
     e.preventDefault();
     const stopPointIds = [...originSP, ...destinationSP].map((sp) => sp.id);
-
-    const body = {
-      originId: formData.origin.id,
+    const body: CreateRouteDTO = {
       destinationId: formData.destination.id,
+      originId: formData.origin.id,
       duration: Number(formData.duration),
       restAtDestination: Number(formData.restAtDestination),
       stopPointIds,
     };
 
-    try {
-      await routeApi.createRoute(body);
-
-      // reset nếu muốn
-      setFormData({
-        origin: {
-          id: "",
-          name: "",
+    createRoute(
+      { ...body },
+      {
+        onSuccess: () => {
+          setFormData({
+            origin: { name: "", id: "" },
+            destination: { name: "", id: "" },
+            duration: 0,
+            restAtDestination: 0,
+            repeatsDay: 0,
+          });
+          alert("Tạo route thành công!");
         },
-        destination: {
-          id: "",
-          name: "",
+        onError: (error: any) => {
+          const message =
+            error?.response?.data?.message || error?.message || "Unknown error";
+          alert("Tạo route thất bại, lỗi: " + message);
         },
-        duration: 0,
-        restAtDestination: 0,
-        repeatsDay: 0,
-      });
-    } catch (error: any) {
-      alert("Có lỗi xảy ra: " + JSON.stringify(error));
-    }
+      }
+    );
   };
 
   const locationsConfig = [

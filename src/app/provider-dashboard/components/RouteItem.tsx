@@ -1,4 +1,4 @@
-import { routeApi } from "@/apiGen/route.api";
+import { useDeleteRoute } from "@/hooks/useRoute";
 import { IconDelete } from "@/type/icon";
 import {
   Card,
@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 
 export default function RouteItem({ route }: { route: any }) {
+  const { deleteRoute } = useDeleteRoute();
   const routesConfig = [
     {
       label: "🚏 Điểm đón",
@@ -30,12 +31,9 @@ export default function RouteItem({ route }: { route: any }) {
 
   const handleDelete = async (routeId?: string) => {
     if (!routeId) return;
-    try {
-      const res = await routeApi.routeControllerDeleteRoute(routeId);
-      if (res) alert("Xóa thành công!");
-    } catch (error) {
-      alert(`Lỗi: ${JSON.stringify(error)}`);
-    }
+    deleteRoute({
+      routeId,
+    });
   };
 
   return (

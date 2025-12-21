@@ -1,11 +1,11 @@
 "use client";
 import { UserInterface } from "@/api/DTO/localStorage";
-import { Pagination, ResponseGetRoutes } from "@/api/DTO/routeApiDTO";
-import { routeApi } from "@/api/routeApi";
-import { useEffect, useState } from "react";
+import { Pagination } from "@/api/DTO/routeApiDTO";
+import { useState } from "react";
 import RouteItem from "../components/RouteItem";
 import SelectStopPoint from "../components/SelectStopPoint";
 import { Text } from "@mantine/core";
+import { useRoute } from "@/hooks/useRoute";
 
 export default function Tab_TuyenDuong() {
   // common
@@ -15,7 +15,6 @@ export default function Tab_TuyenDuong() {
     userJson = JSON.parse(userLocal);
   }
 
-  const [routes, setRoutes] = useState<ResponseGetRoutes[]>([]);
   const [pagination, setPagination] = useState<Pagination>({
     page: 1,
     limit: 10,
@@ -24,26 +23,16 @@ export default function Tab_TuyenDuong() {
   });
 
   // fetch routes
-  const fetchRoutesPagination = async (page: number, limit: number) => {
-    try {
-      let response = null;
-      response = await routeApi.getRoutes(page, limit);
-      if (response.status === "success") {
-        setRoutes(response.data);
-        setPagination(response.pagination);
-      }
-    } catch (error) {
-      alert("Có lỗi: " + JSON.stringify(error));
-    }
-  };
-
-  useEffect(() => {
-    fetchRoutesPagination(pagination.page, pagination.limit);
-  }, []);
+  const { routes, error } = useRoute({
+    page: pagination.page,
+    limit: pagination.limit,
+  });
 
   if (userJson === null) {
     return <div>User chưa đăng nhập</div>;
   }
+
+  if (error) alert("Có lỗi khi fetch routes: " + JSON.stringify(error));
 
   return (
     <div>
@@ -54,7 +43,7 @@ export default function Tab_TuyenDuong() {
       <SelectStopPoint />
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
-        {routes.map((route, index) => (
+        {routes?.data?.map((route: any, index: number) => (
           <div key={index}>
             <RouteItem route={route} />
           </div>

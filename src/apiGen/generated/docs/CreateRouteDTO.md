@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **destinationId** | **string** |  | [default to undefined]
 **duration** | **number** |  | [default to undefined]
 **restAtDestination** | **number** |  | [default to undefined]
-**providerId** | **string** |  | [default to undefined]
+**providerId** | **string** |  | [optional] [default to undefined]
 **stopPointIds** | **Array&lt;string&gt;** |  | [default to undefined]
 
 ## Example
