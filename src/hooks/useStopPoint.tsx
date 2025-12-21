@@ -1,4 +1,5 @@
 import { stopPointApi } from "@/api/stopPointApi";
+import { StopPointType } from "@/type/stopPointType";
 import { useEffect, useState } from "react";
 
 interface useStopPointParams {
@@ -6,7 +7,7 @@ interface useStopPointParams {
 }
 
 export const useStopPoint = ({ locationId }: useStopPointParams) => {
-  const [stopPoints, setStopPoints] = useState<any>([]);
+  const [stopPoints, setStopPoints] = useState<StopPointType[]>([]);
   useEffect(() => {
     const loadStopPoints = async () => {
       if (locationId && locationId !== "") {

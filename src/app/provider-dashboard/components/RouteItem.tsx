@@ -1,3 +1,5 @@
+import { routeApi } from "@/apiGen/route.api";
+import { IconDelete } from "@/type/icon";
 import {
   Card,
   Divider,
@@ -26,14 +28,37 @@ export default function RouteItem({ route }: { route: any }) {
     },
   ];
 
+  const handleDelete = async (routeId?: string) => {
+    if (!routeId) return;
+    try {
+      const res = await routeApi.routeControllerDeleteRoute(routeId);
+      if (res) alert("Xóa thành công!");
+    } catch (error) {
+      alert(`Lỗi: ${JSON.stringify(error)}`);
+    }
+  };
+
   return (
     <Card radius="xl" withBorder shadow="lg" h="20em">
       <Stack h="100%" justify="space-between">
         {/* Header tuyến */}
         <Stack gap={4}>
-          <Text fw={700} size="xl" c="blue.7">
-            {route.origin.name} ↔ {route.destination.name}
-          </Text>
+          <div className="flex justify-between items-center">
+            <Text fw={700} size="xl" c="blue.7">
+              {route.origin.name} ↔ {route.destination.name}
+            </Text>
+
+            <div
+              className="bg-red-100 p-2 rounded-full inline-flex cursor-pointer"
+              onClick={() => handleDelete(route.routeId)}
+            >
+              <IconDelete
+                size={20}
+                color="red"
+                className="hover:scale-120 transition-all"
+              />
+            </div>
+          </div>
 
           <Group gap="md" c="dimmed" fz="sm">
             <Text>Thời gian chạy: {route.duration} giờ</Text>

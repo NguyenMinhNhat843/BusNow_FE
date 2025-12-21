@@ -1,7 +1,19 @@
 import { routeApi } from "@/api/routeApi";
 import { useLocations } from "@/hooks/useLocations";
 import { useStopPoint } from "@/hooks/useStopPoint";
-import { Input, Paper, ScrollArea, Select, Text } from "@mantine/core";
+import { IconClean } from "@/type/icon";
+import { StopPointType } from "@/type/stopPointType";
+import {
+  ActionIcon,
+  ComboboxItem,
+  Group,
+  Input,
+  Paper,
+  ScrollArea,
+  Select,
+  Stack,
+  Text,
+} from "@mantine/core";
 import { useState } from "react";
 
 export default function CreateRouteForm() {
@@ -25,9 +37,43 @@ export default function CreateRouteForm() {
   const { stopPoints: destinationSP } = useStopPoint({
     locationId: formData.destination.id,
   });
+  const [spSelected, setSPSelected] = useState<{
+    origin: ComboboxItem[];
+    destination: ComboboxItem[];
+  }>({
+    origin: [],
+    destination: [],
+  });
 
   const handleInputChange = (name: string, value: any) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddSP = (name: "origin" | "destination", value: ComboboxItem) => {
+    setSPSelected((prev) => {
+      const list = prev[name];
+      const exists = list.some((sp) => sp.value === value.value);
+
+      if (exists) return prev;
+
+      return {
+        ...prev,
+        [name]: [...list, value],
+      };
+    });
+  };
+
+  const handleRemoveSp = (
+    name: "origin" | "destination",
+    value: ComboboxItem
+  ) => {
+    setSPSelected((prev) => {
+      const list = prev[name];
+      return {
+        ...prev,
+        [name]: list.filter((item) => item.value !== value.value),
+      };
+    });
   };
 
   // handle submit create
@@ -69,12 +115,14 @@ export default function CreateRouteForm() {
     {
       key: "origin",
       label: "Điểm đi",
+      field: "origin",
       value: formData.origin.id,
       stopPoints: originSP,
     },
     {
       key: "destination",
       label: "Điểm đến",
+      field: "destination",
       value: formData.destination.id,
       stopPoints: destinationSP,
     },
@@ -107,28 +155,45 @@ export default function CreateRouteForm() {
                 />
               </Input.Wrapper>
 
-              {config.value && (
-                <Input.Wrapper label="Danh sách điểm dừng" className="mt-2">
-                  <ScrollArea h={250} scrollbars="y">
-                    <div className="space-y-2">
-                      {config.stopPoints.map((sp) => (
-                        <Paper
-                          key={sp.id}
-                          withBorder
-                          radius="md"
-                          className="p-3 hover:bg-gray-50 cursor-pointer transition"
-                        >
-                          <Text fw={500} size="md">
-                            {sp.name}
-                          </Text>
-                          <Text fw={400} size="sm" color="gray">
-                            {sp.address}
-                          </Text>
+              {(!!formData.origin?.id || !!formData.destination?.id) && (
+                <div className="mt-2">
+                  <Text fw={500} size="sm">
+                    Chọn điểm dừng
+                  </Text>
+                  <Select
+                    data={config.stopPoints.map((sp) => {
+                      return {
+                        label: sp.name,
+                        value: sp.id,
+                      };
+                    })}
+                    onChange={(value, option) => {
+                      handleAddSP(config.field, option);
+                    }}
+                  />
+                  <ScrollArea mah={250} className="mt-2">
+                    <Stack gap="xs">
+                      {spSelected?.[config.field]?.map((sp) => (
+                        <Paper key={sp.value} withBorder radius="md" p="xs">
+                          <Group justify="space-between" align="center">
+                            <Text size="sm" fw={500}>
+                              {sp.label}
+                            </Text>
+
+                            <ActionIcon
+                              size="sm"
+                              variant="subtle"
+                              color="red"
+                              onClick={() => handleRemoveSp(config.field, sp)}
+                            >
+                              <IconClean size={14} />
+                            </ActionIcon>
+                          </Group>
                         </Paper>
                       ))}
-                    </div>
+                    </Stack>
                   </ScrollArea>
-                </Input.Wrapper>
+                </div>
               )}
             </div>
           );

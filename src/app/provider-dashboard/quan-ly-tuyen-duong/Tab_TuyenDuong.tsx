@@ -53,7 +53,7 @@ export default function Tab_TuyenDuong() {
 
       <SelectStopPoint />
 
-      <div className="grid grid-cols-1 xl:grid-cols-2  gap-2">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
         {routes.map((route, index) => (
           <div key={index}>
             <RouteItem route={route} />

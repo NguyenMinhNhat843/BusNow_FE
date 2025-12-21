@@ -1,4 +1,5 @@
 import axiosInstance from "@/api/axiosInstance";
+import { Button } from "@mantine/core";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
@@ -104,9 +105,9 @@ export default function FilterBar({ setRefund }: FilterBarProps) {
           />
         </div>
 
-        <button type="button" onClick={handleSubmit}>
+        <Button onClick={handleSubmit} className="col-start-2 col-span-2">
           Lọc
-        </button>
+        </Button>
       </div>
     </div>
   );

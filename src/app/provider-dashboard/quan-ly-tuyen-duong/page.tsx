@@ -1,6 +1,7 @@
 "use client";
 import { Tabs, TabsList } from "@mantine/core";
 import Tab_TuyenDuong from "./Tab_TuyenDuong";
+import Tab_TinhThanh from "./Tab_TinhThanh";
 
 export default function ManagerRoute() {
   const TabsConfig = [
@@ -10,7 +11,7 @@ export default function ManagerRoute() {
     },
     {
       label: "Tỉnh thành",
-      content: <span>abc</span>,
+      content: <Tab_TinhThanh />,
     },
   ];
 

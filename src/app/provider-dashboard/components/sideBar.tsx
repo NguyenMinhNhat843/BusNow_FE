@@ -1,13 +1,8 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const sideBarItems = [
-  {
-    value: "thong_ke",
-    name: "Thống kê",
-    link: "/provider-dashboard/thong-ke",
-  },
   {
     value: "quan_ly_xe",
     name: "Quản lý xe",
@@ -26,12 +21,11 @@ const sideBarItems = [
 ];
 
 export default function SideBar() {
-  // common
   const pathname = usePathname();
   return (
     <div className="flex flex-col justify-around">
       {sideBarItems.map((item) => {
-        const isActive = pathname.startsWith(item.link); // hoặc dùng === nếu cần khớp tuyệt đối
+        const isActive = pathname.startsWith(item.link);
 
         return (
           <div key={item.value}>

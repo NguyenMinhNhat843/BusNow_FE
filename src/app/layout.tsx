@@ -1,12 +1,13 @@
 "use client";
 
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import HeaderWrapper from "@/component/layout/HeadreWrapper";
 import { Toaster } from "sonner";
 import ReduxProvider from "@/redux/provider";
 import UserInitialize from "@/component/layout/UserInitialize";
 import { ColorSchemeScript, createTheme, MantineProvider } from "@mantine/core";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "./globals.css";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 
@@ -21,6 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 const theme = createTheme({});
+const queryClient = new QueryClient();
 
 export default function RootLayout({
   children,
@@ -33,22 +35,23 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ReduxProvider>
-          <MantineProvider theme={theme}>
-            <UserInitialize />
-            {/* <PageLoading /> */}
-            <Toaster
-              position="top-right"
-              duration={3000}
-              richColors
-              closeButton
-            />
-            <div className="min-h-screen flex flex-col">
-              <HeaderWrapper />
-              <main className="flex-1">{children}</main>
-            </div>
-          </MantineProvider>
-        </ReduxProvider>
+        <QueryClientProvider client={queryClient}>
+          <ReduxProvider>
+            <MantineProvider theme={theme}>
+              <UserInitialize />
+              <Toaster
+                position="top-right"
+                duration={3000}
+                richColors
+                closeButton
+              />
+              <div className="min-h-screen flex flex-col">
+                <HeaderWrapper />
+                <main className="flex-1">{children}</main>
+              </div>
+            </MantineProvider>
+          </ReduxProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );
