@@ -3,6 +3,7 @@
 import { useLocations } from "@/hooks/useLocations";
 import { Card, ScrollArea, Stack, Text } from "@mantine/core";
 import CreateLocationForm from "./FormTinhThanh";
+import { IconDelete } from "@/type/icon";
 
 const Tab_TinhThanh = () => {
   const { locations } = useLocations();
@@ -25,10 +26,22 @@ const Tab_TinhThanh = () => {
             p="md"
             shadow="sm"
           >
-            {/* Location name */}
-            <Text fw={600} size="lg" c="blue.7">
-              {location.name}
-            </Text>
+            <div className="flex justify-between mb-2">
+              <Text fw={600} size="lg" c="blue.7">
+                {location.name}
+              </Text>
+
+              <div
+                className="bg-red-100 p-2 rounded-full inline-flex cursor-pointer"
+                // onClick={() => handleDelete(route.routeId)}
+              >
+                <IconDelete
+                  size={20}
+                  color="red"
+                  className="hover:scale-120 transition-all"
+                />
+              </div>
+            </div>
 
             {location?.stopPoints?.length > 0 ? (
               <ScrollArea h={300}>

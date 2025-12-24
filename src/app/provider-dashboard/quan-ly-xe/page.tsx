@@ -3,19 +3,26 @@
 import { useState } from "react";
 import VehicleItem from "../components/VehicleItem";
 import DetailVehicle from "./components/DetailVehicle";
-import { TabCurrentEnum } from "./enum/TabCurrentEnum";
 import { Input, LoadingOverlay, Select, Text } from "@mantine/core";
 import { useRoute } from "@/hooks/useRoute";
 import { useVehicle } from "@/hooks/useVehicle";
 import { TimeInput } from "@mantine/dates";
 import ModalClean from "./components/ModalClean";
 import { useTrip } from "@/hooks/useTrip";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ManagerBus() {
+  const router = useRouter();
+  const searchParmas = useSearchParams();
+  const vehicleIdFromParams = searchParmas.get("vehicleId");
+
   // common
   const { routes } = useRoute();
-  const { vehicles, addVehicle, loading } = useVehicle();
-  const { handleDeleteTripsBeforeNow } = useTrip();
+  const { addVehicle, loading, useGetVehicles } = useVehicle();
+  const { data: vehicles } = useGetVehicles();
+  const { useDeleteTripsBeforeNow } = useTrip();
+  const { mutate: cleanTrip } = useDeleteTripsBeforeNow();
+
   // state
   const [formData, setFormData] = useState({
     totalSeat: "",
@@ -24,15 +31,9 @@ export default function ManagerBus() {
     routeId: "",
     departHour: "",
   });
-  const [tabCurrent, setTabCurrent] = useState<TabCurrentEnum>(
-    TabCurrentEnum.VEHICLE
-  );
-  const [vehicleSelectedId, setVehicleSelectedId] = useState<string>("");
 
-  // handle onClick a vehicleItem - navigate to detail vehicle tab
   const handleOnClickVehicleItem = (vehicleId: string) => {
-    setTabCurrent(TabCurrentEnum.DETAIL_VEHICLE);
-    setVehicleSelectedId(vehicleId);
+    router.push(`?vehicleId=${vehicleId}`);
   };
 
   const handleChange = (name: string, value: string) => {
@@ -58,7 +59,7 @@ export default function ManagerBus() {
 
   return (
     <div>
-      {tabCurrent === TabCurrentEnum.VEHICLE ? (
+      {!vehicleIdFromParams ? (
         <div className="">
           <div className="bg-white p-6 mb-8">
             <Text size="lg" fw={700}>
@@ -90,7 +91,7 @@ export default function ManagerBus() {
                 value={formData.busType}
                 data={[
                   {
-                    label: "Vip",
+                    label: "VIP",
                     value: "VIP",
                   },
                   {
@@ -118,7 +119,7 @@ export default function ManagerBus() {
               <Input.Wrapper label="Tuyến đường">
                 <Select
                   value={formData.routeId}
-                  data={routes.map((route: any) => ({
+                  data={routes?.data?.map((route: any) => ({
                     label: `${route.origin.name} - ${route.destination.name}`,
                     value: route.routeId,
                   }))}
@@ -147,14 +148,14 @@ export default function ManagerBus() {
 
             <div className="flex gap-4 items-center justify-between pb-4">
               <Text size="lg" fw={700}>
-                Danh sách xe ({vehicles.length})
+                Danh sách xe ({vehicles?.data?.length})
               </Text>
 
-              <ModalClean onSubmit={handleDeleteTripsBeforeNow} />
+              <ModalClean onSubmit={cleanTrip} />
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-              {vehicles.map((vehicle) => (
+              {vehicles?.data?.map((vehicle: any) => (
                 <div
                   key={vehicle.vehicleId}
                   className="mb-4 cursor-pointer transition-transform duration-200 hover:-translate-y-1"
@@ -167,10 +168,7 @@ export default function ManagerBus() {
           </div>
         </div>
       ) : (
-        <DetailVehicle
-          vehicleId={vehicleSelectedId}
-          setTabCurrent={setTabCurrent}
-        />
+        <DetailVehicle vehicleId={vehicleIdFromParams} />
       )}
     </div>
   );

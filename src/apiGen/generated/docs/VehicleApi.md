@@ -6,7 +6,8 @@ All URIs are relative to *http://localhost*
 |------------- | ------------- | -------------|
 |[**vehicleControllerCreateVehicle**](#vehiclecontrollercreatevehicle) | **POST** /vehicle/create | |
 |[**vehicleControllerDeleteVehicle**](#vehiclecontrollerdeletevehicle) | **DELETE** /vehicle/{id} | |
-|[**vehicleControllerGetVehicles**](#vehiclecontrollergetvehicles) | **GET** /vehicle/list | |
+|[**vehicleControllerGetVehicleById**](#vehiclecontrollergetvehiclebyid) | **GET** /vehicle/{id} | |
+|[**vehicleControllerGetVehicles**](#vehiclecontrollergetvehicles) | **GET** /vehicle | |
 
 # **vehicleControllerCreateVehicle**
 > vehicleControllerCreateVehicle(body)
@@ -106,6 +107,56 @@ No authorization required
 |-------------|-------------|------------------|
 |**200** | Xe đã bị xóa thành công |  -  |
 |**404** | Xe không tồn tại |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **vehicleControllerGetVehicleById**
+> object vehicleControllerGetVehicleById()
+
+
+### Example
+
+```typescript
+import {
+    VehicleApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new VehicleApi(configuration);
+
+let id: string; //vehicleId (default to undefined)
+
+const { status, data } = await apiInstance.vehicleControllerGetVehicleById(
+    id
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**string**] | vehicleId | defaults to undefined|
+
+
+### Return type
+
+**object**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**0** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

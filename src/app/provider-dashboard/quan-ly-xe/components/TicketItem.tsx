@@ -1,3 +1,4 @@
+import { Badge, Card, Grid, Group, Text } from "@mantine/core";
 import React from "react";
 
 interface TicketItemProps {
@@ -22,80 +23,87 @@ const TicketItem = ({ ticket }: { ticket: TicketItemProps }) => {
     ticketId,
     status,
     createdAt,
-    userId,
     firstName,
     lastName,
     email,
     phoneNumber,
-    seatId,
     seatCode,
-    paymentId,
     amount,
     paymentTime,
     paymentStatus,
   } = ticket;
+
+  const fields = [
+    {
+      label: "Trạng thái",
+      value: status,
+      color: status === "PAID" ? "green" : "red",
+      isBadge: true,
+    },
+    {
+      label: "Ngày đặt",
+      value: new Date(createdAt).toLocaleString(),
+    },
+    {
+      label: "Tên khách",
+      value: `${firstName} ${lastName}`,
+    },
+    {
+      label: "Email",
+      value: email,
+    },
+    {
+      label: "SĐT",
+      value: phoneNumber ?? "Chưa có",
+    },
+    {
+      label: "Mã ghế",
+      value: seatCode,
+    },
+    {
+      label: "Thanh toán",
+      value: `${amount.toLocaleString()} đ`,
+    },
+    {
+      label: "Tình trạng thanh toán",
+      value: paymentStatus,
+      color: paymentStatus === "PAID" ? "green" : "orange",
+      isBadge: true,
+    },
+    {
+      label: "Thời gian thanh toán",
+      value: paymentTime ? new Date(paymentTime).toLocaleString() : "—",
+    },
+  ];
   return (
-    <div className="border rounded-lg p-4 shadow-sm bg-white mb-4">
-      <div className="text-sm text-gray-800 mb-2">
-        <span className="text-gray-500">Mã vé:</span> {ticketId}
-      </div>
+    <Card withBorder radius="md" padding="md">
+      {/* Header */}
+      <Group justify="space-between" mb="sm">
+        <Text fw={600}>Mã vé: {ticketId}</Text>
+        <Badge variant="light" color="blue">
+          Vé
+        </Badge>
+      </Group>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 text-sm text-gray-700">
-        <div>
-          <span className="text-gray-500">Trạng thái:</span>{" "}
-          <span
-            className={`font-semibold ${
-              status === "PAID" ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            {status}
-          </span>
-        </div>
+      {/* Body */}
+      <Grid gutter="xs">
+        {fields.map((f) => (
+          <Grid.Col key={f.label} span={{ base: 12, sm: 6 }}>
+            <Text size="xs" c="dimmed">
+              {f.label}
+            </Text>
 
-        <div>
-          <span className="text-gray-500">Ngày đặt:</span>{" "}
-          {new Date(createdAt).toLocaleString()}
-        </div>
-
-        <div>
-          <span className="text-gray-500">Tên khách:</span> {firstName}{" "}
-          {lastName}
-        </div>
-
-        <div>
-          <span className="text-gray-500">Email:</span> {email}
-        </div>
-
-        <div>
-          <span className="text-gray-500">SĐT:</span> {phoneNumber ?? "Chưa có"}
-        </div>
-
-        <div>
-          <span className="text-gray-500">Mã ghế:</span> {seatCode}
-        </div>
-
-        <div>
-          <span className="text-gray-500">Thanh toán:</span>{" "}
-          {amount.toLocaleString()}đ
-        </div>
-
-        <div>
-          <span className="text-gray-500">Tình trạng thanh toán:</span>{" "}
-          <span
-            className={`font-semibold ${
-              paymentStatus === "PAID" ? "text-green-600" : "text-orange-500"
-            }`}
-          >
-            {paymentStatus}
-          </span>
-        </div>
-
-        <div>
-          <span className="text-gray-500">Thời gian thanh toán:</span>{" "}
-          {new Date(paymentTime).toLocaleString()}
-        </div>
-      </div>
-    </div>
+            {f.isBadge ? (
+              <Badge color={f.color} variant="light">
+                {f.value}
+              </Badge>
+            ) : (
+              <Text fw={500}>{f.value}</Text>
+            )}
+          </Grid.Col>
+        ))}
+      </Grid>
+    </Card>
   );
 };
 

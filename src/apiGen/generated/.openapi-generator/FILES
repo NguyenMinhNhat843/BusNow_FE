@@ -9,6 +9,8 @@ docs/CreateLocationDto.md
 docs/CreateRouteDTO.md
 docs/CreateStopPointDto.md
 docs/DeleteLocationDto.md
+docs/DeleteTripBeforeDate.md
+docs/GenTripDTO.md
 docs/LocationApi.md
 docs/RefundRequestApi.md
 docs/RouteApi.md

@@ -112,7 +112,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **tripControllerDeleteTripsBeforeDate**
-> tripControllerDeleteTripsBeforeDate(body)
+> tripControllerDeleteTripsBeforeDate(deleteTripBeforeDate)
 
 
 ### Example
@@ -120,16 +120,17 @@ No authorization required
 ```typescript
 import {
     TripApi,
-    Configuration
+    Configuration,
+    DeleteTripBeforeDate
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new TripApi(configuration);
 
-let body: object; //
+let deleteTripBeforeDate: DeleteTripBeforeDate; //
 
 const { status, data } = await apiInstance.tripControllerDeleteTripsBeforeDate(
-    body
+    deleteTripBeforeDate
 );
 ```
 
@@ -137,7 +138,7 @@ const { status, data } = await apiInstance.tripControllerDeleteTripsBeforeDate(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **body** | **object**|  | |
+| **deleteTripBeforeDate** | **DeleteTripBeforeDate**|  | |
 
 
 ### Return type
@@ -162,7 +163,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **tripControllerGenTrips**
-> tripControllerGenTrips(body)
+> tripControllerGenTrips(genTripDTO)
 
 
 ### Example
@@ -170,16 +171,17 @@ No authorization required
 ```typescript
 import {
     TripApi,
-    Configuration
+    Configuration,
+    GenTripDTO
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new TripApi(configuration);
 
-let body: object; //
+let genTripDTO: GenTripDTO; //
 
 const { status, data } = await apiInstance.tripControllerGenTrips(
-    body
+    genTripDTO
 );
 ```
 
@@ -187,7 +189,7 @@ const { status, data } = await apiInstance.tripControllerGenTrips(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **body** | **object**|  | |
+| **genTripDTO** | **GenTripDTO**|  | |
 
 
 ### Return type
@@ -226,10 +228,14 @@ import {
 const configuration = new Configuration();
 const apiInstance = new TripApi(configuration);
 
-let vehicleId: string; // (default to undefined)
+let vehicleId: string; //vehicleId (optional) (default to undefined)
+let page: number; // (optional) (default to 1)
+let limit: number; // (optional) (default to 10)
 
 const { status, data } = await apiInstance.tripControllerGetTripsByVehicle(
-    vehicleId
+    vehicleId,
+    page,
+    limit
 );
 ```
 
@@ -237,7 +243,9 @@ const { status, data } = await apiInstance.tripControllerGetTripsByVehicle(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **vehicleId** | [**string**] |  | defaults to undefined|
+| **vehicleId** | [**string**] | vehicleId | (optional) defaults to undefined|
+| **page** | [**number**] |  | (optional) defaults to 1|
+| **limit** | [**number**] |  | (optional) defaults to 10|
 
 
 ### Return type
