@@ -3,7 +3,6 @@ import { useOrderContext } from "../orderContext";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { tripApi } from "@/api/tripApi";
 import { ticketApi } from "@/api/ticketApi";
 import { useRouter } from "next/navigation";
 

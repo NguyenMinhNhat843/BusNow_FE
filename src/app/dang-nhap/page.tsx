@@ -44,7 +44,6 @@ export default function LoginPage() {
         }
       }
     } catch (error: any) {
-      console.log(error);
       toast.error(
         error.response?.data?.message || "Đăng nhập thất bại. Vui lòng thử lại."
       );

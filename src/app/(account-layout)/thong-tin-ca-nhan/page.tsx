@@ -31,7 +31,6 @@ export default function PersonalInfoPage() {
   });
 
   useEffect(() => {
-    console.log(userRedux);
     if (userRedux) {
       setAvatarPreview(userRedux.avatar || "/avatar_default.png");
       setUserInfo({
@@ -45,9 +44,7 @@ export default function PersonalInfoPage() {
     }
   }, [userRedux]);
 
-  useEffect(() => {
-    console.log(avatarPreview);
-  }, [avatarPreview]);
+  useEffect(() => {}, [avatarPreview]);
 
   // ref
   const selectAvatarRef = useRef(null as HTMLInputElement | null);

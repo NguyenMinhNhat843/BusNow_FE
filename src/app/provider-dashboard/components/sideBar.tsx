@@ -18,6 +18,11 @@ const sideBarItems = [
     name: "Quản lý vé hủy",
     link: "/provider-dashboard/quan-ly-ve-huy",
   },
+  {
+    value: "quan-ly-ve",
+    name: "Quản lý vé",
+    link: "/provider-dashboard/quan-ly-ve",
+  },
 ];
 
 export default function SideBar() {

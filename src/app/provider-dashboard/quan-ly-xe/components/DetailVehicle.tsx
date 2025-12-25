@@ -55,6 +55,8 @@ export default function DetailVehicle({ vehicleId }: DetailVehicleProps) {
   const { data: tripsResponse } = useFetchTrip(vehicleId, currentPage, 6);
   const trips = tripsResponse?.data;
   const totalPage = tripsResponse?.pagination?.totalPage;
+  const routeFrom = vehicle?.route?.origin?.name;
+  const routeTo = vehicle?.route?.destination?.name;
 
   const onClickTrip = async (tripId: string) => {
     try {
@@ -132,6 +134,10 @@ export default function DetailVehicle({ vehicleId }: DetailVehicleProps) {
           <div className="space-y-4 min-w-[500px] max-w-[600px]">
             {trips.map((trip: any) => {
               const isSelected = selectedTripId === trip.tripId;
+              const routeNameDispaly =
+                trip.type === "go"
+                  ? `${routeFrom} -> ${routeTo}`
+                  : `${routeTo} -> ${routeFrom}`;
 
               return (
                 <Card
@@ -147,8 +153,7 @@ export default function DetailVehicle({ vehicleId }: DetailVehicleProps) {
                   {/* Header */}
                   <Group justify="space-between" mb="xs">
                     <Text fw={700} c="blue">
-                      Chuyến {trip.type === "go" ? "đi" : "về"} –{" "}
-                      {trip.vehicle.code}
+                      {routeNameDispaly}
                     </Text>
 
                     <Badge

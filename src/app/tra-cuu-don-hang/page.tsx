@@ -1,6 +1,5 @@
 "use client";
 
-import { BusTypeEnum } from "@/api/Enum/BusTypeEnum";
 import { ticketApi } from "@/api/ticketApi";
 import { useEffect, useState } from "react";
 import TicketItem from "./components/TicketItem";
@@ -10,6 +9,7 @@ import { RootState } from "@/redux/store";
 import { toast } from "sonner";
 
 export default function OrderLookup() {
+  console.log("abc");
   // Kiểm tra có đang đăng nhập không?
   const user = useSelector((state: RootState) => state.auth.user);
 

@@ -33,7 +33,6 @@ export default function QuanLyDonHang() {
   const fetchTickets = async (dât: requestFilterTicketApi = filterData) => {
     setIsLoading(true);
     try {
-      console.log("sdsadasdasd");
       const response: ResponseFilterTicketApi = await ticketApi.filterTickets(
         filterData
       );
@@ -87,7 +86,6 @@ export default function QuanLyDonHang() {
 
   const handleOnChangeRangeTime = (e: any) => {
     const { name, value } = e.target;
-    console.log("name: ", name, "          value:", value);
     const newFilterData = {
       ...filterData,
       time: {
