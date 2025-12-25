@@ -1,18 +1,9 @@
 "use client";
 
+import TicketItem from "@/component/TicketItem";
 import { useTicket } from "@/hooks/useTicket";
 import { RootState } from "@/redux/store";
-import {
-  Badge,
-  Button,
-  Card,
-  Center,
-  Divider,
-  Group,
-  Paper,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Button, Center, Paper, Stack, Text } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { FunctionComponent } from "react";
 import { useSelector } from "react-redux";
@@ -23,8 +14,7 @@ const MyOrder: FunctionComponent<MyOrderProps> = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
   const { useFetchMyTicket } = useTicket();
-  const { data: ticketsResponse } = useFetchMyTicket();
-  const tickets = ticketsResponse?.data;
+  const { data: tickets } = useFetchMyTicket();
   if (!user) {
     return (
       <Center h="100%">
@@ -52,59 +42,25 @@ const MyOrder: FunctionComponent<MyOrderProps> = () => {
     );
   }
 
+  console.log(tickets);
   return (
     <div>
-      {tickets?.tickets.map((ticket: any) => {
-        const isPaid = ticket.status !== "UNPAID";
-
+      <Text size="xl" fw={500} className="!mb-4">
+        Đơn hàng của tôi
+      </Text>
+      {tickets?.map((ticket: any) => {
         return (
-          <Card
+          <div
             key={ticket.ticketId}
-            shadow="sm"
-            radius="lg"
-            p="md"
-            mb="md"
-            withBorder
-            className="w-96 m-4  transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-md cursor-pointer"
+            className="mb-2 cursor-pointer"
+            onClick={() =>
+              router.push(
+                `/chi-tiet-don-hang?ticketId=${ticket.ticketId}&phone=${user.phoneNumber}`
+              )
+            }
           >
-            <Stack gap="xs">
-              {/* Header: ngày + trạng thái */}
-              <Group justify="space-between">
-                <Text size="sm" c="dimmed">
-                  {ticket.departDate}
-                </Text>
-
-                <Badge color={isPaid ? "green" : "yellow"} variant="light">
-                  {isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
-                </Badge>
-              </Group>
-
-              <Divider />
-
-              {/* Tuyến đi */}
-              <Text fw={600} size="lg">
-                {ticket.origin} → {ticket.destination}
-              </Text>
-
-              {/* Thông tin xe */}
-              <Group justify="space-between">
-                <Text size="sm">
-                  Nhà xe:{" "}
-                  <Text span fw={500}>
-                    {ticket.providerName}
-                  </Text>
-                </Text>
-
-                <Text size="sm">
-                  Biển số xe:{" "}
-                  <Text fw={500} span>
-                    {ticket.vehicleCode}
-                  </Text>
-                </Text>
-                <Button>Hủy vé</Button>
-              </Group>
-            </Stack>
-          </Card>
+            <TicketItem ticket={ticket} />
+          </div>
         );
       })}
     </div>

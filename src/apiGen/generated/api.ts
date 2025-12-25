@@ -52,10 +52,19 @@ export interface GenTripDTO {
     'endTime': string;
     'price': number;
 }
+export interface SearchTicketDTO {
+    'ticketId'?: string;
+    'page'?: number;
+    'limit'?: number;
+}
 export interface UpdateStopPointDto {
     'stopPointId'?: string;
     'name': string;
     'address': string;
+}
+export interface UpdateTicketDTO {
+    'ticketId': string;
+    'status': string;
 }
 
 /**
@@ -2132,39 +2141,6 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
-         * @param {string} ticketId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        ticketControllerFindTicketById: async (ticketId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'ticketId' is not null or undefined
-            assertParamExists('ticketControllerFindTicketById', 'ticketId', ticketId)
-            const localVarPath = `/ticket/ticket-by-id/{ticketId}`
-                .replace(`{${"ticketId"}}`, encodeURIComponent(String(ticketId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @param {string} phone 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2258,6 +2234,76 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @param {SearchTicketDTO} searchTicketDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        ticketControllerSearchTicket: async (searchTicketDTO: SearchTicketDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'searchTicketDTO' is not null or undefined
+            assertParamExists('ticketControllerSearchTicket', 'searchTicketDTO', searchTicketDTO)
+            const localVarPath = `/ticket/search`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(searchTicketDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {UpdateTicketDTO} updateTicketDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        ticketControllerUpdateTicket: async (updateTicketDTO: UpdateTicketDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'updateTicketDTO' is not null or undefined
+            assertParamExists('ticketControllerUpdateTicket', 'updateTicketDTO', updateTicketDTO)
+            const localVarPath = `/ticket`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updateTicketDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -2315,18 +2361,6 @@ export const TicketApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {string} ticketId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async ticketControllerFindTicketById(ticketId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerFindTicketById(ticketId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['TicketApi.ticketControllerFindTicketById']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
          * @param {string} phone 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2358,6 +2392,30 @@ export const TicketApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerGetTicketsByTrip(tripId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['TicketApi.ticketControllerGetTicketsByTrip']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {SearchTicketDTO} searchTicketDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async ticketControllerSearchTicket(searchTicketDTO: SearchTicketDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerSearchTicket(searchTicketDTO, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['TicketApi.ticketControllerSearchTicket']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {UpdateTicketDTO} updateTicketDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async ticketControllerUpdateTicket(updateTicketDTO: UpdateTicketDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerUpdateTicket(updateTicketDTO, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['TicketApi.ticketControllerUpdateTicket']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -2405,15 +2463,6 @@ export const TicketApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
-         * @param {string} ticketId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        ticketControllerFindTicketById(ticketId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.ticketControllerFindTicketById(ticketId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @param {string} phone 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2437,6 +2486,24 @@ export const TicketApiFactory = function (configuration?: Configuration, basePat
          */
         ticketControllerGetTicketsByTrip(tripId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.ticketControllerGetTicketsByTrip(tripId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {SearchTicketDTO} searchTicketDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        ticketControllerSearchTicket(searchTicketDTO: SearchTicketDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.ticketControllerSearchTicket(searchTicketDTO, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {UpdateTicketDTO} updateTicketDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        ticketControllerUpdateTicket(updateTicketDTO: UpdateTicketDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.ticketControllerUpdateTicket(updateTicketDTO, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -2485,16 +2552,6 @@ export class TicketApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} ticketId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public ticketControllerFindTicketById(ticketId: string, options?: RawAxiosRequestConfig) {
-        return TicketApiFp(this.configuration).ticketControllerFindTicketById(ticketId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @param {string} phone 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -2520,6 +2577,26 @@ export class TicketApi extends BaseAPI {
      */
     public ticketControllerGetTicketsByTrip(tripId: string, options?: RawAxiosRequestConfig) {
         return TicketApiFp(this.configuration).ticketControllerGetTicketsByTrip(tripId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {SearchTicketDTO} searchTicketDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public ticketControllerSearchTicket(searchTicketDTO: SearchTicketDTO, options?: RawAxiosRequestConfig) {
+        return TicketApiFp(this.configuration).ticketControllerSearchTicket(searchTicketDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {UpdateTicketDTO} updateTicketDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public ticketControllerUpdateTicket(updateTicketDTO: UpdateTicketDTO, options?: RawAxiosRequestConfig) {
+        return TicketApiFp(this.configuration).ticketControllerUpdateTicket(updateTicketDTO, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -3120,6 +3197,60 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
         },
         /**
          * 
+         * @param {string} [userId] 
+         * @param {string} [email] 
+         * @param {string} [phone] 
+         * @param {number} [page] 
+         * @param {number} [limit] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        userControllerSearchUser: async (userId?: string, email?: string, phone?: string, page?: number, limit?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/user`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (userId !== undefined) {
+                localVarQueryParameter['userId'] = userId;
+            }
+
+            if (email !== undefined) {
+                localVarQueryParameter['email'] = email;
+            }
+
+            if (phone !== undefined) {
+                localVarQueryParameter['phone'] = phone;
+            }
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {object} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3220,6 +3351,22 @@ export const UserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {string} [userId] 
+         * @param {string} [email] 
+         * @param {string} [phone] 
+         * @param {number} [page] 
+         * @param {number} [limit] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async userControllerSearchUser(userId?: string, email?: string, phone?: string, page?: number, limit?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerSearchUser(userId, email, phone, page, limit, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerSearchUser']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {object} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3282,6 +3429,19 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
         },
         /**
          * 
+         * @param {string} [userId] 
+         * @param {string} [email] 
+         * @param {string} [phone] 
+         * @param {number} [page] 
+         * @param {number} [limit] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        userControllerSearchUser(userId?: string, email?: string, phone?: string, page?: number, limit?: number, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.userControllerSearchUser(userId, email, phone, page, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {object} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3340,6 +3500,20 @@ export class UserApi extends BaseAPI {
      */
     public userControllerGetUserLimit(options?: RawAxiosRequestConfig) {
         return UserApiFp(this.configuration).userControllerGetUserLimit(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [userId] 
+     * @param {string} [email] 
+     * @param {string} [phone] 
+     * @param {number} [page] 
+     * @param {number} [limit] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public userControllerSearchUser(userId?: string, email?: string, phone?: string, page?: number, limit?: number, options?: RawAxiosRequestConfig) {
+        return UserApiFp(this.configuration).userControllerSearchUser(userId, email, phone, page, limit, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

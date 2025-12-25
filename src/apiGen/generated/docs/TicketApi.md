@@ -8,10 +8,11 @@ All URIs are relative to *http://localhost*
 |[**ticketControllerConfirmCancleTicket**](#ticketcontrollerconfirmcancleticket) | **POST** /ticket/confirm-cancle | |
 |[**ticketControllerCreateTicket**](#ticketcontrollercreateticket) | **POST** /ticket | |
 |[**ticketControllerFilterTicket**](#ticketcontrollerfilterticket) | **POST** /ticket/filter-ticket | |
-|[**ticketControllerFindTicketById**](#ticketcontrollerfindticketbyid) | **GET** /ticket/ticket-by-id/{ticketId} | |
 |[**ticketControllerFindTicketByPhone**](#ticketcontrollerfindticketbyphone) | **GET** /ticket/by-phone/{phone} | |
 |[**ticketControllerGetMyTicket**](#ticketcontrollergetmyticket) | **GET** /ticket/my-ticket | |
 |[**ticketControllerGetTicketsByTrip**](#ticketcontrollergetticketsbytrip) | **GET** /ticket/by-trip/{tripId} | |
+|[**ticketControllerSearchTicket**](#ticketcontrollersearchticket) | **POST** /ticket/search | |
+|[**ticketControllerUpdateTicket**](#ticketcontrollerupdateticket) | **PUT** /ticket | |
 
 # **ticketControllerCancleTicket**
 > ticketControllerCancleTicket()
@@ -199,56 +200,6 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **ticketControllerFindTicketById**
-> ticketControllerFindTicketById()
-
-
-### Example
-
-```typescript
-import {
-    TicketApi,
-    Configuration
-} from './api';
-
-const configuration = new Configuration();
-const apiInstance = new TicketApi(configuration);
-
-let ticketId: string; // (default to undefined)
-
-const { status, data } = await apiInstance.ticketControllerFindTicketById(
-    ticketId
-);
-```
-
-### Parameters
-
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **ticketId** | [**string**] |  | defaults to undefined|
-
-
-### Return type
-
-void (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: Not defined
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** |  |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **ticketControllerFindTicketByPhone**
 > ticketControllerFindTicketByPhone()
 
@@ -382,6 +333,108 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **ticketControllerSearchTicket**
+> ticketControllerSearchTicket(searchTicketDTO)
+
+
+### Example
+
+```typescript
+import {
+    TicketApi,
+    Configuration,
+    SearchTicketDTO
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new TicketApi(configuration);
+
+let searchTicketDTO: SearchTicketDTO; //
+
+const { status, data } = await apiInstance.ticketControllerSearchTicket(
+    searchTicketDTO
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **searchTicketDTO** | **SearchTicketDTO**|  | |
+
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: Not defined
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**201** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **ticketControllerUpdateTicket**
+> ticketControllerUpdateTicket(updateTicketDTO)
+
+
+### Example
+
+```typescript
+import {
+    TicketApi,
+    Configuration,
+    UpdateTicketDTO
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new TicketApi(configuration);
+
+let updateTicketDTO: UpdateTicketDTO; //
+
+const { status, data } = await apiInstance.ticketControllerUpdateTicket(
+    updateTicketDTO
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **updateTicketDTO** | **UpdateTicketDTO**|  | |
+
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
  - **Accept**: Not defined
 
 

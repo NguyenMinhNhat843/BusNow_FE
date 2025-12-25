@@ -1,5 +1,6 @@
+import { SearchTicketDTO } from "@/apiGen/generated";
 import { ticketApi } from "@/apiGen/ticketApi";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useTicket = () => {
   const useFetchMyTicket = () => {
@@ -13,7 +14,33 @@ export const useTicket = () => {
     });
   };
 
+  const useSearchTicket = (payload: SearchTicketDTO) => {
+    return useQuery<any>({
+      queryKey: ["tickets", payload],
+      queryFn: async () => {
+        const response = await ticketApi.ticketControllerSearchTicket(payload);
+        return response.data;
+      },
+      enabled: Boolean(payload),
+      refetchOnWindowFocus: false,
+      staleTime: 15 * 60 * 1000,
+    });
+  };
+
+  const useFetchTicketByPhone = () => {
+    return useMutation({
+      mutationFn: async ({ phone }: { phone: string }) => {
+        const response = await ticketApi.ticketControllerFindTicketByPhone(
+          phone
+        );
+        return response.data;
+      },
+    });
+  };
+
   return {
     useFetchMyTicket,
+    useFetchTicketByPhone,
+    useSearchTicket,
   };
 };
