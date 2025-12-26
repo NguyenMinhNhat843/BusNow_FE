@@ -1,6 +1,5 @@
 "use client";
 
-import { tripApi } from "@/api/tripApi";
 import { useTicket } from "@/hooks/useTicket";
 import {
   Badge,
@@ -13,21 +12,49 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { useSearchParams } from "next/navigation";
-import { FunctionComponent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { FunctionComponent, useState } from "react";
+import BankingInfoModal from "./components/BankingInfoSection";
 
 interface ChiTietDonHangProps {}
 
 const ChiTietDonHang: FunctionComponent<ChiTietDonHangProps> = () => {
   const searchParams = useSearchParams();
   const ticketId = searchParams.get("ticketId");
+  const router = useRouter();
 
-  const { useSearchTicket } = useTicket();
+  const [bankingModalOpened, setBankingModalOpened] = useState(false);
+  const { useSearchTicket, useCancleTicket } = useTicket();
   const { data: ticketResponse } = useSearchTicket({
     ticketId: String(ticketId),
   });
-
   const ticket = ticketResponse?.data[0];
+  const isPaid = ticket?.status === "PAID";
+
+  const { mutate: cancleTicket } = useCancleTicket();
+
+  if (!ticketId) return;
+
+  const handleCancleTicket = async () => {
+    if (!isPaid) {
+      cancleTicket(
+        {
+          ticketId,
+        },
+        {
+          onSuccess: () => {
+            alert("Hủy vé thành công");
+            router.push("/don-hang-cua-toi");
+          },
+          onError: (err: any) => {
+            alert("Lỗi: " + err.message);
+          },
+        }
+      );
+    } else {
+      setBankingModalOpened(true);
+    }
+  };
 
   const route =
     ticket?.trip?.type === "return"
@@ -78,11 +105,17 @@ const ChiTietDonHang: FunctionComponent<ChiTietDonHangProps> = () => {
             ))}
           </SimpleGrid>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center" onClick={handleCancleTicket}>
             <Button className="!bg-red-500 !w-full mt-4">Hủy vé</Button>
           </div>
         </Card>
       </Grid.Col>
+
+      <BankingInfoModal
+        opened={bankingModalOpened}
+        onClose={() => setBankingModalOpened(false)}
+        ticketId={ticketId}
+      />
 
       {/* ===== CỘT PHẢI ===== */}
       <Grid.Col span={{ base: 12, md: 4 }}>

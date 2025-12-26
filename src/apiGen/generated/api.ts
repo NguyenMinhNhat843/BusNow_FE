@@ -23,6 +23,19 @@ import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
+export interface BankingInfoDTO {
+    'accountName': string;
+    'accountNumber': string;
+    'bankName': string;
+}
+export interface CancleTicketDTO {
+    'ticketId': string;
+    'bankingInfo'?: BankingInfoDTO;
+}
+export interface ConfirmCancleTicketDTO {
+    'cancleTicketRequest': CancleTicketDTO;
+    'otp': string;
+}
 export interface CreateLocationDto {
     'locationName': string;
     'stopPoints': Array<CreateStopPointDto>;
@@ -2013,11 +2026,14 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
     return {
         /**
          * 
+         * @param {CancleTicketDTO} cancleTicketDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        ticketControllerCancleTicket: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/ticket/send-mail-cancle-ticket`;
+        ticketControllerCancleTicket: async (cancleTicketDTO: CancleTicketDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'cancleTicketDTO' is not null or undefined
+            assertParamExists('ticketControllerCancleTicket', 'cancleTicketDTO', cancleTicketDTO)
+            const localVarPath = `/ticket/cancle-ticket`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2031,9 +2047,12 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(cancleTicketDTO, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2042,10 +2061,13 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @param {ConfirmCancleTicketDTO} confirmCancleTicketDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        ticketControllerConfirmCancleTicket: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        ticketControllerConfirmCancleTicket: async (confirmCancleTicketDTO: ConfirmCancleTicketDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'confirmCancleTicketDTO' is not null or undefined
+            assertParamExists('ticketControllerConfirmCancleTicket', 'confirmCancleTicketDTO', confirmCancleTicketDTO)
             const localVarPath = `/ticket/confirm-cancle`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2060,9 +2082,12 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
 
 
     
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(confirmCancleTicketDTO, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2315,22 +2340,24 @@ export const TicketApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {CancleTicketDTO} cancleTicketDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async ticketControllerCancleTicket(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerCancleTicket(options);
+        async ticketControllerCancleTicket(cancleTicketDTO: CancleTicketDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerCancleTicket(cancleTicketDTO, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['TicketApi.ticketControllerCancleTicket']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
+         * @param {ConfirmCancleTicketDTO} confirmCancleTicketDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async ticketControllerConfirmCancleTicket(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerConfirmCancleTicket(options);
+        async ticketControllerConfirmCancleTicket(confirmCancleTicketDTO: ConfirmCancleTicketDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerConfirmCancleTicket(confirmCancleTicketDTO, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['TicketApi.ticketControllerConfirmCancleTicket']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -2429,19 +2456,21 @@ export const TicketApiFactory = function (configuration?: Configuration, basePat
     return {
         /**
          * 
+         * @param {CancleTicketDTO} cancleTicketDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        ticketControllerCancleTicket(options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.ticketControllerCancleTicket(options).then((request) => request(axios, basePath));
+        ticketControllerCancleTicket(cancleTicketDTO: CancleTicketDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.ticketControllerCancleTicket(cancleTicketDTO, options).then((request) => request(axios, basePath));
         },
         /**
          * 
+         * @param {ConfirmCancleTicketDTO} confirmCancleTicketDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        ticketControllerConfirmCancleTicket(options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.ticketControllerConfirmCancleTicket(options).then((request) => request(axios, basePath));
+        ticketControllerConfirmCancleTicket(confirmCancleTicketDTO: ConfirmCancleTicketDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.ticketControllerConfirmCancleTicket(confirmCancleTicketDTO, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2514,20 +2543,22 @@ export const TicketApiFactory = function (configuration?: Configuration, basePat
 export class TicketApi extends BaseAPI {
     /**
      * 
+     * @param {CancleTicketDTO} cancleTicketDTO 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public ticketControllerCancleTicket(options?: RawAxiosRequestConfig) {
-        return TicketApiFp(this.configuration).ticketControllerCancleTicket(options).then((request) => request(this.axios, this.basePath));
+    public ticketControllerCancleTicket(cancleTicketDTO: CancleTicketDTO, options?: RawAxiosRequestConfig) {
+        return TicketApiFp(this.configuration).ticketControllerCancleTicket(cancleTicketDTO, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
+     * @param {ConfirmCancleTicketDTO} confirmCancleTicketDTO 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public ticketControllerConfirmCancleTicket(options?: RawAxiosRequestConfig) {
-        return TicketApiFp(this.configuration).ticketControllerConfirmCancleTicket(options).then((request) => request(this.axios, this.basePath));
+    public ticketControllerConfirmCancleTicket(confirmCancleTicketDTO: ConfirmCancleTicketDTO, options?: RawAxiosRequestConfig) {
+        return TicketApiFp(this.configuration).ticketControllerConfirmCancleTicket(confirmCancleTicketDTO, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

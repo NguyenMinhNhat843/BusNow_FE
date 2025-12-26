@@ -4,7 +4,7 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**ticketControllerCancleTicket**](#ticketcontrollercancleticket) | **PUT** /ticket/send-mail-cancle-ticket | |
+|[**ticketControllerCancleTicket**](#ticketcontrollercancleticket) | **PUT** /ticket/cancle-ticket | |
 |[**ticketControllerConfirmCancleTicket**](#ticketcontrollerconfirmcancleticket) | **POST** /ticket/confirm-cancle | |
 |[**ticketControllerCreateTicket**](#ticketcontrollercreateticket) | **POST** /ticket | |
 |[**ticketControllerFilterTicket**](#ticketcontrollerfilterticket) | **POST** /ticket/filter-ticket | |
@@ -15,7 +15,7 @@ All URIs are relative to *http://localhost*
 |[**ticketControllerUpdateTicket**](#ticketcontrollerupdateticket) | **PUT** /ticket | |
 
 # **ticketControllerCancleTicket**
-> ticketControllerCancleTicket()
+> ticketControllerCancleTicket(cancleTicketDTO)
 
 
 ### Example
@@ -23,17 +23,25 @@ All URIs are relative to *http://localhost*
 ```typescript
 import {
     TicketApi,
-    Configuration
+    Configuration,
+    CancleTicketDTO
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new TicketApi(configuration);
 
-const { status, data } = await apiInstance.ticketControllerCancleTicket();
+let cancleTicketDTO: CancleTicketDTO; //
+
+const { status, data } = await apiInstance.ticketControllerCancleTicket(
+    cancleTicketDTO
+);
 ```
 
 ### Parameters
-This endpoint does not have any parameters.
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **cancleTicketDTO** | **CancleTicketDTO**|  | |
 
 
 ### Return type
@@ -46,7 +54,7 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: Not defined
 
 
@@ -58,7 +66,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **ticketControllerConfirmCancleTicket**
-> ticketControllerConfirmCancleTicket()
+> ticketControllerConfirmCancleTicket(confirmCancleTicketDTO)
 
 
 ### Example
@@ -66,17 +74,25 @@ No authorization required
 ```typescript
 import {
     TicketApi,
-    Configuration
+    Configuration,
+    ConfirmCancleTicketDTO
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new TicketApi(configuration);
 
-const { status, data } = await apiInstance.ticketControllerConfirmCancleTicket();
+let confirmCancleTicketDTO: ConfirmCancleTicketDTO; //
+
+const { status, data } = await apiInstance.ticketControllerConfirmCancleTicket(
+    confirmCancleTicketDTO
+);
 ```
 
 ### Parameters
-This endpoint does not have any parameters.
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **confirmCancleTicketDTO** | **ConfirmCancleTicketDTO**|  | |
 
 
 ### Return type
@@ -89,7 +105,7 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: Not defined
 
 

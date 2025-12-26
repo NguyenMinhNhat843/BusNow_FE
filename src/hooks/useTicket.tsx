@@ -1,4 +1,8 @@
-import { SearchTicketDTO } from "@/apiGen/generated";
+import {
+  CancleTicketDTO,
+  ConfirmCancleTicketDTO,
+  SearchTicketDTO,
+} from "@/apiGen/generated";
 import { ticketApi } from "@/apiGen/ticketApi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -38,9 +42,31 @@ export const useTicket = () => {
     });
   };
 
+  const useCancleTicket = () => {
+    return useMutation({
+      mutationFn: async (payload: CancleTicketDTO) => {
+        const response = await ticketApi.ticketControllerCancleTicket(payload);
+        return response.data;
+      },
+    });
+  };
+
+  const useConfirmOTPCancleTicket = () => {
+    return useMutation({
+      mutationFn: async (payload: ConfirmCancleTicketDTO) => {
+        const response = await ticketApi.ticketControllerConfirmCancleTicket(
+          payload
+        );
+        return response.data;
+      },
+    });
+  };
+
   return {
     useFetchMyTicket,
     useFetchTicketByPhone,
     useSearchTicket,
+    useCancleTicket,
+    useConfirmOTPCancleTicket,
   };
 };

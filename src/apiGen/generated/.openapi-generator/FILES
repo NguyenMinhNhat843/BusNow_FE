@@ -5,6 +5,9 @@ base.ts
 common.ts
 configuration.ts
 docs/AuthApi.md
+docs/BankingInfoDTO.md
+docs/CancleTicketDTO.md
+docs/ConfirmCancleTicketDTO.md
 docs/CreateLocationDto.md
 docs/CreateRouteDTO.md
 docs/CreateStopPointDto.md
