@@ -4,12 +4,13 @@ import {
   SearchTicketDTO,
 } from "@/apiGen/generated";
 import { ticketApi } from "@/apiGen/ticketApi";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useTicket = () => {
+  const queryClient = useQueryClient();
   const useFetchMyTicket = () => {
     return useQuery<any>({
-      queryKey: ["myticket"],
+      queryKey: ["tickets", "me"],
       queryFn: async () => {
         const response = await ticketApi.ticketControllerGetMyTicket();
         return response.data;
@@ -51,6 +52,20 @@ export const useTicket = () => {
     });
   };
 
+  const useDeleteTicket = () => {
+    return useMutation({
+      mutationFn: async (ticketId: string) => {
+        const response = await ticketApi.ticketControllerDeleteTicket(ticketId);
+        return response.data;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["tickets"],
+        });
+      },
+    });
+  };
+
   const useConfirmOTPCancleTicket = () => {
     return useMutation({
       mutationFn: async (payload: ConfirmCancleTicketDTO) => {
@@ -68,5 +83,6 @@ export const useTicket = () => {
     useSearchTicket,
     useCancleTicket,
     useConfirmOTPCancleTicket,
+    useDeleteTicket,
   };
 };

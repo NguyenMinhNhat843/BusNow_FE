@@ -7,6 +7,7 @@ All URIs are relative to *http://localhost*
 |[**ticketControllerCancleTicket**](#ticketcontrollercancleticket) | **PUT** /ticket/cancle-ticket | |
 |[**ticketControllerConfirmCancleTicket**](#ticketcontrollerconfirmcancleticket) | **POST** /ticket/confirm-cancle | |
 |[**ticketControllerCreateTicket**](#ticketcontrollercreateticket) | **POST** /ticket | |
+|[**ticketControllerDeleteTicket**](#ticketcontrollerdeleteticket) | **DELETE** /ticket/{id} | |
 |[**ticketControllerFilterTicket**](#ticketcontrollerfilterticket) | **POST** /ticket/filter-ticket | |
 |[**ticketControllerFindTicketByPhone**](#ticketcontrollerfindticketbyphone) | **GET** /ticket/by-phone/{phone} | |
 |[**ticketControllerGetMyTicket**](#ticketcontrollergetmyticket) | **GET** /ticket/my-ticket | |
@@ -163,6 +164,56 @@ No authorization required
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 |**201** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **ticketControllerDeleteTicket**
+> ticketControllerDeleteTicket()
+
+
+### Example
+
+```typescript
+import {
+    TicketApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new TicketApi(configuration);
+
+let id: string; // (default to undefined)
+
+const { status, data } = await apiInstance.ticketControllerDeleteTicket(
+    id
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** |  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

@@ -1,68 +1,59 @@
 "use client";
 
-import axiosInstance from "@/api/axiosInstance";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import RefundCard from "./RefundCard";
 import FilterBar from "./FilterBar";
 import ModalDetail from "./ModalDetail1";
+import { useRefundRequest } from "@/hooks/useRefundRequest";
+import { useState } from "react";
+import { Pagination, Table, TableData } from "@mantine/core";
+import { IconEye } from "@/type/icon";
 
 export default function ListRefunds() {
-  const [refundsRequest, setRefundsRequest] = useState([]);
-  const [filters, setFilters] = useState({});
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedRefundCard, setSelectedRefundCard] = useState<any>(null);
+  const [requestSelected, setRequestSelected] = useState<any | null>(null);
+  const { useSearchRefundRequest } = useRefundRequest();
+  const { data: refundRequestsResponse } = useSearchRefundRequest({});
+  const refundRequests = refundRequestsResponse?.data;
+  const total = refundRequestsResponse?.total;
 
-  useEffect(() => {
-    const fetchRefundRequest = async () => {
-      try {
-        const response = await axiosInstance.get("/refund-request/limit", {
-          params: {
-            page: 1,
-            limit: 100,
-          },
-        });
+  const handleDetailRequest = (request: any) => {
+    setRequestSelected(request);
+  };
 
-        if (response.data.status === "success") {
-          setRefundsRequest(response.data.data);
-        }
-      } catch (error) {
-        console.log(error);
-        toast.error("Có lỗi");
-      }
-    };
-
-    fetchRefundRequest();
-  }, []);
+  const tableData: TableData = {
+    head: ["", "Họ và tên", "Trạng thái", "email", "Số điện thoại"],
+    body: refundRequests?.map((request: any) => {
+      const fullName = `${request.requestedBy.firstName} ${request.requestedBy.lastName}`;
+      return [
+        <IconEye
+          size={24}
+          key={request.id}
+          className="text-blue-600 cursor-pointer"
+          onClick={() => handleDetailRequest(request)}
+        />,
+        fullName,
+        request.status,
+        request.requestedBy.email,
+        request.requestedBy.phoneNumber,
+      ];
+    }),
+  };
 
   return (
     <div className="">
       <div>
-        <FilterBar setRefund={setRefundsRequest} />
+        <FilterBar setRefund={null} />
       </div>
-      <div className="w-full grid grid-cols-3 gap-4">
-        {refundsRequest.map((item, index) => (
-          <div key={index}>
-            <RefundCard
-              refund={item}
-              setOpenModal={setOpenModal}
-              setSelectedRefundCard={setSelectedRefundCard}
-            />
-          </div>
-        ))}
-      </div>
-      {openModal && (
+      <Table data={tableData} />
+      {requestSelected && (
         <ModalDetail
-          isOpen={openModal}
-          onClose={() => setOpenModal(false)}
-          ticketId={
-            selectedRefundCard ? selectedRefundCard.ticket.ticketId : ""
-          }
-          user={selectedRefundCard ? selectedRefundCard.requestedBy : null}
-          bank={selectedRefundCard ? selectedRefundCard : null}
-          requestId={selectedRefundCard ? selectedRefundCard.id : ""}
+          isOpen={requestSelected !== null}
+          onClose={() => setRequestSelected(null)}
+          request={requestSelected}
         />
       )}
+
+      <div className="flex justify-center mt-4">
+        <Pagination total={total} />
+      </div>
     </div>
   );
 }

@@ -65,6 +65,12 @@ export interface GenTripDTO {
     'endTime': string;
     'price': number;
 }
+export interface SearchRefundRequestDTO {
+    'page'?: number;
+    'limit'?: number;
+    'phoneNumber'?: string;
+    'status'?: string;
+}
 export interface SearchTicketDTO {
     'ticketId'?: string;
     'page'?: number;
@@ -1110,11 +1116,14 @@ export const RefundRequestApiAxiosParamCreator = function (configuration?: Confi
     return {
         /**
          * 
+         * @param {SearchRefundRequestDTO} searchRefundRequestDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        refundRequestControllerFilter: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/refund-request/filter`;
+        refundRequestControllerSearchRefundRequest: async (searchRefundRequestDTO: SearchRefundRequestDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'searchRefundRequestDTO' is not null or undefined
+            assertParamExists('refundRequestControllerSearchRefundRequest', 'searchRefundRequestDTO', searchRefundRequestDTO)
+            const localVarPath = `/refund-request/search`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1122,58 +1131,18 @@ export const RefundRequestApiAxiosParamCreator = function (configuration?: Confi
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
 
     
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {number} page 
-         * @param {number} limit 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        refundRequestControllerGetLimit: async (page: number, limit: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'page' is not null or undefined
-            assertParamExists('refundRequestControllerGetLimit', 'page', page)
-            // verify required parameter 'limit' is not null or undefined
-            assertParamExists('refundRequestControllerGetLimit', 'limit', limit)
-            const localVarPath = `/refund-request/limit`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (page !== undefined) {
-                localVarQueryParameter['page'] = page;
-            }
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(searchRefundRequestDTO, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1230,26 +1199,14 @@ export const RefundRequestApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {SearchRefundRequestDTO} searchRefundRequestDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async refundRequestControllerFilter(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.refundRequestControllerFilter(options);
+        async refundRequestControllerSearchRefundRequest(searchRefundRequestDTO: SearchRefundRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.refundRequestControllerSearchRefundRequest(searchRefundRequestDTO, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['RefundRequestApi.refundRequestControllerFilter']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {number} page 
-         * @param {number} limit 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async refundRequestControllerGetLimit(page: number, limit: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.refundRequestControllerGetLimit(page, limit, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['RefundRequestApi.refundRequestControllerGetLimit']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['RefundRequestApi.refundRequestControllerSearchRefundRequest']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -1276,21 +1233,12 @@ export const RefundRequestApiFactory = function (configuration?: Configuration, 
     return {
         /**
          * 
+         * @param {SearchRefundRequestDTO} searchRefundRequestDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        refundRequestControllerFilter(options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.refundRequestControllerFilter(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {number} page 
-         * @param {number} limit 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        refundRequestControllerGetLimit(page: number, limit: number, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.refundRequestControllerGetLimit(page, limit, options).then((request) => request(axios, basePath));
+        refundRequestControllerSearchRefundRequest(searchRefundRequestDTO: SearchRefundRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.refundRequestControllerSearchRefundRequest(searchRefundRequestDTO, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1311,22 +1259,12 @@ export const RefundRequestApiFactory = function (configuration?: Configuration, 
 export class RefundRequestApi extends BaseAPI {
     /**
      * 
+     * @param {SearchRefundRequestDTO} searchRefundRequestDTO 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public refundRequestControllerFilter(options?: RawAxiosRequestConfig) {
-        return RefundRequestApiFp(this.configuration).refundRequestControllerFilter(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {number} page 
-     * @param {number} limit 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public refundRequestControllerGetLimit(page: number, limit: number, options?: RawAxiosRequestConfig) {
-        return RefundRequestApiFp(this.configuration).refundRequestControllerGetLimit(page, limit, options).then((request) => request(this.axios, this.basePath));
+    public refundRequestControllerSearchRefundRequest(searchRefundRequestDTO: SearchRefundRequestDTO, options?: RawAxiosRequestConfig) {
+        return RefundRequestApiFp(this.configuration).refundRequestControllerSearchRefundRequest(searchRefundRequestDTO, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2131,6 +2069,39 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        ticketControllerDeleteTicket: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('ticketControllerDeleteTicket', 'id', id)
+            const localVarPath = `/ticket/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {object} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2376,6 +2347,18 @@ export const TicketApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async ticketControllerDeleteTicket(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerDeleteTicket(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['TicketApi.ticketControllerDeleteTicket']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {object} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2483,6 +2466,15 @@ export const TicketApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        ticketControllerDeleteTicket(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.ticketControllerDeleteTicket(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {object} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2569,6 +2561,16 @@ export class TicketApi extends BaseAPI {
      */
     public ticketControllerCreateTicket(body: object, options?: RawAxiosRequestConfig) {
         return TicketApiFp(this.configuration).ticketControllerCreateTicket(body, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public ticketControllerDeleteTicket(id: string, options?: RawAxiosRequestConfig) {
+        return TicketApiFp(this.configuration).ticketControllerDeleteTicket(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
