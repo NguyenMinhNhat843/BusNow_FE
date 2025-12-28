@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 export const useRefundRequest = () => {
   const useSearchRefundRequest = (payload: SearchRefundRequestDTO) => {
     return useQuery<any>({
-      queryKey: ["refundRequests"],
+      queryKey: ["refundRequests", payload],
       queryFn: async () => {
         const response =
           await refundRequestApi.refundRequestControllerSearchRefundRequest(

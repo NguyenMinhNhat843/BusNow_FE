@@ -6,11 +6,15 @@ import { useRefundRequest } from "@/hooks/useRefundRequest";
 import { useState } from "react";
 import { Pagination, Table, TableData } from "@mantine/core";
 import { IconEye } from "@/type/icon";
+import { SearchRefundRequestDTO } from "@/apiGen/generated";
 
 export default function ListRefunds() {
   const [requestSelected, setRequestSelected] = useState<any | null>(null);
   const { useSearchRefundRequest } = useRefundRequest();
-  const { data: refundRequestsResponse } = useSearchRefundRequest({});
+  const [filterObject, setFilterObject] = useState<SearchRefundRequestDTO>();
+  const { data: refundRequestsResponse } = useSearchRefundRequest({
+    ...filterObject,
+  });
   const refundRequests = refundRequestsResponse?.data;
   const total = refundRequestsResponse?.total;
 
@@ -18,6 +22,7 @@ export default function ListRefunds() {
     setRequestSelected(request);
   };
 
+  console.log(filterObject);
   const tableData: TableData = {
     head: ["", "Họ và tên", "Trạng thái", "email", "Số điện thoại"],
     body: refundRequests?.map((request: any) => {
@@ -40,7 +45,7 @@ export default function ListRefunds() {
   return (
     <div className="">
       <div>
-        <FilterBar setRefund={null} />
+        <FilterBar onSubmit={setFilterObject} />
       </div>
       <Table data={tableData} />
       {requestSelected && (

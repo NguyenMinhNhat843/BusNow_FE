@@ -69,8 +69,17 @@ export interface SearchRefundRequestDTO {
     'page'?: number;
     'limit'?: number;
     'phoneNumber'?: string;
-    'status'?: string;
+    'status'?: SearchRefundRequestDTOStatusEnum;
 }
+
+export const SearchRefundRequestDTOStatusEnum = {
+    Pending: 'PENDING',
+    Complete: 'COMPLETE',
+    Rejected: 'REJECTED'
+} as const;
+
+export type SearchRefundRequestDTOStatusEnum = typeof SearchRefundRequestDTOStatusEnum[keyof typeof SearchRefundRequestDTOStatusEnum];
+
 export interface SearchTicketDTO {
     'ticketId'?: string;
     'page'?: number;
