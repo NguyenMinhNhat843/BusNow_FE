@@ -27,17 +27,26 @@ const ModalDetail: React.FC<ModalDetailProps> = ({
     request;
   const { firstName, lastName, email, phoneNumber } = requestedBy;
   const { ticketId } = request.ticket;
-  const { useSearchTicket } = useTicket();
+  const { useSearchTicket, useDeleteTicket } = useTicket();
   const { data: ticketResponse, isLoading: isLoadingTicket } = useSearchTicket({
     ticketId,
   });
+  const { mutate: deleteTicket } = useDeleteTicket();
 
   const handleClickConfirmRefund = async () => {
+    const isConfirmed = window.confirm(`❓ Xác nhận hoàn tiền`);
+
+    if (!isConfirmed) return;
+
     try {
-      // await ticketApi.confirmRefund(requestId);
-      onClose();
-    } catch (error) {
-      console.log(error);
+      deleteTicket(ticketId, {
+        onSuccess: () => {
+          alert("✅ Hoàn tiền thành công!");
+          onClose();
+        },
+      });
+    } catch (error: any) {
+      alert(error.message);
     }
   };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import FilterBar from "./FilterBar";
-import ModalDetail from "./ModalDetail1";
+import ModalDetail from "./ModalDetail";
 import { useRefundRequest } from "@/hooks/useRefundRequest";
 import { useState } from "react";
 import { Pagination, Table, TableData } from "@mantine/core";
