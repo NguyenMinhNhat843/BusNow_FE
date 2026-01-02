@@ -1,18 +1,11 @@
 "use client";
 
-import { useSelector } from "react-redux";
 import FormOrderInfo from "./component/formOrderInfo";
 import PaymentMethod from "./component/PaymentMethod";
 import { OrderProvider, useOrderContext } from "./orderContext";
-import { RootState } from "@/redux/store";
-import { useEffect } from "react";
 
 function PaymentPageContent() {
-  const { stage, setStage } = useOrderContext();
-  const info = useSelector((state: RootState) => state.booking);
-  useEffect(() => {
-    console.log(info);
-  }, []);
+  const { stage } = useOrderContext();
 
   return (
     <div className="flex flex-col items-center pt-8">

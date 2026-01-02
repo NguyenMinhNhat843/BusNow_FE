@@ -40,6 +40,18 @@ export interface CreateLocationDto {
     'locationName': string;
     'stopPoints': Array<CreateStopPointDto>;
 }
+export interface CreatePaymentDto {
+    /**
+     * Số tiền thanh toán (VND)
+     */
+    'amount': number;
+    /**
+     * Thông tin đơn hàng
+     */
+    'orderInfo': string;
+    'bookingInfo': CreateTIcketDTO;
+    'userId'?: string;
+}
 export interface CreateRouteDTO {
     'originId': string;
     'destinationId': string;
@@ -53,6 +65,56 @@ export interface CreateStopPointDto {
     'address': string;
     'cityId'?: string;
 }
+export interface CreateTIcketDTO {
+    /**
+     * ID chuyến xe
+     */
+    'tripId': string;
+    /**
+     * Danh sách mã ghế
+     */
+    'seatCode': Array<number>;
+    /**
+     * Phương thức thanh toán
+     */
+    'methodPayment': CreateTIcketDTOMethodPaymentEnum;
+    /**
+     * Trạng thái thanh toán
+     */
+    'statusPayment'?: CreateTIcketDTOStatusPaymentEnum;
+    /**
+     * Tên khách (guest)
+     */
+    'firstName'?: string;
+    /**
+     * Họ khách (guest)
+     */
+    'lastName'?: string;
+    /**
+     * Số điện thoại khách
+     */
+    'phone'?: string;
+    /**
+     * Email khách
+     */
+    'email'?: string;
+}
+
+export const CreateTIcketDTOMethodPaymentEnum = {
+    BankTransfer: 'BANK_TRANSFER',
+    Cash: 'CASH'
+} as const;
+
+export type CreateTIcketDTOMethodPaymentEnum = typeof CreateTIcketDTOMethodPaymentEnum[keyof typeof CreateTIcketDTOMethodPaymentEnum];
+export const CreateTIcketDTOStatusPaymentEnum = {
+    Pending: 'PENDING',
+    Completed: 'COMPLETED',
+    Failed: 'FAILED',
+    Refunded: 'REFUNDED'
+} as const;
+
+export type CreateTIcketDTOStatusPaymentEnum = typeof CreateTIcketDTOStatusPaymentEnum[keyof typeof CreateTIcketDTOStatusPaymentEnum];
+
 export interface DeleteLocationDto {
     'locationId': string;
 }
@@ -2043,13 +2105,13 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
-         * @param {object} body 
+         * @param {CreateTIcketDTO} createTIcketDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        ticketControllerCreateTicket: async (body: object, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'body' is not null or undefined
-            assertParamExists('ticketControllerCreateTicket', 'body', body)
+        ticketControllerCreateTicket: async (createTIcketDTO: CreateTIcketDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createTIcketDTO' is not null or undefined
+            assertParamExists('ticketControllerCreateTicket', 'createTIcketDTO', createTIcketDTO)
             const localVarPath = `/ticket`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2069,7 +2131,7 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createTIcketDTO, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2344,12 +2406,12 @@ export const TicketApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {object} body 
+         * @param {CreateTIcketDTO} createTIcketDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async ticketControllerCreateTicket(body: object, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerCreateTicket(body, options);
+        async ticketControllerCreateTicket(createTIcketDTO: CreateTIcketDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerCreateTicket(createTIcketDTO, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['TicketApi.ticketControllerCreateTicket']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -2466,12 +2528,12 @@ export const TicketApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
-         * @param {object} body 
+         * @param {CreateTIcketDTO} createTIcketDTO 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        ticketControllerCreateTicket(body: object, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.ticketControllerCreateTicket(body, options).then((request) => request(axios, basePath));
+        ticketControllerCreateTicket(createTIcketDTO: CreateTIcketDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.ticketControllerCreateTicket(createTIcketDTO, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2564,12 +2626,12 @@ export class TicketApi extends BaseAPI {
 
     /**
      * 
-     * @param {object} body 
+     * @param {CreateTIcketDTO} createTIcketDTO 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public ticketControllerCreateTicket(body: object, options?: RawAxiosRequestConfig) {
-        return TicketApiFp(this.configuration).ticketControllerCreateTicket(body, options).then((request) => request(this.axios, this.basePath));
+    public ticketControllerCreateTicket(createTIcketDTO: CreateTIcketDTO, options?: RawAxiosRequestConfig) {
+        return TicketApiFp(this.configuration).ticketControllerCreateTicket(createTIcketDTO, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3566,6 +3628,162 @@ export class UserApi extends BaseAPI {
      */
     public userControllerUpdateProfile(body: object, options?: RawAxiosRequestConfig) {
         return UserApiFp(this.configuration).userControllerUpdateProfile(body, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * VNPAYApi - axios parameter creator
+ */
+export const VNPAYApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {CreatePaymentDto} createPaymentDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        vnpayControllerCreatePaymentUrl: async (createPaymentDto: CreatePaymentDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createPaymentDto' is not null or undefined
+            assertParamExists('vnpayControllerCreatePaymentUrl', 'createPaymentDto', createPaymentDto)
+            const localVarPath = `/vnpay/create-payment-url`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createPaymentDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        vnpayControllerVnpayCallback: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/vnpay/callback`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * VNPAYApi - functional programming interface
+ */
+export const VNPAYApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = VNPAYApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {CreatePaymentDto} createPaymentDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async vnpayControllerCreatePaymentUrl(createPaymentDto: CreatePaymentDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.vnpayControllerCreatePaymentUrl(createPaymentDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['VNPAYApi.vnpayControllerCreatePaymentUrl']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async vnpayControllerVnpayCallback(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.vnpayControllerVnpayCallback(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['VNPAYApi.vnpayControllerVnpayCallback']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * VNPAYApi - factory interface
+ */
+export const VNPAYApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = VNPAYApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {CreatePaymentDto} createPaymentDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        vnpayControllerCreatePaymentUrl(createPaymentDto: CreatePaymentDto, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.vnpayControllerCreatePaymentUrl(createPaymentDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        vnpayControllerVnpayCallback(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.vnpayControllerVnpayCallback(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * VNPAYApi - object-oriented interface
+ */
+export class VNPAYApi extends BaseAPI {
+    /**
+     * 
+     * @param {CreatePaymentDto} createPaymentDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public vnpayControllerCreatePaymentUrl(createPaymentDto: CreatePaymentDto, options?: RawAxiosRequestConfig) {
+        return VNPAYApiFp(this.configuration).vnpayControllerCreatePaymentUrl(createPaymentDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public vnpayControllerVnpayCallback(options?: RawAxiosRequestConfig) {
+        return VNPAYApiFp(this.configuration).vnpayControllerVnpayCallback(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

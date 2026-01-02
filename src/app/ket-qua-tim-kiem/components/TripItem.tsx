@@ -117,12 +117,12 @@ export default function TripItem({ trip }: { trip: TripResponse }) {
           <p className="text-sm text-gray-600">
             {format.formatDate(departTime)} → {format.formatDate(arriveTime)}
           </p>
-          <span
+          {/* <span
             className="text-blue-400 hover:underline cursor-pointer"
             onClick={() => setOpenModelDetailInfo(!openModelDetailInfo)}
           >
             Thông tin chi tiết
-          </span>
+          </span> */}
         </div>
 
         {/* Actions */}

@@ -118,7 +118,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **ticketControllerCreateTicket**
-> ticketControllerCreateTicket(body)
+> ticketControllerCreateTicket(createTIcketDTO)
 
 
 ### Example
@@ -126,16 +126,17 @@ No authorization required
 ```typescript
 import {
     TicketApi,
-    Configuration
+    Configuration,
+    CreateTIcketDTO
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new TicketApi(configuration);
 
-let body: object; //
+let createTIcketDTO: CreateTIcketDTO; //
 
 const { status, data } = await apiInstance.ticketControllerCreateTicket(
-    body
+    createTIcketDTO
 );
 ```
 
@@ -143,7 +144,7 @@ const { status, data } = await apiInstance.ticketControllerCreateTicket(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **body** | **object**|  | |
+| **createTIcketDTO** | **CreateTIcketDTO**|  | |
 
 
 ### Return type

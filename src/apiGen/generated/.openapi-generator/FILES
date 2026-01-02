@@ -9,8 +9,10 @@ docs/BankingInfoDTO.md
 docs/CancleTicketDTO.md
 docs/ConfirmCancleTicketDTO.md
 docs/CreateLocationDto.md
+docs/CreatePaymentDto.md
 docs/CreateRouteDTO.md
 docs/CreateStopPointDto.md
+docs/CreateTIcketDTO.md
 docs/DeleteLocationDto.md
 docs/DeleteTripBeforeDate.md
 docs/GenTripDTO.md
@@ -26,6 +28,7 @@ docs/TripApi.md
 docs/UpdateStopPointDto.md
 docs/UpdateTicketDTO.md
 docs/UserApi.md
+docs/VNPAYApi.md
 docs/VehicleApi.md
 git_push.sh
 index.ts

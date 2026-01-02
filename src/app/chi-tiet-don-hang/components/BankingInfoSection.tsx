@@ -4,7 +4,7 @@ import { BankingInfoDTO } from "@/apiGen/generated";
 import { useTicket } from "@/hooks/useTicket";
 import { Modal, TextInput, Button, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface BankingInfoModalProps {

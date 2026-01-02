@@ -1,6 +1,7 @@
 import {
   CancleTicketDTO,
   ConfirmCancleTicketDTO,
+  CreateTIcketDTO,
   SearchTicketDTO,
 } from "@/apiGen/generated";
 import { ticketApi } from "@/apiGen/ticketApi";
@@ -8,6 +9,18 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useTicket = () => {
   const queryClient = useQueryClient();
+  const useCreateTicket = () => {
+    return useMutation({
+      mutationFn: async (payload: CreateTIcketDTO) => {
+        const response = await ticketApi.ticketControllerCreateTicket(payload);
+        return response.data;
+      },
+      onError: (err: any) => {
+        alert("Lỗi khi đặt vé: " + err.message);
+      },
+    });
+  };
+
   const useFetchMyTicket = () => {
     return useQuery<any>({
       queryKey: ["tickets", "me"],
@@ -29,6 +42,20 @@ export const useTicket = () => {
       enabled: Boolean(payload),
       refetchOnWindowFocus: false,
       staleTime: 15 * 60 * 1000,
+    });
+  };
+
+  const useGetTicketByTrip = (tripId: string) => {
+    return useQuery<any>({
+      queryKey: ["tickets", tripId],
+      queryFn: async () => {
+        const response = await ticketApi.ticketControllerGetTicketsByTrip(
+          tripId
+        );
+        return response.data;
+      },
+      enabled: Boolean(tripId),
+      refetchOnWindowFocus: false,
     });
   };
 
@@ -84,5 +111,7 @@ export const useTicket = () => {
     useCancleTicket,
     useConfirmOTPCancleTicket,
     useDeleteTicket,
+    useGetTicketByTrip,
+    useCreateTicket,
   };
 };

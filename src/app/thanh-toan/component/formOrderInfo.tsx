@@ -1,9 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useOrderContext } from "../orderContext";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import format from "@/utils/format";
 
@@ -22,16 +21,11 @@ interface FormOrderInfoProps {
 }
 
 export default function FormOrderInfo() {
-  // common
-  const router = useRouter();
-  const dispatch = useDispatch();
-
-  // redux
   const bookingInfo = useSelector((state: RootState) => state.booking);
   const userRedux = useSelector((state: RootState) => state.auth.user);
 
   // state
-  const { stage, setStage } = useOrderContext();
+  const { setStage } = useOrderContext();
   const [formData, setFormData] = useState<FormOrderInfoProps>({
     firstName: "",
     lastName: "",

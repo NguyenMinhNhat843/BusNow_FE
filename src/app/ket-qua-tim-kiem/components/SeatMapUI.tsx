@@ -1,11 +1,10 @@
-import { ticketApi } from "@/api/ticketApi";
+import { useTicket } from "@/hooks/useTicket";
 import {
   setSeats,
   setTotalAmout,
   setTripInfo,
 } from "@/redux/slice/bookingSlice";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 
 const SeatMapModel = ({
@@ -21,27 +20,10 @@ const SeatMapModel = ({
 }) => {
   const dispatch = useDispatch();
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
-  const [seatBooked, setSeatBooked] = useState<number[]>([]);
-  const [loading, setLoading] = useState(false);
   const totalAmount = selectedSeats.length * price;
-
-  // Lấy ghế đã đặt trong trip này
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const result = await ticketApi.findTicketByTrip(tripId);
-        if (result.status === "success" && result.data.length > 0) {
-          const bookedSeats = result.data.map((i: any) => i.seatCode);
-          setSeatBooked(bookedSeats);
-        }
-      } catch (error) {
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  const { useGetTicketByTrip } = useTicket();
+  const { data: ticketsByTripResponse, isLoading: isLoadingSeatBooked } =
+    useGetTicketByTrip(tripId);
 
   const toggleSelectedSeat = (seatNumber: number) => {
     const newSeats = selectedSeats.includes(seatNumber)
@@ -58,9 +40,8 @@ const SeatMapModel = ({
     onSubmit();
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  if (isLoadingSeatBooked) return;
+  const seatBooked = ticketsByTripResponse?.data;
 
   return (
     <div className="flex flex-col md:flex-row justify-between gap-6 bg-white rounded-xl p-6 border shadow-sm">
@@ -74,7 +55,9 @@ const SeatMapModel = ({
           {Array.from({ length: totalSeat }).map((_, index) => {
             const seatNumber = index + 1;
             const isSelected = selectedSeats.includes(seatNumber);
-            const isBooked = seatBooked.includes(seatNumber);
+            const isBooked = seatBooked
+              .map((seat: any) => seat.seatCode)
+              .includes(seatNumber);
 
             return (
               <button
