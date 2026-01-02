@@ -74,7 +74,6 @@ export default function Header() {
   const headerNavigation = [
     {
       label: "Đơn hàng của tôi",
-      // route: "tra-cuu-don-hang",
       route: "don-hang-cua-toi",
       role: user?.role ? [String(RoleEnum.USER)].includes(user?.role) : true,
     },

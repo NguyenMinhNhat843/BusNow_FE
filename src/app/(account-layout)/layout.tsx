@@ -1,14 +1,12 @@
-"use client";
-
-import { IconAdd } from "@/type/icon";
-import { Box, NavLink, Stack, Title } from "@mantine/core";
-import { usePathname, useRouter } from "next/navigation";
+import { Box, Stack, Title } from "@mantine/core";
 import React, { FunctionComponent } from "react";
+import { NavigationMenu } from "./NavigationMenu";
 
 interface AccountLayoutProps {
   children: React.ReactNode;
 }
 
+// Move ra ngoài component để tránh re-create
 const navigations = [
   {
     label: "Thông tin tài khoản",
@@ -22,11 +20,10 @@ const navigations = [
     label: "Đổi mật khẩu",
     path: "/doi-mat-khau",
   },
-];
+] as const;
 
+// Server Component - không cần "use client"
 const AccountLayout: FunctionComponent<AccountLayoutProps> = ({ children }) => {
-  const pathname = usePathname();
-  const router = useRouter();
   return (
     <Box
       className="flex min-h-full grow bg-gray-50"
@@ -39,15 +36,8 @@ const AccountLayout: FunctionComponent<AccountLayoutProps> = ({ children }) => {
         <Stack gap="lg">
           <Title order={5}>Tài khoản</Title>
 
-          {navigations.map((navi) => (
-            <NavLink
-              key={navi.label}
-              label={navi.label}
-              //   leftSection={<IconAdd size={18} />}
-              active={pathname === navi.path}
-              onClick={() => router.push(navi.path)}
-            />
-          ))}
+          {/* Tách phần interactive thành Client Component riêng */}
+          <NavigationMenu navigations={navigations} />
         </Stack>
       </Box>
 

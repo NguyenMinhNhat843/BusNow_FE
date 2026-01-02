@@ -1,15 +1,8 @@
-"use client";
-
 import { Geist, Geist_Mono } from "next/font/google";
 import HeaderWrapper from "@/component/layout/HeadreWrapper";
-import { Toaster } from "sonner";
-import ReduxProvider from "@/redux/provider";
-import UserInitialize from "@/component/layout/UserInitialize";
-import { ColorSchemeScript, createTheme, MantineProvider } from "@mantine/core";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ColorSchemeScript } from "@mantine/core";
 import "./globals.css";
-import "@mantine/core/styles.css";
-import "@mantine/dates/styles.css";
+import Providers from "./provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,37 +14,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const theme = createTheme({});
-const queryClient = new QueryClient();
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <ColorSchemeScript />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <QueryClientProvider client={queryClient}>
-          <ReduxProvider>
-            <MantineProvider theme={theme}>
-              <UserInitialize />
-              <Toaster
-                position="top-right"
-                duration={3000}
-                richColors
-                closeButton
-              />
-              <div className="min-h-screen flex flex-col">
-                <HeaderWrapper />
-                <main className="flex-1">{children}</main>
-              </div>
-            </MantineProvider>
-          </ReduxProvider>
-        </QueryClientProvider>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable}`}
+        suppressHydrationWarning
+      >
+        <Providers>
+          <div className="min-h-screen flex flex-col">
+            <HeaderWrapper />
+            <main className="flex-1">{children}</main>
+          </div>
+        </Providers>
       </body>
     </html>
   );
