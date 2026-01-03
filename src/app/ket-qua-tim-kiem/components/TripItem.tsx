@@ -1,14 +1,12 @@
 import { BusTypeEnum } from "@/api/Enum/BusTypeEnum";
 import Image from "next/image";
 import format from "@/utils/format";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { stopPointApi } from "@/api/stopPointApi";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { setFrom, setSeats } from "@/redux/slice/bookingSlice";
 import DetailInfo from "./StopPoint";
 import SeatMapModel from "./SeatMapUI";
+import { Button, Paper } from "@mantine/core";
 
 export interface TripResponse {
   tripId: string;
@@ -26,6 +24,7 @@ export interface TripResponse {
   toName: string;
   arriveTime: string;
   type: "return" | "go";
+  avatar: string;
 }
 
 export interface StopPointInterface {
@@ -55,12 +54,10 @@ export default function TripItem({ trip }: { trip: TripResponse }) {
     arriveTime,
     departTime,
     type,
+    avatar,
   } = trip;
   const router = useRouter();
 
-  // state
-  const [openModelDetailInfo, setOpenModelDetailInfo] =
-    useState<boolean>(false);
   const [tabSelected, setTabSelected] = useState<string>("stop-point");
   const [openModelBooking, setOpenModelBooking] = useState<boolean>(false);
   const [stopPoints, setStopPoints] = useState<any[]>([]);
@@ -84,13 +81,19 @@ export default function TripItem({ trip }: { trip: TripResponse }) {
   };
 
   return (
-    <div className="bg-white border border-gray-200 p-4 mb-4 rounded-lg shadow-sm hover:shadow-2xl transition-all">
-      {/* base info */}
+    <Paper
+      shadow="sm"
+      radius="md"
+      p="md"
+      withBorder
+      className="mb-4 transition-all hover:shadow-xl"
+    >
+      {/* Base info */}
       <div className="flex items-center gap-4">
         {/* Vehicle Image */}
-        <div className="relative w-28 h-20 flex-shrink-0 rounded overflow-hidden">
+        <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden rounded-md">
           <Image
-            src="/logo.webp"
+            src={avatar}
             alt="avatar vehicle"
             fill
             className="object-cover"
@@ -98,31 +101,42 @@ export default function TripItem({ trip }: { trip: TripResponse }) {
         </div>
 
         {/* Trip Info */}
-        <div className="flex flex-col justify-between grow">
-          <p className="text-lg font-semibold text-gray-800">
-            {`${vehicleName} - ${
-              busType === BusTypeEnum.VIP
+        <div className="flex flex-col justify-between flex-1 gap-1">
+          {/* Tên xe + loại */}
+          <p className="text-lg font-semibold text-gray-900">
+            {vehicleName}
+            <span className="ml-2 text-sm font-medium text-yellow-600">
+              {busType === BusTypeEnum.VIP
                 ? "VIP"
                 : busType === BusTypeEnum.LIMOUSINE
                 ? "LIMOUSINE"
-                : ""
-            } ${totalSeat} chỗ`}
+                : ""}
+            </span>
+            <span className="mx-2 text-gray-400">•</span>
+            <span className="text-sm font-medium text-gray-700">
+              {totalSeat} chỗ
+            </span>
           </p>
-          <p className="text-sm text-gray-500">Biển số: {codeNumber}</p>
-          <p className="text-sm text-gray-600">
+
+          {/* Biển số */}
+          <p className="text-sm text-gray-500">
+            Biển số:{" "}
+            <span className="font-medium text-gray-700">{codeNumber}</span>
+          </p>
+
+          {/* Tuyến */}
+          <p className="text-sm font-medium text-gray-700">
             {type === "go"
-              ? `${fromname} -> ${toName}`
-              : `${toName} -> ${fromname}`}
+              ? `${fromname} → ${toName}`
+              : `${toName} → ${fromname}`}
           </p>
-          <p className="text-sm text-gray-600">
-            {format.formatDate(departTime)} → {format.formatDate(arriveTime)}
+
+          {/* Thời gian */}
+          <p className="text-sm text-gray-500">
+            {format.formatDate(departTime)}
+            <span className="mx-1 text-gray-400">→</span>
+            {format.formatDate(arriveTime)}
           </p>
-          {/* <span
-            className="text-blue-400 hover:underline cursor-pointer"
-            onClick={() => setOpenModelDetailInfo(!openModelDetailInfo)}
-          >
-            Thông tin chi tiết
-          </span> */}
         </div>
 
         {/* Actions */}
@@ -130,22 +144,28 @@ export default function TripItem({ trip }: { trip: TripResponse }) {
           <p className="text-lg font-bold text-yellow-600">
             {price.toLocaleString()} đ
           </p>
+
           <p className="text-sm text-gray-600">Còn {availableSeat} chỗ trống</p>
-          <button
-            className="cursor-pointer px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-black/70
-                 font-bold text-sm rounded-md transition-all"
+
+          <Button
+            color="yellow"
+            radius="md"
+            size="sm"
             onClick={handleOnClickBooking}
+            className="!text-black"
           >
             Đặt vé
-          </button>
+          </Button>
         </div>
       </div>
 
-      <div className="pt-6">
-        {openModelBooking && (
-          <div className="flex justify-start gap-4 border-b mb-4">
+      {/* Tabs + Detail */}
+      {openModelBooking && (
+        <div className="pt-6">
+          {/* Tabs */}
+          <div className="flex gap-6 border-b mb-4">
             <button
-              className={`px-4 py-2 font-medium transition ${
+              className={`pb-2 font-medium transition ${
                 tabSelected === "stop-point"
                   ? "border-b-2 border-yellow-500 text-yellow-600"
                   : "text-gray-600 hover:text-yellow-500"
@@ -154,8 +174,9 @@ export default function TripItem({ trip }: { trip: TripResponse }) {
             >
               Điểm đón / trả
             </button>
+
             <button
-              className={`px-4 py-2 font-medium transition ${
+              className={`pb-2 font-medium transition ${
                 tabSelected === "seat"
                   ? "border-b-2 border-yellow-500 text-yellow-600"
                   : "text-gray-600 hover:text-yellow-500"
@@ -165,29 +186,32 @@ export default function TripItem({ trip }: { trip: TripResponse }) {
               Chọn ghế
             </button>
           </div>
-        )}
-        {openModelBooking && tabSelected === "stop-point" && (
-          <DetailInfo
-            tripId={tripId}
-            stopPoints={stopPoints}
-            fromId={fromId}
-            toId={toId}
-            fromName={fromname}
-            toName={toName}
-            departTime={departTime}
-            arriveTime={arriveTime}
-            type={type}
-          />
-        )}
-        {openModelBooking && tabSelected === "seat" && (
-          <SeatMapModel
-            tripId={tripId}
-            totalSeat={totalSeat}
-            price={price}
-            onSubmit={() => router.push("thanh-toan")}
-          />
-        )}
-      </div>
-    </div>
+
+          {/* Content */}
+          {tabSelected === "stop-point" && (
+            <DetailInfo
+              tripId={tripId}
+              stopPoints={stopPoints}
+              fromId={fromId}
+              toId={toId}
+              fromName={fromname}
+              toName={toName}
+              departTime={departTime}
+              arriveTime={arriveTime}
+              type={type}
+            />
+          )}
+
+          {tabSelected === "seat" && (
+            <SeatMapModel
+              tripId={tripId}
+              totalSeat={totalSeat}
+              price={price}
+              onSubmit={() => router.push("thanh-toan")}
+            />
+          )}
+        </div>
+      )}
+    </Paper>
   );
 }
