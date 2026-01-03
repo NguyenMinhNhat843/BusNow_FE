@@ -22,7 +22,6 @@ export default function ListRefunds() {
     setRequestSelected(request);
   };
 
-  console.log(filterObject);
   const tableData: TableData = {
     head: ["", "Họ và tên", "Trạng thái", "email", "Số điện thoại"],
     body: refundRequests?.map((request: any) => {

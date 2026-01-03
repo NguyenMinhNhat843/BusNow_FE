@@ -152,7 +152,7 @@ export default function FormOrderInfo() {
           <div className="flex-1 rounded-xl bg-yellow-100 border border-yellow-300 p-4 shadow-sm">
             <p className="text-sm text-gray-600 font-medium">Đi từ:</p>
             <p className="text-lg font-semibold text-gray-800">
-              {bookingInfo?.from.name || "Có lỗi"}
+              {bookingInfo?.from.name}
             </p>
             <p className="text-sm text-gray-500">
               Điểm đón: {bookingInfo.from.stopPoint}

@@ -5,7 +5,6 @@ import { useState } from "react";
 import isExpiredToken from "@/utils/decodeToken";
 import { authApi } from "@/api/authApi";
 import { toast } from "sonner";
-import { isValid } from "date-fns";
 
 export default function ChangePasswordPage() {
   // Lấy token từ query param
@@ -13,7 +12,6 @@ export default function ChangePasswordPage() {
   const token = searchparams.get("token");
 
   const isValidToken = isExpiredToken(token || "");
-  console.log("isExpriedTOken", isExpiredToken(token as string));
 
   // state
   const [password, setPassword] = useState("");

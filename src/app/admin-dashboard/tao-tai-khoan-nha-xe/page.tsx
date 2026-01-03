@@ -16,7 +16,7 @@ export default function CreateAccountProvicer() {
     phoneNumber: "0159368245",
     password: "Pass@123",
     address: "123 Gò Vấp, Hồ Chí Minh",
-    type: VehicleTypeEnum.BUS,
+    // type: VehicleTypeEnum.BUS,
     role: RoleEnum.PROVIDER,
     isInternalAdminCreate: true,
   });

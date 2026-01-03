@@ -13,6 +13,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { vi } from "date-fns/locale";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocations } from "@/hooks/useLocations";
+import { Box, Group, Menu, Text } from "@mantine/core";
 
 // Component tuỳ biến hiển thị ngày
 const CustomDateInput = forwardRef<
@@ -35,75 +36,24 @@ CustomDateInput.displayName = "CustomDateInput";
 export default function SearchBar() {
   // common
   const router = useRouter();
-  const { locations, setLocations } = useLocations();
+  const { useGetLocations } = useLocations();
+  const { data: locations } = useGetLocations();
+  // search params
+  const searchParams = useSearchParams();
+  const fromId = searchParams.get("from");
+  const toId = searchParams.get("to");
+  const fromObject = locations?.find((l: any) => l.locationId === fromId);
+  const toObject = locations?.find((l: any) => l.locationId === toId);
   // state
   const [isOpenMenuLocationFrom, setIsOpenMenuLocationFrom] = useState(false);
   const [isOpenMenuLocationTo, setIsOpenMenuLocationTo] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
-  const menuLocationFromRef = useRef<HTMLDivElement>(null);
-  const menuLocationToRef = useRef<HTMLDivElement>(null);
   const [locationSelected, setLocationSelected] = useState({
-    fromId: "",
-    from: "",
-    toId: "",
-    to: "",
+    fromId: fromId || "",
+    from: fromObject?.name || "",
+    toId: toId || "",
+    to: toObject?.name || "",
   });
-
-  // search params
-  const searchParams = useSearchParams();
-  const from = searchParams.get("from");
-  const to = searchParams.get("to");
-
-  useEffect(() => {
-    const locationsStorage = localStorage.getItem("locations");
-
-    const initFromURL = (locationsJsonArray: any[]) => {
-      // Nếu có param from/to thì tìm name tương ứng
-      if (from && to) {
-        const fromLocation = locationsJsonArray.find(
-          (loc: any) => loc.locationId === from
-        );
-        const toLocation = locationsJsonArray.find(
-          (loc: any) => loc.locationId === to
-        );
-
-        if (fromLocation && toLocation) {
-          setLocationSelected({
-            fromId: fromLocation.locationId,
-            from: fromLocation.name,
-            toId: toLocation.locationId,
-            to: toLocation.name,
-          });
-          return;
-        }
-      }
-
-      // Không có param thì set mặc định
-      setLocationSelected({
-        fromId: locationsJsonArray[0].locationId,
-        from: locationsJsonArray[0].name,
-        toId: locationsJsonArray[1].locationId,
-        to: locationsJsonArray[1].name,
-      });
-    };
-
-    if (locationsStorage === null) {
-      // Nếu localStorage rỗng, fetch API
-      fetchLocations().then(() => {
-        const newLocations = JSON.parse(
-          localStorage.getItem("locations") || "[]"
-        );
-        if (newLocations.length) {
-          setLocations(newLocations);
-          initFromURL(newLocations);
-        }
-      });
-    } else {
-      const locationsJsonArray = JSON.parse(locationsStorage);
-      setLocations(locationsJsonArray);
-      initFromURL(locationsJsonArray);
-    }
-  }, []);
 
   // handle select location
   const handleSeletLocationFrom = (location: any) => {
@@ -136,46 +86,6 @@ export default function SearchBar() {
     }));
   };
 
-  // handle cick outside to close menu location - location from
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        menuLocationFromRef.current &&
-        !menuLocationFromRef.current.contains(event.target as Node)
-      ) {
-        setIsOpenMenuLocationFrom(false);
-      }
-    };
-
-    // add listener
-    document.addEventListener("mousedown", handleClickOutside);
-
-    // cleanup listener
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  // handle cick outside to close menu location - location to
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        menuLocationToRef.current &&
-        !menuLocationToRef.current.contains(event.target as Node)
-      ) {
-        setIsOpenMenuLocationTo(false);
-      }
-    };
-
-    // add listener
-    document.addEventListener("mousedown", handleClickOutside);
-
-    // cleanup listener
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
   // handle click button search
   const handleSearch = () => {
     const startDateFormatted = startDate.toISOString().split("T")[0];
@@ -197,39 +107,41 @@ export default function SearchBar() {
     <div className="flex items-center justify-between gap-4">
       <div className="relative flex justify-between gap-4 grow border border-slate-300 rounded-2xl p-2">
         {/* Nơi đi */}
-        <div
-          className="relative flex items-center gap-4 min-w-[140px]"
-          ref={menuLocationFromRef}
+        <Menu
+          opened={isOpenMenuLocationFrom}
+          onChange={setIsOpenMenuLocationFrom}
+          position="bottom-start"
+          offset={8}
+          width={240}
+          shadow="md"
         >
-          <FontAwesomeIcon
-            icon={faCircleDot}
-            className="text-3xl text-blue-600"
-          />
-          <div
-            className="cursor-pointer select-none"
-            onClick={() => setIsOpenMenuLocationFrom(!isOpenMenuLocationFrom)}
-          >
-            <p className="text-sm text-slate-500">Nơi xuất phát</p>
-            <p>{locationSelected.from}</p>
-          </div>
+          <Menu.Target>
+            <Group gap={16} style={{ cursor: "pointer", minWidth: 140 }}>
+              <FontAwesomeIcon
+                icon={faCircleDot}
+                className="text-3xl text-blue-600"
+              />
 
-          {/* menu location */}
-          {isOpenMenuLocationFrom && (
-            <div className="absolute top-20 -left-1 w-[240px] bg-white shadow-lg rounded-lg py-4">
-              <ul>
-                {locations.map((item) => (
-                  <li
-                    key={item.locationId}
-                    className="py-2 px-4 cursor-pointer hover:bg-slate-100 "
-                    onClick={() => handleSeletLocationFrom(item)}
-                  >
-                    {item.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+              <Box>
+                <Text size="sm" c="dimmed">
+                  Nơi xuất phát
+                </Text>
+                <Text fw={500}>{locationSelected.from}</Text>
+              </Box>
+            </Group>
+          </Menu.Target>
+
+          <Menu.Dropdown className="mt-2">
+            {locations?.map((item: any) => (
+              <Menu.Item
+                key={item.locationId}
+                onClick={() => handleSeletLocationFrom(item)}
+              >
+                {item.name}
+              </Menu.Item>
+            ))}
+          </Menu.Dropdown>
+        </Menu>
 
         {/* swap button */}
         <div
@@ -240,37 +152,41 @@ export default function SearchBar() {
         </div>
 
         {/* Nơi đến */}
-        <div
-          className="relative flex items-center gap-4 min-w-[140px]"
-          onClick={() => setIsOpenMenuLocationTo(!isOpenMenuLocationTo)}
-          ref={menuLocationToRef}
+        <Menu
+          opened={isOpenMenuLocationTo}
+          onChange={setIsOpenMenuLocationTo}
+          position="bottom-start"
+          offset={8}
+          width={240}
+          shadow="md"
         >
-          <FontAwesomeIcon
-            icon={faLocationDot}
-            className="text-3xl text-red-600"
-          />
-          <div className="cursor-pointer select-none">
-            <p className="text-sm text-slate-500">Nơi đến</p>
-            <p>{locationSelected.to}</p>
-          </div>
+          <Menu.Target>
+            <Group gap={16} style={{ cursor: "pointer", minWidth: 140 }}>
+              <FontAwesomeIcon
+                icon={faLocationDot}
+                className="text-3xl text-red-600"
+              />
 
-          {/* menu location */}
-          {isOpenMenuLocationTo && (
-            <div className="absolute top-20 w-[240px] bg-white shadow-lg rounded-lg py-4">
-              <ul>
-                {locations.map((item) => (
-                  <li
-                    key={item.locationId}
-                    className="py-2 px-4 cursor-pointer hover:bg-slate-100 "
-                    onClick={() => handleSeletLocationTo(item)}
-                  >
-                    {item.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+              <Box>
+                <Text size="sm" c="dimmed">
+                  Nơi đến
+                </Text>
+                <Text fw={500}>{locationSelected.to}</Text>
+              </Box>
+            </Group>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            {locations?.map((item: any) => (
+              <Menu.Item
+                key={item.locationId}
+                onClick={() => handleSeletLocationTo(item)}
+              >
+                {item.name}
+              </Menu.Item>
+            ))}
+          </Menu.Dropdown>
+        </Menu>
 
         {/* separation */}
         <div className="border-l border-slate-300 h-10"></div>

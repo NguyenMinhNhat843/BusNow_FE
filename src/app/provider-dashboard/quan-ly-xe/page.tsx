@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import VehicleItem from "../components/VehicleItem";
 import DetailVehicle from "./components/DetailVehicle";
-import { Input, LoadingOverlay, Select, Text } from "@mantine/core";
+import { Button, Input, LoadingOverlay, Select, Text } from "@mantine/core";
 import { useRoute } from "@/hooks/useRoute";
 import { useVehicle } from "@/hooks/useVehicle";
 import { TimeInput } from "@mantine/dates";
 import ModalClean from "./components/ModalClean";
 import { useTrip } from "@/hooks/useTrip";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "@mantine/form";
 
 export default function ManagerBus() {
   const router = useRouter();
@@ -18,43 +18,51 @@ export default function ManagerBus() {
 
   // common
   const { routes } = useRoute();
-  const { addVehicle, loading, useGetVehicles } = useVehicle();
-  const { data: vehicles } = useGetVehicles();
+  const { useGetVehicles, useAddVehicle } = useVehicle();
+  const { mutate: addVehicle, isPending: isPendingAddVehicle } =
+    useAddVehicle();
+  const { data: vehicles, isLoading: isLoadingGetVehicles } = useGetVehicles();
   const { useDeleteTripsBeforeNow } = useTrip();
   const { mutate: cleanTrip } = useDeleteTripsBeforeNow();
 
   // state
-  const [formData, setFormData] = useState({
-    totalSeat: "",
-    code: "",
-    busType: "",
-    routeId: "",
-    departHour: "",
+  const form = useForm({
+    initialValues: {
+      totalSeat: "",
+      code: "",
+      busType: "",
+      routeId: "",
+      departHour: "",
+    },
+
+    validate: {
+      totalSeat: (v) => (!v ? "Vui lòng nhập số ghế" : null),
+      code: (v) => (!v ? "Vui lòng nhập biển số xe" : null),
+      busType: (v) => (!v ? "Chọn loại xe" : null),
+      routeId: (v) => (!v ? "Chọn tuyến đường" : null),
+      departHour: (v) => (!v ? "Chọn giờ khởi hành" : null),
+    },
   });
 
   const handleOnClickVehicleItem = (vehicleId: string) => {
     router.push(`?vehicleId=${vehicleId}`);
   };
 
-  const handleChange = (name: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = (values: typeof form.values) => {
     const body = {
-      code: formData.code,
-      totalSeat: Number(formData.totalSeat),
-      busType: formData.busType, // tùy cách backend xử lý
-      routeId: formData.routeId,
-      departHour: formData.departHour,
+      code: values.code,
+      totalSeat: Number(values.totalSeat),
+      busType: values.busType,
+      routeId: values.routeId,
+      departHour: values.departHour,
     };
 
-    addVehicle(body);
+    addVehicle(body, {
+      onSuccess: () => {
+        alert("✅ Thêm xe thành công");
+        form.reset();
+      },
+    });
   };
 
   return (
@@ -65,75 +73,58 @@ export default function ManagerBus() {
             <Text size="lg" fw={700}>
               Thêm xe mới
             </Text>
-            <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-4">
+            <form
+              onSubmit={form.onSubmit(handleSubmit)}
+              className="grid grid-cols-3 gap-4"
+            >
               <Input.Wrapper label="Số ghế">
                 <Input
                   type="number"
                   placeholder="Số ghế"
-                  value={formData.totalSeat}
-                  onChange={(e) =>
-                    handleChange("totalSeat", e.currentTarget.value)
-                  }
+                  {...form.getInputProps("totalSeat")}
                 />
               </Input.Wrapper>
+
               <Input.Wrapper label="Biển số xe">
                 <Input
-                  type="text"
                   placeholder="VD: 29A-125.45"
-                  value={formData.code}
-                  onChange={(e) => handleChange("code", e.currentTarget.value)}
+                  {...form.getInputProps("code")}
                 />
               </Input.Wrapper>
+
               <Select
                 label="Loại xe"
-                name="type"
                 clearable
-                value={formData.busType}
                 data={[
-                  {
-                    label: "VIP",
-                    value: "VIP",
-                  },
-                  {
-                    label: "LIMOUSINE",
-                    value: "LIMOUSINE",
-                  },
-                  {
-                    label: "STANDARD",
-                    value: "STANDARD",
-                  },
+                  { label: "VIP", value: "VIP" },
+                  { label: "LIMOUSINE", value: "LIMOUSINE" },
+                  { label: "STANDARD", value: "STANDARD" },
                 ]}
-                onChange={(value) => {
-                  return handleChange("busType", String(value));
-                }}
+                {...form.getInputProps("busType")}
               />
+
               <Input.Wrapper label="Giờ khởi hành">
-                <TimeInput
-                  value={formData.departHour}
-                  onChange={(e) => {
-                    return handleChange("departHour", e.currentTarget.value);
-                  }}
-                />
+                <TimeInput {...form.getInputProps("departHour")} />
               </Input.Wrapper>
 
               <Input.Wrapper label="Tuyến đường">
                 <Select
-                  value={formData.routeId}
                   data={routes?.data?.map((route: any) => ({
                     label: `${route.origin.name} - ${route.destination.name}`,
                     value: route.routeId,
                   }))}
-                  onChange={(value) => handleChange("routeId", String(value))}
+                  {...form.getInputProps("routeId")}
                 />
               </Input.Wrapper>
 
               <div className="col-span-3 flex justify-center">
-                <button
+                <Button
                   type="submit"
-                  className="w-1/2 mx-auto bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+                  className="w-1/2"
+                  loading={isPendingAddVehicle}
                 >
                   Thêm xe
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -141,7 +132,7 @@ export default function ManagerBus() {
           {/* Danh sách xe */}
           <div className="relative p-4">
             <LoadingOverlay
-              visible={loading}
+              visible={isLoadingGetVehicles || isPendingAddVehicle}
               zIndex={100}
               overlayProps={{ radius: "sm", blur: 2 }}
             />

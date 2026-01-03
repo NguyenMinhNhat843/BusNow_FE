@@ -1,11 +1,33 @@
 "use client";
 
+import { useSelector } from "react-redux";
 import FormOrderInfo from "./component/formOrderInfo";
 import PaymentMethod from "./component/PaymentMethod";
 import { OrderProvider, useOrderContext } from "./orderContext";
+import { RootState } from "@/redux/store";
+import { useRouter, useSearchParams } from "next/navigation";
+import PaymentSuccess from "./component/PaymentSuccess";
+import PaymentFail from "./component/PaymentFail";
 
 function PaymentPageContent() {
   const { stage } = useOrderContext();
+  const searchParams = useSearchParams();
+  const status = searchParams.get("status");
+  const bookingInfo = useSelector((state: RootState) => state.booking);
+  const router = useRouter();
+
+  if (status === "success") {
+    return <PaymentSuccess />;
+  }
+
+  if (status === "fail") {
+    return <PaymentFail />;
+  }
+
+  if (!bookingInfo.tripId) {
+    router.push("/");
+    return;
+  }
 
   return (
     <div className="flex flex-col items-center pt-8">

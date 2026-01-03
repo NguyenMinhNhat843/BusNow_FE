@@ -42,7 +42,6 @@ const MyOrder: FunctionComponent<MyOrderProps> = () => {
     );
   }
 
-  console.log(tickets);
   return (
     <div>
       <Text size="xl" fw={500} className="!mb-4">

@@ -1,22 +1,36 @@
-import { locationApi } from "@/api/locationApi";
-import { LocationType } from "@/type/location";
-import { useEffect, useState } from "react";
+import { CreateLocationDto } from "@/apiGen/generated";
+import { locationApi } from "@/apiGen/location.api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useLocations = () => {
-  const [locations, setLocations] = useState<LocationType[]>([]);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const response = await locationApi.getAllLocation();
-        setLocations(response);
-      } catch (error) {
-        alert(JSON.stringify(error));
-      }
-    };
+  const useGetLocations = () => {
+    return useQuery<any>({
+      queryKey: ["locations"],
+      queryFn: async () => {
+        const response = await locationApi.locationControllerGetAllLocation();
+        return response.data;
+      },
+      refetchOnWindowFocus: false,
+    });
+  };
 
-    fetchLocations();
-  }, []);
+  const useCreateLocation = () => {
+    return useMutation({
+      mutationFn: async (payload: CreateLocationDto) => {
+        const response = await locationApi.locationControllerCreateLocation(
+          payload
+        );
+        return response.data;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["locations"],
+        });
+      },
+    });
+  };
 
-  return { locations, setLocations };
+  return { useGetLocations, useCreateLocation };
 };

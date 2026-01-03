@@ -21,22 +21,26 @@ const methodItems = [
     value: "BANKING",
     name: "Thanh toán qua ngân hàng",
   },
-];
+] as {
+  value: CreateTIcketDTOMethodPaymentEnum;
+  name: string;
+}[];
 
 export default function PaymentMethod() {
   const router = useRouter();
   const storedUser = localStorage.getItem("guest");
   const user = storedUser ? JSON.parse(storedUser) : null;
   const { setStage } = useOrderContext();
-  const [selectedMethod, setSelectedMethod] = useState<string>("CASH");
+  const [selectedMethod, setSelectedMethod] =
+    useState<CreateTIcketDTOMethodPaymentEnum>("CASH");
   const bookingInfo = useSelector((state: RootState) => state.booking);
   const handlePreviousStage = () => {
     setStage(1);
   };
   const handleSelectPaymentMethod = (value: string) => {
-    setSelectedMethod(value);
+    setSelectedMethod(value as CreateTIcketDTOMethodPaymentEnum);
   };
-  const { totalAmount, from, selectedSeats, to, tripId } = bookingInfo;
+  const { totalAmount, selectedSeats, tripId } = bookingInfo;
 
   const { useCreatePaymentUrl } = useVnpay();
   const { mutate: createPaymentUrl } = useCreatePaymentUrl();
@@ -73,13 +77,13 @@ export default function PaymentMethod() {
           onSuccess: () => {
             alert("Đặt vé thành công!");
             router.push("/");
-            return;
           },
         });
+        return;
       }
 
       // Thanh toán banking
-      const res = createPaymentUrl(
+      createPaymentUrl(
         {
           amount: totalAmount,
           bookingInfo: payload,
@@ -92,7 +96,7 @@ export default function PaymentMethod() {
         }
       );
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Có lỗi xảy ra");
+      alert(error?.message || "❌ Có lỗi xảy ra");
     }
   };
 

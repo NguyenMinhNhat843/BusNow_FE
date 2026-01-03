@@ -1,12 +1,11 @@
-import { routeApi } from "@/api/routeApi";
 import { CreateRouteDTO } from "@/apiGen/generated";
 import { useLocations } from "@/hooks/useLocations";
 import { useCreateRoute } from "@/hooks/useRoute";
 import { useStopPoint } from "@/hooks/useStopPoint";
 import { IconClean } from "@/type/icon";
-import { StopPointType } from "@/type/stopPointType";
 import {
   ActionIcon,
+  Button,
   ComboboxItem,
   Group,
   Input,
@@ -19,8 +18,9 @@ import {
 import { useState } from "react";
 
 export default function CreateRouteForm() {
-  const { locations } = useLocations();
-  const { createRoute } = useCreateRoute();
+  const { useGetLocations } = useLocations();
+  const { data: locations, isLoading: isLoadingLocations } = useGetLocations();
+  const { createRoute, isPendingCreateRoute } = useCreateRoute();
   const [formData, setFormData] = useState({
     origin: {
       name: "",
@@ -102,12 +102,15 @@ export default function CreateRouteForm() {
             restAtDestination: 0,
             repeatsDay: 0,
           });
-          alert("Tạo route thành công!");
+          setSPSelected({
+            destination: [],
+            origin: [],
+          });
+          alert("✅ Tạo route thành công!");
         },
         onError: (error: any) => {
-          const message =
-            error?.response?.data?.message || error?.message || "Unknown error";
-          alert("Tạo route thất bại, lỗi: " + message);
+          const message = error?.message || "Lỗi không xác định";
+          alert("❌ Tạo route thất bại, lỗi: " + message);
         },
       }
     );
@@ -142,7 +145,7 @@ export default function CreateRouteForm() {
             <div key={config.key}>
               <Input.Wrapper label={config.label}>
                 <Select
-                  data={locations.map((location) => ({
+                  data={locations?.map((location: any) => ({
                     label: location.name,
                     value: location.locationId,
                   }))}
@@ -250,13 +253,14 @@ export default function CreateRouteForm() {
       </div>
 
       <div className="mt-6 text-right">
-        <button
+        <Button
           type="submit"
-          className="bg-yellow-500 text-white font-medium px-6 py-2 rounded-md hover:bg-yellow-600"
+          color="yellow"
           onClick={handleCreateRouteApi}
+          loading={isPendingCreateRoute}
         >
           ✅ Tạo tuyến đường
-        </button>
+        </Button>
       </div>
     </form>
   );

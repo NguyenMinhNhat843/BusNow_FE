@@ -1,10 +1,9 @@
 import { busApi } from "@/api/busApi";
 import { vehicleApi } from "@/apiGen/vehicleApi";
-import { useQuery } from "@tanstack/react-query";
-import { useCallback, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useVehicle = () => {
-  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const useGetVehicles = (page: number = 1, limit: number = 10) => {
     return useQuery<any>({
@@ -31,22 +30,23 @@ export const useVehicle = () => {
     });
   };
 
-  // ===== Add =====
-  const addVehicle = useCallback(async (payload: any) => {
-    try {
-      setLoading(true);
-      await busApi.createVehicle(payload);
-    } catch (error: any) {
-      alert(error?.response?.data?.message || "Có lỗi khi thêm xe");
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const useAddVehicle = () => {
+    return useMutation({
+      mutationFn: (payload: any) => busApi.createVehicle(payload),
+
+      onSuccess: () => {
+        // refetch list xe sau khi tạo
+        queryClient.invalidateQueries({ queryKey: ["vehicles"] });
+      },
+
+      onError: (error: any) => {
+        alert(error?.response?.data?.message || "Có lỗi khi thêm xe");
+      },
+    });
+  };
 
   return {
-    loading,
-    addVehicle,
+    useAddVehicle,
     useGetVehicles,
     useGetVehicleById,
   };

@@ -57,7 +57,6 @@ export default function TripItem({ trip }: { trip: TripResponse }) {
     arriveTime,
     departTime,
   } = trip;
-  console.log(departTime);
 
   const departTimeFormatted = new Date(departTime).toLocaleDateString("vi-VN", {
     timeZone: "Asia/Ho_Chi_Minh",
@@ -215,7 +214,6 @@ export default function TripItem({ trip }: { trip: TripResponse }) {
         arriveTime: arriveTimeFormatted,
         seats: [...chairSelected],
       };
-      console.log("data booking ticket", data);
 
       dispatch(setSelectedTrip(data));
       router.push("/thanh-toan");

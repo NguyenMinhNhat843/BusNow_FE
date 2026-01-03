@@ -31,7 +31,11 @@ export const useTrip = () => {
         const response = await tripApi.tripControllerGenTrips(body);
         return response.data;
       },
-      onSuccess: () => {},
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["trips"],
+        });
+      },
       onError: () => {},
     });
   };

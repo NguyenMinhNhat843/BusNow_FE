@@ -1,12 +1,16 @@
 "use client";
 
 import { CreateLocationDto } from "@/apiGen/generated";
-import { locationApi } from "@/apiGen/location.api";
+import { useLocations } from "@/hooks/useLocations";
 import { IconAdd, IconClean } from "@/type/icon";
 import { Button, Card, Group, Stack, Text, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
 export default function CreateLocationForm() {
+  const { useCreateLocation } = useLocations();
+  const { mutate: createLocation, isPending: isPendingCreateLocation } =
+    useCreateLocation();
+
   const form = useForm<CreateLocationDto>({
     initialValues: {
       locationName: "",
@@ -26,12 +30,15 @@ export default function CreateLocationForm() {
   };
 
   const handleSubmit = async (values: CreateLocationDto) => {
-    try {
-      const res = await locationApi.locationControllerCreateLocation(values);
-      if (res) alert("Thêm thành công");
-    } catch (error) {
-      alert("Có lỗi: " + JSON.stringify(error));
-    }
+    createLocation(values, {
+      onSuccess: () => {
+        alert("✅ Thêm location thành công");
+        form.reset();
+      },
+      onError: (error: any) => {
+        alert("❌ Có lỗi xảy ra: " + error.message);
+      },
+    });
   };
 
   return (
@@ -95,7 +102,9 @@ export default function CreateLocationForm() {
           </Stack>
 
           <Group justify="flex-end">
-            <Button type="submit">Lưu</Button>
+            <Button type="submit" loading={isPendingCreateLocation}>
+              Lưu
+            </Button>
           </Group>
         </Stack>
       </form>
