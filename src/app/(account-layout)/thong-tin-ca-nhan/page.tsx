@@ -1,50 +1,56 @@
 "use client";
 
 import { userApi } from "@/api/userApi";
+import { useUSer } from "@/hooks/useUser";
 import { updateProfile } from "@/redux/slice/authSlice";
-import { RootState } from "@/redux/store";
-import Image from "next/image";
+import { IconCheck, IconWarning } from "@/type/icon";
+import {
+  Avatar,
+  Button,
+  Card,
+  Center,
+  Group,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 
 export default function PersonalInfoPage() {
-  // common
   const dispatch = useDispatch();
-
-  // redux
-  const userRedux = useSelector((state: RootState) => state.auth.user);
+  const { useGetProfileMe } = useUSer();
+  const { data: userCurrent, isLoading: isLoadingUserInfo } = useGetProfileMe();
 
   // state
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
-    "/avatar_default.png"
+    userCurrent?.avatar || "/avatar_default.png"
   );
   const [avatarFile, setAvatarFile] = useState(null as File | null);
   const [userInfo, setUserInfo] = useState({
-    firstName: "Đang tải",
-    lastName: "Đang tải",
-    email: "Đang tải",
-    phoneNumber: "Đang tải",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
     role: "",
     userId: "",
   });
 
   useEffect(() => {
-    if (userRedux) {
-      setAvatarPreview(userRedux.avatar || "/avatar_default.png");
-      setUserInfo({
-        firstName: userRedux.firstName || "Chưa cập nhật",
-        lastName: userRedux.lastName || "Chưa cập nhật",
-        email: userRedux.email || "Chưa cập nhật",
-        phoneNumber: userRedux.phoneNumber || "Chưa cập nhật",
-        role: userRedux.role || "",
-        userId: userRedux.userId || "",
-      });
-    }
-  }, [userRedux]);
+    if (!userCurrent) return;
 
-  useEffect(() => {}, [avatarPreview]);
+    setAvatarPreview(userCurrent.avatar || "/avatar_default.png");
+    setUserInfo({
+      firstName: userCurrent.firstName || "Chưa cập nhật",
+      lastName: userCurrent.lastName || "Chưa cập nhật",
+      email: userCurrent.email || "Chưa cập nhật",
+      phoneNumber: userCurrent.phoneNumber || "Chưa cập nhật",
+      role: userCurrent.role,
+      userId: userCurrent.userId,
+    });
+  }, [userCurrent]);
 
   // ref
   const selectAvatarRef = useRef(null as HTMLInputElement | null);
@@ -106,23 +112,25 @@ export default function PersonalInfoPage() {
   };
 
   const onClickButtonCancle = () => {
-    if (!userRedux) {
+    if (!userCurrent) {
       toast.error("Có lỗi xảy ra vui lòng thử lại!!!");
       return;
     }
     setIsUpdateMode(false);
-    setAvatarPreview(userRedux.avatar || "/avatar_default.png");
+    setAvatarPreview(userCurrent.avatar || "/avatar_default.png");
     setUserInfo({
-      firstName: userRedux.firstName || "Chưa cập nhật",
-      lastName: userRedux.lastName || "Chưa cập nhật",
-      email: userRedux.email || "Chưa cập nhật",
-      phoneNumber: userRedux.phoneNumber || "Chưa cập nhật",
-      role: userRedux.role || "",
-      userId: userRedux.userId || "",
+      firstName: userCurrent.firstName || "Chưa cập nhật",
+      lastName: userCurrent.lastName || "Chưa cập nhật",
+      email: userCurrent.email || "Chưa cập nhật",
+      phoneNumber: userCurrent.phoneNumber || "Chưa cập nhật",
+      role: userCurrent.role || "",
+      userId: userCurrent.userId || "",
     });
   };
 
-  if (!userRedux) {
+  if (isLoadingUserInfo) return;
+
+  if (!userCurrent) {
     return (
       <div className="w-[500px] mx-auto p-8 rounded-md shadow-lg bg-white mt-8">
         <p className="text-center text-red-500">Bạn chưa đăng nhập</p>
@@ -131,109 +139,117 @@ export default function PersonalInfoPage() {
   }
 
   return (
-    <div className="w-[500px] mx-auto p-8 rounded-md shadow-lg bg-white mt-8">
-      <div>
-        <div className="flex flex-col justify-center items-center">
-          <div className="relative w-[100px] h-[100px] overflow-hidden rounded-full">
-            <Image
+    <Card shadow="md" radius="md" padding="xl" maw={500} mx="auto" mt="xl">
+      <Stack gap="md">
+        {/* Avatar */}
+        <Center>
+          <Stack align="center" gap="xs">
+            <Avatar
               src={avatarPreview || "/avatar_default.png"}
-              alt="avatar"
-              fill
-              className="object-cover"
+              size={100}
+              radius={100}
             />
-          </div>
-          <input
-            type="file"
-            accept="image/*"
-            hidden
-            ref={selectAvatarRef}
-            onChange={handleChangeFile}
-          />
-          {isUpdateMode && (
-            <button
-              className="py-2 px-4 rounded-md bg-blue-400 mt-2 hover:bg-blue-500 cursor-pointer"
-              onClick={handleOpenFolder}
-            >
-              Chọn avatar
-            </button>
-          )}
-        </div>
-        <div className="flex gap-6 items-center mt-4">
-          <label className="font-bold text-black/80 w-[150px]">
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              ref={selectAvatarRef}
+              onChange={handleChangeFile}
+            />
+            {isUpdateMode && (
+              <Button size="xs" onClick={handleOpenFolder}>
+                Chọn avatar
+              </Button>
+            )}
+          </Stack>
+        </Center>
+
+        {/* First name */}
+        <Group align="center" gap="lg">
+          <Text fw={600} w={150}>
             Họ và tên đệm
-          </label>
+          </Text>
           {!isUpdateMode ? (
-            <p>{userInfo.firstName}</p>
+            <Text>{userInfo.firstName}</Text>
           ) : (
-            <input
-              type="text"
+            <TextInput
               value={userInfo.firstName}
-              onChange={handleOnchangeInput}
               name="firstName"
-              className="border border-gray-200 rounded-200 py-1 px-2 grow"
+              onChange={handleOnchangeInput}
+              className="flex-1"
             />
           )}
-        </div>
-        <div className="flex gap-6 items-center mt-4">
-          <label className="font-bold text-black/80 w-[150px]">Tên</label>
+        </Group>
+
+        {/* Last name */}
+        <Group align="center" gap="lg">
+          <Text fw={600} w={150}>
+            Tên
+          </Text>
           {!isUpdateMode ? (
-            <p>{userInfo.lastName}</p>
+            <Text>{userInfo.lastName}</Text>
           ) : (
-            <input
-              type="text"
+            <TextInput
               value={userInfo.lastName}
-              onChange={handleOnchangeInput}
               name="lastName"
-              className="border border-gray-200 rounded-200 py-1 px-2 grow"
-            />
-          )}
-        </div>
-        <div className="flex gap-6 items-center mt-4">
-          <label className="font-bold text-black/80 w-[150px]">Email</label>
-          <p>{userInfo.email}</p>
-        </div>
-        <div className="flex gap-6 items-center mt-4">
-          <label className="font-bold text-black/80 w-[150px]">
-            Số điện thoại
-          </label>
-          {isUpdateMode ? (
-            <input
-              type="text"
-              name="phoneNumber"
-              className="border border-gray-200 rounded-200 py-1 px-2 grow"
-              value={userInfo.phoneNumber}
               onChange={handleOnchangeInput}
+              className="flex-1"
             />
-          ) : (
-            <p>{userInfo.phoneNumber}</p>
           )}
-        </div>
-        <div className="flex justify-center items-center pt-8 ">
+        </Group>
+
+        {/* Email */}
+        <Group align="center" gap="lg">
+          <Text fw={600} w={150}>
+            Email
+          </Text>
+          <Text>{userInfo.email}</Text>
+        </Group>
+
+        {/* Phone */}
+        <Group align="center" gap="lg">
+          <Text fw={600} w={150}>
+            Số điện thoại
+          </Text>
+          {!isUpdateMode ? (
+            <Text>{userInfo.phoneNumber}</Text>
+          ) : (
+            <TextInput
+              value={userInfo.phoneNumber}
+              name="phoneNumber"
+              onChange={handleOnchangeInput}
+              className="flex-1"
+            />
+          )}
+        </Group>
+
+        {/* Actions */}
+        <Center pt="md">
           {isUpdateMode ? (
-            <>
-              <button
-                className="bg-yellow-400 rounded-md px-4 py-2 hover:bg-yellow-500 cursor-pointer me-4"
+            <Group>
+              <Button
+                color="yellow"
+                leftSection={<IconCheck size={16} />}
                 onClick={handleSubmit}
               >
                 Lưu thay đổi
-              </button>
-              <button
-                className="bg-red-400 rounded-md px-4 py-2 hover:bg-red-500 cursor-pointer"
+              </Button>
+              <Button
+                color="red"
+                variant="light"
+                leftSection={<IconWarning size={16} />}
                 onClick={onClickButtonCancle}
               >
                 Hủy
-              </button>
-            </>
+              </Button>
+            </Group>
           ) : (
-            <button
-              className="bg-yellow-400 rounded-md px-4 py-2 hover:bg-yellow-500 cursor-pointer"
-              onClick={() => setIsUpdateMode(true)}
-            >
+            <Button color="yellow" onClick={() => setIsUpdateMode(true)}>
               Chỉnh sửa
-            </button>
+            </Button>
           )}
-        </div>
-      </div>
-    </div>
+        </Center>
+      </Stack>
+    </Card>
   );
 }
