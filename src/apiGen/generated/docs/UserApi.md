@@ -297,7 +297,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **userControllerUpdateProfile**
-> userControllerUpdateProfile(body)
+> userControllerUpdateProfile(updateProfileDTO)
 
 
 ### Example
@@ -305,16 +305,17 @@ No authorization required
 ```typescript
 import {
     UserApi,
-    Configuration
+    Configuration,
+    UpdateProfileDTO
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new UserApi(configuration);
 
-let body: object; //
+let updateProfileDTO: UpdateProfileDTO; //
 
 const { status, data } = await apiInstance.userControllerUpdateProfile(
-    body
+    updateProfileDTO
 );
 ```
 
@@ -322,7 +323,7 @@ const { status, data } = await apiInstance.userControllerUpdateProfile(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **body** | **object**|  | |
+| **updateProfileDTO** | **UpdateProfileDTO**|  | |
 
 
 ### Return type

@@ -168,11 +168,21 @@ import {
 const configuration = new Configuration();
 const apiInstance = new AuthApi(configuration);
 
-const { status, data } = await apiInstance.authControllerLogin();
+let password: string; // (default to undefined)
+let email: string; // (default to undefined)
+
+const { status, data } = await apiInstance.authControllerLogin(
+    password,
+    email
+);
 ```
 
 ### Parameters
-This endpoint does not have any parameters.
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **password** | [**string**] |  | defaults to undefined|
+| **email** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
@@ -240,7 +250,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **authControllerRegister**
-> authControllerRegister(body)
+> authControllerRegister(registerDTO)
 
 
 ### Example
@@ -248,16 +258,17 @@ No authorization required
 ```typescript
 import {
     AuthApi,
-    Configuration
+    Configuration,
+    RegisterDTO
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new AuthApi(configuration);
 
-let body: object; //
+let registerDTO: RegisterDTO; //
 
 const { status, data } = await apiInstance.authControllerRegister(
-    body
+    registerDTO
 );
 ```
 
@@ -265,7 +276,7 @@ const { status, data } = await apiInstance.authControllerRegister(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **body** | **object**|  | |
+| **registerDTO** | **RegisterDTO**|  | |
 
 
 ### Return type

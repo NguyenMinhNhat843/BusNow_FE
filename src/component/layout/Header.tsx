@@ -2,16 +2,12 @@
 
 import logo from "../../../public/logo.webp";
 import Image from "next/image";
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import { logout, setUser } from "@/redux/slice/authSlice";
-import { authApi } from "@/api/authApi";
-import { userApi } from "@/api/userApi";
 import { RoleEnum } from "@/api/Enum/RoleEnum";
 import { Avatar, Box, Button, Group, Menu, Text } from "@mantine/core";
 import { IconBack, IconDown } from "@/type/icon";
+import { useUSer } from "@/hooks/useUser";
+import { useAuth } from "@/hooks/useAuth";
 
 const tabMenuUser = [
   {
@@ -31,44 +27,16 @@ const tabMenuUser = [
 export default function Header() {
   // common
   const router = useRouter();
-  const dispatch = useDispatch();
-
-  // redux
-  useEffect(() => {
-    const getMe = async () => {
-      try {
-        const res = await userApi.getProfileMe();
-
-        if (res.userId) {
-          dispatch(setUser(res));
-        } else {
-          dispatch(logout());
-        }
-      } catch (error) {
-        dispatch(logout());
-        console.log(error);
-      }
-    };
-
-    getMe();
-  }, []);
-
-  // state
-  const user = useSelector((state: RootState) => state.auth.user);
+  const { useGetProfileMe } = useUSer();
+  const { logout } = useAuth();
+  const { data: user } = useGetProfileMe();
 
   const handleNaviagteLogin = () => {
     router.push("/dang-nhap");
   };
 
-  // Vì đổi lưu token trong httpOnly cookie nên không cần kiểm tra token trong localStorage nữa
-  // Mà phải call api logout phía server để xóa cookie
-  const handleLogout = async () => {
-    const response = await authApi.logout();
-    if (response.status === 200) {
-      localStorage.removeItem("user");
-    }
-    dispatch(logout());
-    router.push("/");
+  const handleLogout = () => {
+    logout();
   };
 
   const headerNavigation = [

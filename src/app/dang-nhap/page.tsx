@@ -1,17 +1,13 @@
 "use client";
 
-import { authApi } from "@/api/authApi";
 import { RoleEnum } from "@/api/Enum/RoleEnum";
-import { login } from "@/redux/slice/authSlice";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { toast } from "sonner";
 
 export default function LoginPage() {
-  const dispatch = useDispatch();
+  const { login, isPendingLogin } = useAuth();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "minhnhat8843@gmail.com",
     password: "Pass@123",
@@ -27,40 +23,21 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    setIsLoading(true);
-    try {
-      const response = await authApi.login(formData.email, formData.password);
-      if (response.status === 200) {
-        toast.success("Đăng nhập thành công!", {
-          duration: 2000,
-        });
-        if (response.user.role === RoleEnum.PROVIDER) {
-          localStorage.setItem("user", JSON.stringify(response.user));
-          router.push("provider-dashboard");
-        } else {
-          localStorage.setItem("user", JSON.stringify(response.user));
-          dispatch(login({ user: response.user }));
-          router.push("/");
-        }
+    login(
+      {
+        email: formData.email,
+        password: formData.password,
+      },
+      {
+        onSuccess: (response: any) => {
+          if (response.user.role === RoleEnum.PROVIDER) {
+            router.push("provider-dashboard");
+          } else {
+            router.push("/");
+          }
+        },
       }
-    } catch (error: any) {
-      toast.error(
-        error.response?.data?.message || "Đăng nhập thất bại. Vui lòng thử lại."
-      );
-    }
-    setIsLoading(false);
-  };
-
-  const handleNaviagteRegister = () => {
-    router.push("/dang-ky");
-  };
-
-  const handleNaviagteHome = () => {
-    router.push("/");
-  };
-
-  const handleNavigateForgotPassword = () => {
-    router.push("/quen-mat-khau");
+    );
   };
 
   const handleLoginWithGoogle = async () => {
@@ -97,7 +74,7 @@ export default function LoginPage() {
 
           <p
             className="text-right text-blue-500 cursor-pointer hover:text-blue-600 hover:underline"
-            onClick={handleNavigateForgotPassword}
+            onClick={() => router.push("/quen-mat-khau")}
           >
             Quên mật khẩu
           </p>
@@ -110,7 +87,7 @@ export default function LoginPage() {
             Bạn chưa có tài khoản?{" "}
             <span
               className="text-blue-400 cursor-pointer"
-              onClick={handleNaviagteRegister}
+              onClick={() => router.push("/dang-ky")}
             >
               Đăng ký ngay
             </span>
@@ -120,7 +97,7 @@ export default function LoginPage() {
             Bạn chưa muốn tạo tìa khoản?{" "}
             <span
               className="text-blue-400 cursor-pointer"
-              onClick={handleNaviagteHome}
+              onClick={() => router.push("/")}
             >
               Vào trang chính
             </span>
@@ -152,7 +129,7 @@ export default function LoginPage() {
           </div>
         </form>
       </div>
-      {isLoading && (
+      {isPendingLogin && (
         <div>
           <div className="absolute top-0 left-0 w-full h-full bg-black/40 flex justify-center items-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-400"></div>

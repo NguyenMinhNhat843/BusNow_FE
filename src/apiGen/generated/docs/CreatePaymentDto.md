@@ -8,7 +8,6 @@ Name | Type | Description | Notes
 **amount** | **number** | Số tiền thanh toán (VND) | [default to undefined]
 **orderInfo** | **string** | Thông tin đơn hàng | [default to undefined]
 **bookingInfo** | [**CreateTIcketDTO**](CreateTIcketDTO.md) |  | [default to undefined]
-**userId** | **string** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -19,7 +18,6 @@ const instance: CreatePaymentDto = {
     amount,
     orderInfo,
     bookingInfo,
-    userId,
 };
 ```
 

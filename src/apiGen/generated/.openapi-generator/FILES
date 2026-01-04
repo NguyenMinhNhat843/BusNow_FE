@@ -18,6 +18,7 @@ docs/DeleteTripBeforeDate.md
 docs/GenTripDTO.md
 docs/LocationApi.md
 docs/RefundRequestApi.md
+docs/RegisterDTO.md
 docs/RouteApi.md
 docs/SearchRefundRequestDTO.md
 docs/SearchTicketDTO.md
@@ -25,6 +26,7 @@ docs/SeatApi.md
 docs/StopPointApi.md
 docs/TicketApi.md
 docs/TripApi.md
+docs/UpdateProfileDTO.md
 docs/UpdateStopPointDto.md
 docs/UpdateTicketDTO.md
 docs/UserApi.md
