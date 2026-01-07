@@ -194,6 +194,20 @@ export interface SearchTicketDTO {
     'page'?: number;
     'limit'?: number;
 }
+export interface UpdateBusCompanyRequestDTO {
+    'id': number;
+    'status': UpdateBusCompanyRequestDTOStatusEnum;
+    'rejectReason'?: string;
+}
+
+export const UpdateBusCompanyRequestDTOStatusEnum = {
+    Pending: 'PENDING',
+    Approved: 'APPROVED',
+    Rejected: 'REJECTED'
+} as const;
+
+export type UpdateBusCompanyRequestDTOStatusEnum = typeof UpdateBusCompanyRequestDTOStatusEnum[keyof typeof UpdateBusCompanyRequestDTOStatusEnum];
+
 export interface UpdateProfileDTO {
     'firstName'?: string;
     'lastName'?: string;
@@ -973,6 +987,373 @@ export class AuthApi extends BaseAPI {
     }
 }
 
+
+
+/**
+ * BusCompanyRequestApi - axios parameter creator
+ */
+export const BusCompanyRequestApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {string} companyName 
+         * @param {string} address 
+         * @param {string} phoneNumber 
+         * @param {string} email 
+         * @param {string} representativeName 
+         * @param {string} licenseNumber 
+         * @param {File} [licenseFile] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        busCompanyRequestControllerCreate: async (companyName: string, address: string, phoneNumber: string, email: string, representativeName: string, licenseNumber: string, licenseFile?: File, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'companyName' is not null or undefined
+            assertParamExists('busCompanyRequestControllerCreate', 'companyName', companyName)
+            // verify required parameter 'address' is not null or undefined
+            assertParamExists('busCompanyRequestControllerCreate', 'address', address)
+            // verify required parameter 'phoneNumber' is not null or undefined
+            assertParamExists('busCompanyRequestControllerCreate', 'phoneNumber', phoneNumber)
+            // verify required parameter 'email' is not null or undefined
+            assertParamExists('busCompanyRequestControllerCreate', 'email', email)
+            // verify required parameter 'representativeName' is not null or undefined
+            assertParamExists('busCompanyRequestControllerCreate', 'representativeName', representativeName)
+            // verify required parameter 'licenseNumber' is not null or undefined
+            assertParamExists('busCompanyRequestControllerCreate', 'licenseNumber', licenseNumber)
+            const localVarPath = `/bus-company-requests`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+
+            if (companyName !== undefined) { 
+                localVarFormParams.append('companyName', companyName as any);
+            }
+    
+            if (address !== undefined) { 
+                localVarFormParams.append('address', address as any);
+            }
+    
+            if (phoneNumber !== undefined) { 
+                localVarFormParams.append('phoneNumber', phoneNumber as any);
+            }
+    
+            if (email !== undefined) { 
+                localVarFormParams.append('email', email as any);
+            }
+    
+            if (representativeName !== undefined) { 
+                localVarFormParams.append('representativeName', representativeName as any);
+            }
+    
+            if (licenseNumber !== undefined) { 
+                localVarFormParams.append('licenseNumber', licenseNumber as any);
+            }
+    
+            if (licenseFile !== undefined) { 
+                localVarFormParams.append('licenseFile', licenseFile as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} [page] 
+         * @param {number} [limit] 
+         * @param {string} [requestId] 
+         * @param {string} [phone] 
+         * @param {string} [email] 
+         * @param {BusCompanyRequestControllerGetListStatusEnum} [status] 
+         * @param {string} [fromDate] 
+         * @param {string} [toDate] 
+         * @param {string} [sortBy] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        busCompanyRequestControllerGetList: async (page?: number, limit?: number, requestId?: string, phone?: string, email?: string, status?: BusCompanyRequestControllerGetListStatusEnum, fromDate?: string, toDate?: string, sortBy?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/bus-company-requests`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (requestId !== undefined) {
+                localVarQueryParameter['requestId'] = requestId;
+            }
+
+            if (phone !== undefined) {
+                localVarQueryParameter['phone'] = phone;
+            }
+
+            if (email !== undefined) {
+                localVarQueryParameter['email'] = email;
+            }
+
+            if (status !== undefined) {
+                localVarQueryParameter['status'] = status;
+            }
+
+            if (fromDate !== undefined) {
+                localVarQueryParameter['fromDate'] = (fromDate as any instanceof Date) ?
+                    (fromDate as any).toISOString() :
+                    fromDate;
+            }
+
+            if (toDate !== undefined) {
+                localVarQueryParameter['toDate'] = (toDate as any instanceof Date) ?
+                    (toDate as any).toISOString() :
+                    toDate;
+            }
+
+            if (sortBy !== undefined) {
+                localVarQueryParameter['sortBy'] = sortBy;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {UpdateBusCompanyRequestDTO} updateBusCompanyRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        busCompanyRequestControllerUpdate: async (updateBusCompanyRequestDTO: UpdateBusCompanyRequestDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'updateBusCompanyRequestDTO' is not null or undefined
+            assertParamExists('busCompanyRequestControllerUpdate', 'updateBusCompanyRequestDTO', updateBusCompanyRequestDTO)
+            const localVarPath = `/bus-company-requests`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updateBusCompanyRequestDTO, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * BusCompanyRequestApi - functional programming interface
+ */
+export const BusCompanyRequestApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = BusCompanyRequestApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {string} companyName 
+         * @param {string} address 
+         * @param {string} phoneNumber 
+         * @param {string} email 
+         * @param {string} representativeName 
+         * @param {string} licenseNumber 
+         * @param {File} [licenseFile] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async busCompanyRequestControllerCreate(companyName: string, address: string, phoneNumber: string, email: string, representativeName: string, licenseNumber: string, licenseFile?: File, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.busCompanyRequestControllerCreate(companyName, address, phoneNumber, email, representativeName, licenseNumber, licenseFile, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BusCompanyRequestApi.busCompanyRequestControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {number} [page] 
+         * @param {number} [limit] 
+         * @param {string} [requestId] 
+         * @param {string} [phone] 
+         * @param {string} [email] 
+         * @param {BusCompanyRequestControllerGetListStatusEnum} [status] 
+         * @param {string} [fromDate] 
+         * @param {string} [toDate] 
+         * @param {string} [sortBy] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async busCompanyRequestControllerGetList(page?: number, limit?: number, requestId?: string, phone?: string, email?: string, status?: BusCompanyRequestControllerGetListStatusEnum, fromDate?: string, toDate?: string, sortBy?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.busCompanyRequestControllerGetList(page, limit, requestId, phone, email, status, fromDate, toDate, sortBy, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BusCompanyRequestApi.busCompanyRequestControllerGetList']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {UpdateBusCompanyRequestDTO} updateBusCompanyRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async busCompanyRequestControllerUpdate(updateBusCompanyRequestDTO: UpdateBusCompanyRequestDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.busCompanyRequestControllerUpdate(updateBusCompanyRequestDTO, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BusCompanyRequestApi.busCompanyRequestControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * BusCompanyRequestApi - factory interface
+ */
+export const BusCompanyRequestApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = BusCompanyRequestApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {string} companyName 
+         * @param {string} address 
+         * @param {string} phoneNumber 
+         * @param {string} email 
+         * @param {string} representativeName 
+         * @param {string} licenseNumber 
+         * @param {File} [licenseFile] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        busCompanyRequestControllerCreate(companyName: string, address: string, phoneNumber: string, email: string, representativeName: string, licenseNumber: string, licenseFile?: File, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.busCompanyRequestControllerCreate(companyName, address, phoneNumber, email, representativeName, licenseNumber, licenseFile, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} [page] 
+         * @param {number} [limit] 
+         * @param {string} [requestId] 
+         * @param {string} [phone] 
+         * @param {string} [email] 
+         * @param {BusCompanyRequestControllerGetListStatusEnum} [status] 
+         * @param {string} [fromDate] 
+         * @param {string} [toDate] 
+         * @param {string} [sortBy] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        busCompanyRequestControllerGetList(page?: number, limit?: number, requestId?: string, phone?: string, email?: string, status?: BusCompanyRequestControllerGetListStatusEnum, fromDate?: string, toDate?: string, sortBy?: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.busCompanyRequestControllerGetList(page, limit, requestId, phone, email, status, fromDate, toDate, sortBy, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {UpdateBusCompanyRequestDTO} updateBusCompanyRequestDTO 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        busCompanyRequestControllerUpdate(updateBusCompanyRequestDTO: UpdateBusCompanyRequestDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.busCompanyRequestControllerUpdate(updateBusCompanyRequestDTO, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * BusCompanyRequestApi - object-oriented interface
+ */
+export class BusCompanyRequestApi extends BaseAPI {
+    /**
+     * 
+     * @param {string} companyName 
+     * @param {string} address 
+     * @param {string} phoneNumber 
+     * @param {string} email 
+     * @param {string} representativeName 
+     * @param {string} licenseNumber 
+     * @param {File} [licenseFile] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public busCompanyRequestControllerCreate(companyName: string, address: string, phoneNumber: string, email: string, representativeName: string, licenseNumber: string, licenseFile?: File, options?: RawAxiosRequestConfig) {
+        return BusCompanyRequestApiFp(this.configuration).busCompanyRequestControllerCreate(companyName, address, phoneNumber, email, representativeName, licenseNumber, licenseFile, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} [page] 
+     * @param {number} [limit] 
+     * @param {string} [requestId] 
+     * @param {string} [phone] 
+     * @param {string} [email] 
+     * @param {BusCompanyRequestControllerGetListStatusEnum} [status] 
+     * @param {string} [fromDate] 
+     * @param {string} [toDate] 
+     * @param {string} [sortBy] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public busCompanyRequestControllerGetList(page?: number, limit?: number, requestId?: string, phone?: string, email?: string, status?: BusCompanyRequestControllerGetListStatusEnum, fromDate?: string, toDate?: string, sortBy?: string, options?: RawAxiosRequestConfig) {
+        return BusCompanyRequestApiFp(this.configuration).busCompanyRequestControllerGetList(page, limit, requestId, phone, email, status, fromDate, toDate, sortBy, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {UpdateBusCompanyRequestDTO} updateBusCompanyRequestDTO 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public busCompanyRequestControllerUpdate(updateBusCompanyRequestDTO: UpdateBusCompanyRequestDTO, options?: RawAxiosRequestConfig) {
+        return BusCompanyRequestApiFp(this.configuration).busCompanyRequestControllerUpdate(updateBusCompanyRequestDTO, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+export const BusCompanyRequestControllerGetListStatusEnum = {
+    Pending: 'PENDING',
+    Approved: 'APPROVED',
+    Rejected: 'REJECTED'
+} as const;
+export type BusCompanyRequestControllerGetListStatusEnum = typeof BusCompanyRequestControllerGetListStatusEnum[keyof typeof BusCompanyRequestControllerGetListStatusEnum];
 
 
 /**

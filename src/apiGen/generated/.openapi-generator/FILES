@@ -6,6 +6,7 @@ common.ts
 configuration.ts
 docs/AuthApi.md
 docs/BankingInfoDTO.md
+docs/BusCompanyRequestApi.md
 docs/CancleTicketDTO.md
 docs/ConfirmCancleTicketDTO.md
 docs/CreateLocationDto.md
@@ -26,6 +27,7 @@ docs/SeatApi.md
 docs/StopPointApi.md
 docs/TicketApi.md
 docs/TripApi.md
+docs/UpdateBusCompanyRequestDTO.md
 docs/UpdateProfileDTO.md
 docs/UpdateStopPointDto.md
 docs/UpdateTicketDTO.md
