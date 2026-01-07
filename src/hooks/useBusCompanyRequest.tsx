@@ -1,5 +1,6 @@
 import { axiosInstance } from "@/apiGen";
-import { useMutation } from "@tanstack/react-query";
+import { busCompanyRequestApi } from "@/apiGen/busCompanyRequest.api";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useBusCompanyRequest = () => {
   const {
@@ -14,8 +15,20 @@ export const useBusCompanyRequest = () => {
     },
   });
 
+  const useGetBusCompanyRequest = () => {
+    return useQuery<any>({
+      queryKey: ["busCompanyRequests"],
+      queryFn: async () => {
+        const res =
+          await busCompanyRequestApi.busCompanyRequestControllerGetList();
+        return res.data;
+      },
+    });
+  };
+
   return {
     createBusCompanyRequest,
     isPendingCreateBusCompanyRequest,
+    useGetBusCompanyRequest,
   };
 };

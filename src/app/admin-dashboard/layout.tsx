@@ -1,18 +1,25 @@
+"use client";
+
+import { Box } from "@mantine/core";
 import SideBar from "./components/sideBar";
 
-interface typeOfProp {
+export default function AdminDashboardLayout({
+  children,
+}: {
   children: React.ReactNode;
-}
-
-export default function AdminDashBoardLayout({ children }: typeOfProp) {
+}) {
   return (
-    <div className="flex justify-center p-8">
-      <div className="w-[1000px] flex gap-6">
-        <div className="shadow-2xl min-h-screen">
-          <SideBar />
-        </div>
-        <div className="grow shadow-2xl p-6">{children}</div>
-      </div>
-    </div>
+    <Box
+      className="flex bg-gray-50"
+      style={{
+        minHeight: "calc(100vh - 64px)",
+      }}
+    >
+      <Box w={280} bg="white" p="md" className="border-r border-slate-300">
+        <SideBar />
+      </Box>
+
+      <Box className="flex-1 p-6">{children}</Box>
+    </Box>
   );
 }

@@ -1,14 +1,12 @@
 "use client";
 
-import { authApi } from "@/api/authApi";
 import { RequestRegisterDTO } from "@/api/DTO/authApiDTO";
 import { RoleEnum } from "@/api/Enum/RoleEnum";
-import { VehicleTypeEnum } from "@/api/Enum/VehicleEnum";
+import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
-import { toast } from "sonner";
 
 export default function CreateAccountProvicer() {
-  const [loading, setLoading] = useState(false);
+  const { registerProvider, isPendingRegisterProvider } = useAuth();
   const [formData, setFormData] = useState<RequestRegisterDTO>({
     firstName: "Nhà xe",
     lastName: "Liên Hưng",
@@ -16,9 +14,7 @@ export default function CreateAccountProvicer() {
     phoneNumber: "0159368245",
     password: "Pass@123",
     address: "123 Gò Vấp, Hồ Chí Minh",
-    // type: VehicleTypeEnum.BUS,
     role: RoleEnum.PROVIDER,
-    isInternalAdminCreate: true,
   });
 
   const handleOnChangeInput = (e: any) => {
@@ -38,28 +34,23 @@ export default function CreateAccountProvicer() {
       password: "",
       address: "",
       role: RoleEnum.PROVIDER,
-      isInternalAdminCreate: true,
     });
   };
 
   const handleRegisterApi = async (e: any) => {
-    setLoading(true);
     e.preventDefault();
-    try {
-      const response = await authApi.registerProvider(formData);
-      toast.success("Đăng ký nhà xe thành công!!!");
-      resetFormData();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message);
-    } finally {
-      setLoading(false);
-    }
+    registerProvider(formData, {
+      onSuccess: () => {
+        alert("✅ Đăng ký thành công");
+        resetFormData();
+      },
+    });
   };
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 border rounded-lg shadow-md bg-white">
       {/* Overlay loading */}
-      {loading && (
+      {isPendingRegisterProvider && (
         <div className="absolute top-0 left-0 w-full h-full bg-black/40 flex justify-center items-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-400"></div>
         </div>

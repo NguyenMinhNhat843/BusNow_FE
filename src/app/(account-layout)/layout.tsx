@@ -6,7 +6,6 @@ interface AccountLayoutProps {
   children: React.ReactNode;
 }
 
-// Move ra ngoài component để tránh re-create
 const navigations = [
   {
     label: "Thông tin tài khoản",
@@ -22,7 +21,6 @@ const navigations = [
   },
 ] as const;
 
-// Server Component - không cần "use client"
 const AccountLayout: FunctionComponent<AccountLayoutProps> = ({ children }) => {
   return (
     <Box

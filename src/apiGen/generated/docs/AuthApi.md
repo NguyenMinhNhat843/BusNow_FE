@@ -301,7 +301,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **authControllerRegisterProvider**
-> authControllerRegisterProvider(body)
+> authControllerRegisterProvider(createUserDto)
 
 
 ### Example
@@ -309,16 +309,17 @@ No authorization required
 ```typescript
 import {
     AuthApi,
-    Configuration
+    Configuration,
+    CreateUserDto
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new AuthApi(configuration);
 
-let body: object; //
+let createUserDto: CreateUserDto; //
 
 const { status, data } = await apiInstance.authControllerRegisterProvider(
-    body
+    createUserDto
 );
 ```
 
@@ -326,7 +327,7 @@ const { status, data } = await apiInstance.authControllerRegisterProvider(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **body** | **object**|  | |
+| **createUserDto** | **CreateUserDto**|  | |
 
 
 ### Return type

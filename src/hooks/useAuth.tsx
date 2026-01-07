@@ -1,4 +1,5 @@
 import { authApi } from "@/apiGen/auth.api";
+import { CreateUserDto } from "@/apiGen/generated";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useAuth = () => {
@@ -28,10 +29,20 @@ export const useAuth = () => {
     },
   });
 
+  const { mutate: registerProvider, isPending: isPendingRegisterProvider } =
+    useMutation({
+      mutationFn: async (body: CreateUserDto) => {
+        const res = await authApi.authControllerRegisterProvider(body);
+        return res.data;
+      },
+    });
+
   return {
     logout,
     isPendingLogout,
     login,
     isPendingLogin,
+    registerProvider,
+    isPendingRegisterProvider,
   };
 };

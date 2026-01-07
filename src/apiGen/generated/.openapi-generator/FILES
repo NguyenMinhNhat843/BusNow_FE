@@ -14,6 +14,7 @@ docs/CreatePaymentDto.md
 docs/CreateRouteDTO.md
 docs/CreateStopPointDto.md
 docs/CreateTIcketDTO.md
+docs/CreateUserDto.md
 docs/DeleteLocationDto.md
 docs/DeleteTripBeforeDate.md
 docs/GenTripDTO.md
