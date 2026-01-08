@@ -56,59 +56,74 @@ export default function Header() {
     <Box
       h={64}
       px="md"
-      bg="white"
+      className="
+    sticky top-0 z-50
+    bg-white
+    border-b border-gray-100
+    transition-shadow duration-300
+  "
       style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        boxShadow: "var(--mantine-shadow-md)",
-        zIndex: 10,
       }}
     >
       {/* Logo */}
       <Box
         w={120}
         h="100%"
-        style={{ cursor: "pointer", position: "relative" }}
+        className="relative cursor-pointer transition-opacity hover:opacity-80"
         onClick={() => router.push("/")}
       >
         <Image src={logo} alt="logo" fill className="object-contain" />
       </Box>
 
       {/* Right */}
-      <Group gap="md">
-        {/* Menu navigation */}
-        {headerNavigation
-          .filter((item) => item.role)
-          .map((item) => (
-            <Text
-              key={item.label}
-              fw={500}
-              style={{ cursor: "pointer" }}
-              onClick={() => router.push(`/${item.route}`)}
-            >
-              {item.label}
-            </Text>
-          ))}
+      <div className="flex items-center gap-6">
+        {/* Navigation */}
+        <div className="flex items-center gap-6">
+          {headerNavigation
+            .filter((item) => item.role)
+            .map((item) => (
+              <div
+                key={item.label}
+                onClick={() => router.push(`/${item.route}`)}
+                className="
+              relative cursor-pointer text-sm font-medium text-gray-700
+              after:absolute after:-bottom-1 after:left-0 after:h-[2px]
+              after:w-0 after:bg-yellow-400
+              hover:after:w-full
+              after:transition-all after:duration-300
+            "
+              >
+                {item.label}
+              </div>
+            ))}
+        </div>
 
-        {/* User */}
+        {/* User / Auth */}
         {user ? (
-          <Menu width={200} position="bottom-end" shadow="md">
+          <Menu width={200} position="bottom-end" shadow="md" withArrow>
             <Menu.Target>
-              <Group gap="xs" style={{ cursor: "pointer" }}>
-                <Avatar src="/avatar_default.png" size="sm" />
-                <Text size="sm">
+              <div className="flex items-center gap-2 cursor-pointer group">
+                <Avatar
+                  src="/avatar_default.png"
+                  size="sm"
+                  className="transition-transform duration-300 group-hover:scale-105"
+                />
+                <span className="text-sm font-medium text-gray-700">
                   {user.firstName} {user.lastName}
-                </Text>
-                <IconDown size={14} />
-              </Group>
+                </span>
+                <IconDown size={14} className="text-gray-500" />
+              </div>
             </Menu.Target>
 
-            <Menu.Dropdown>
+            <Menu.Dropdown className="py-2">
               {tabMenuUser.map((item) => (
                 <Menu.Item
                   key={item.name}
                   onClick={() => router.push(item.link)}
+                  className="transition hover:bg-gray-50"
                 >
                   {item.name}
                 </Menu.Item>
@@ -126,11 +141,20 @@ export default function Header() {
             </Menu.Dropdown>
           </Menu>
         ) : (
-          <Button color="yellow" onClick={handleNaviagteLogin}>
+          <Button
+            radius="md"
+            className="
+          bg-gradient-to-r from-yellow-400 to-yellow-500
+          hover:from-yellow-500 hover:to-yellow-600
+          transition-all duration-300
+          hover:-translate-y-0.5
+        "
+            onClick={handleNaviagteLogin}
+          >
             Đăng nhập
           </Button>
         )}
-      </Group>
+      </div>
     </Box>
   );
 }

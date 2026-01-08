@@ -2,7 +2,8 @@
 import { authApi } from "@/api/authApi";
 import { RequestRegisterDTO } from "@/api/DTO/authApiDTO";
 import { RoleEnum } from "@/api/Enum/RoleEnum";
-import { set } from "date-fns";
+import { IconLock, IconMail, IconUser } from "@/type/icon";
+import { Button, Paper, PasswordInput, Text, TextInput } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -31,7 +32,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    const { firstName, lastName, email, password } = formData;
+    const { email } = formData;
     setIsLoading(true);
     try {
       const response = await authApi.sendOtpRegister(email);
@@ -81,126 +82,155 @@ export default function RegisterPage() {
   const handleNaviagteHome = () => {
     router.push("/");
   };
+
+  const registerFields = [
+    {
+      label: "Họ và tên đệm",
+      name: "firstName",
+      placeholder: "Nhập họ và tên đệm",
+      icon: <IconUser size={18} />,
+      type: "text",
+    },
+    {
+      label: "Tên",
+      name: "lastName",
+      placeholder: "Nhập tên",
+      icon: <IconUser size={18} />,
+      type: "text",
+    },
+    {
+      label: "Email",
+      name: "email",
+      placeholder: "email@example.com",
+      icon: <IconMail size={18} />,
+      type: "email",
+    },
+  ];
+
   return (
-    <div className="relative flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white rounded-lg shadow-lg p-8 w-[500px]">
-        <h1 className="text-2xl font-bold text-center pb-6">
+    <div className="relative flex items-center justify-center overflow-hidden min-h-screen bg-gradient-to-br from-yellow-100 via-white to-blue-100">
+      {/* Blur blobs */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-yellow-300 rounded-full blur-3xl opacity-30" />
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-300 rounded-full blur-3xl opacity-30" />
+
+      <Paper
+        shadow="xl"
+        radius="lg"
+        p="xl"
+        className="relative w-[480px] bg-white/90 backdrop-blur transition-all duration-300 hover:shadow-2xl"
+      >
+        <Text size="xl" fw={700} ta="center" mb={4}>
           Đăng ký tài khoản
-        </h1>
-        <form onSubmit={handleSubmit} className="flex flex-col">
-          <div className="">
-            <label className="font-bold text-gray-700">Họ và tên đệm</label>
-            <input
-              type="text"
-              name="firstName"
-              value={formData.firstName}
-              onChange={onChangeInput}
-              className="border border-gray-300 rounded-md py-1 px-2 w-full mt-2 mb-4"
-              placeholder="Nhập họ và tên đệm"
-              required
-            />
-          </div>
-          <div className="">
-            <label className="font-bold text-gray-700">Tên</label>
-            <input
-              type="text"
-              name="lastName"
-              value={formData.lastName}
-              onChange={onChangeInput}
-              className="border border-gray-300 rounded-md py-1 px-2 w-full mt-2 mb-4"
-              placeholder="Nhập tên"
-              required
-            />
-          </div>
-          <div className="">
-            <label className="font-bold text-gray-700">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={onChangeInput}
-              className="border border-gray-300 rounded-md py-1 px-2 w-full mt-2 mb-4"
-              placeholder="Nhập email"
-              required
-            />
-          </div>
-          <div className="">
-            <label className="font-bold text-gray-700">Mật khẩu</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={onChangeInput}
-              className="border border-gray-300 rounded-md py-1 px-2 w-full mt-2 mb-4"
-              placeholder="Nhập mật khẩu"
-              required
-            />
-          </div>
-          <div className="">
-            <label className="font-bold text-gray-700">Nhập lại mật khẩu</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={onChangeInput}
-              className="border border-gray-300 rounded-md py-1 px-2 w-full mt-2 mb-4"
-              placeholder="Nhập lại mật khẩu"
-              required
-            />
-          </div>
+        </Text>
+        <Text size="sm" c="dimmed" ta="center" mb="lg">
+          Tạo tài khoản mới chỉ trong vài bước
+        </Text>
 
-          <button className="w-full py-2 bg-yellow-400 rounded-lg my-4 cursor-pointer hover:bg-yellow-500">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Text inputs */}
+          {registerFields.map((field) => (
+            <TextInput
+              key={field.name}
+              label={field.label}
+              placeholder={field.placeholder}
+              leftSection={field.icon}
+              name={field.name}
+              value={formData[field.name as keyof typeof formData]}
+              onChange={onChangeInput}
+              required
+              radius="md"
+            />
+          ))}
+
+          {/* Password */}
+          <PasswordInput
+            label="Mật khẩu"
+            placeholder="••••••••"
+            leftSection={<IconLock size={18} />}
+            name="password"
+            value={formData.password}
+            onChange={onChangeInput}
+            required
+            radius="md"
+          />
+
+          <PasswordInput
+            label="Nhập lại mật khẩu"
+            placeholder="••••••••"
+            leftSection={<IconLock size={18} />}
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={onChangeInput}
+            required
+            radius="md"
+          />
+
+          <Button
+            type="submit"
+            fullWidth
+            radius="md"
+            size="md"
+            loading={isLoading}
+            className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 transition-all duration-300 hover:-translate-y-0.5"
+          >
             Đăng ký tài khoản
-          </button>
+          </Button>
 
-          <p className="text-center pt-2">
-            Bạn đã có tài khoản?{" "}
+          <Text size="sm" ta="center">
+            Đã có tài khoản?{" "}
             <span
-              className="text-blue-400 cursor-pointer"
+              className="text-blue-500 cursor-pointer hover:underline"
               onClick={handleNaviagteLogin}
             >
               Đăng nhập ngay
             </span>
-          </p>
+          </Text>
 
-          <p className="text-center pt-2">
-            Bạn chưa muốn tạo tài khoản?{" "}
+          <Text size="sm" ta="center">
+            Chưa muốn tạo tài khoản?{" "}
             <span
-              className="text-blue-400 cursor-pointer"
+              className="text-blue-500 cursor-pointer hover:underline"
               onClick={handleNaviagteHome}
             >
-              Vào trang chính
+              Về trang chủ
             </span>
-          </p>
+          </Text>
         </form>
-      </div>
-      {isLoading && (
-        <div className="absolute top-0 left-0 w-full h-full bg-black/40 flex justify-center items-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-400"></div>
-        </div>
-      )}
+      </Paper>
+
+      {/* OTP Overlay */}
       {isOtpForm && (
-        <div className="absolute top-0 left-0 w-full h-full bg-black/40 flex flex-col justify-center items-center p-8">
-          <div className="bg-white rounded-lg shadow-lg p-8 w-[500px]">
-            <p>Nhập OTP được gửi qua gmail</p>
-            <form>
-              <input
-                type="text"
-                name="otp"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="border border-gray-300 rounded-md py-1 px-2 w-full mt-2 mb-4"
-                placeholder="Nhập mã OTP"
-                required
-              />
-              <button
-                className="w-full py-2 bg-yellow-400 rounded-lg my-4 cursor-pointer hover:bg-yellow-500"
-                onClick={handleVerifyOtp}
-              >
-                Xác nhận OTP
-              </button>
-            </form>
-          </div>
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-sm">
+          <Paper
+            radius="lg"
+            shadow="xl"
+            p="xl"
+            className="w-[420px] animate-fade-in"
+          >
+            <Text fw={600} mb={6}>
+              Xác thực OTP
+            </Text>
+            <Text size="sm" c="dimmed" mb="md">
+              Nhập mã OTP đã được gửi tới email của bạn
+            </Text>
+
+            <TextInput
+              placeholder="Nhập mã OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              radius="md"
+              required
+            />
+
+            <Button
+              fullWidth
+              mt="md"
+              onClick={handleVerifyOtp}
+              className="bg-yellow-400 hover:bg-yellow-500 transition"
+            >
+              Xác nhận OTP
+            </Button>
+          </Paper>
         </div>
       )}
     </div>

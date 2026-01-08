@@ -2,6 +2,15 @@
 
 import { RoleEnum } from "@/api/Enum/RoleEnum";
 import { useAuth } from "@/hooks/useAuth";
+import { IconGoogle, IconLock, IconMail } from "@/type/icon";
+import {
+  Button,
+  Divider,
+  Paper,
+  PasswordInput,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -45,97 +54,104 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white rounded-lg shadow-lg p-8 w-[500px]">
-        <h1 className="text-2xl font-bold text-center pb-6">Đăng nhập</h1>
-        <form onSubmit={handleSubmit} className="flex flex-col">
-          <div className="">
-            <label className="font-bold text-gray-700">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleOnchange}
-              className="border border-gray-300 rounded-md py-1 px-2 w-full mt-2 mb-4"
-              placeholder="Nhập email"
-            />
-          </div>
-          <div className="">
-            <label className="font-bold text-gray-700">Mật khẩu</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleOnchange}
-              className="border border-gray-300 rounded-md py-1 px-2 w-full mt-2 mb-4"
-              placeholder="Nhập mật khẩu"
-            />
-          </div>
+    <div className="relative flex items-center justify-center min-h-screen overflow-hidden bg-gradient-to-br from-yellow-100 via-white to-blue-100">
+      {/* Background blur blob */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-yellow-300 rounded-full blur-3xl opacity-30" />
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-300 rounded-full blur-3xl opacity-30" />
 
-          <p
-            className="text-right text-blue-500 cursor-pointer hover:text-blue-600 hover:underline"
+      <Paper
+        shadow="xl"
+        radius="lg"
+        p="xl"
+        className="relative w-[420px] backdrop-blur-md bg-white/90 transition-all duration-300 hover:shadow-2xl"
+      >
+        <Text size="xl" fw={700} ta="center" mb={6}>
+          Đăng nhập
+        </Text>
+        <Text size="sm" c="dimmed" ta="center" mb="lg">
+          Chào mừng bạn quay lại
+        </Text>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <TextInput
+            label="Email"
+            placeholder="email@example.com"
+            leftSection={<IconMail size={18} />}
+            value={formData.email}
+            name="email"
+            onChange={handleOnchange}
+            radius="md"
+            required
+            classNames={{
+              input:
+                "transition focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400",
+            }}
+          />
+
+          <PasswordInput
+            label="Mật khẩu"
+            placeholder="••••••••"
+            leftSection={<IconLock size={18} />}
+            value={formData.password}
+            name="password"
+            onChange={handleOnchange}
+            radius="md"
+            required
+          />
+
+          <div
+            className="text-right text-sm text-blue-500 cursor-pointer hover:underline"
             onClick={() => router.push("/quen-mat-khau")}
           >
-            Quên mật khẩu
-          </p>
+            Quên mật khẩu?
+          </div>
 
-          <button className="w-full py-2 bg-yellow-400 rounded-lg my-4 cursor-pointer hover:bg-yellow-500">
+          <Button
+            type="submit"
+            fullWidth
+            radius="md"
+            size="md"
+            className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 transition-all duration-300 hover:-translate-y-0.5"
+            loading={isPendingLogin}
+          >
             Đăng nhập
+          </Button>
+
+          <Divider label="hoặc" labelPosition="center" />
+
+          {/* Google login */}
+          <button
+            type="button"
+            onClick={handleLoginWithGoogle}
+            className="flex items-center cursor-pointer justify-center gap-3 w-full border border-gray-300 rounded-md py-2 transition hover:bg-gray-100 hover:shadow-sm"
+          >
+            <IconGoogle size={24} color="red" />
+            <span className="font-medium text-gray-700">
+              Đăng nhập với Google
+            </span>
           </button>
 
-          <p className="text-center pt-2">
-            Bạn chưa có tài khoản?{" "}
+          <Text size="sm" ta="center">
+            Chưa có tài khoản?{" "}
             <span
-              className="text-blue-400 cursor-pointer"
+              className="text-blue-500 cursor-pointer hover:underline"
               onClick={() => router.push("/dang-ky")}
             >
               Đăng ký ngay
             </span>
-          </p>
+          </Text>
 
-          <p className="text-center pt-2">
-            Bạn chưa muốn tạo tìa khoản?{" "}
+          <Text size="sm" ta="center">
+            Chưa muốn tạo tài khoản?{" "}
             <span
-              className="text-blue-400 cursor-pointer"
+              className="text-blue-500 cursor-pointer hover:underline"
               onClick={() => router.push("/")}
             >
-              Vào trang chính
+              Về trang chủ
             </span>
-          </p>
-
-          {/* Đăngg nhập với google */}
-          <div className="relative my-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-gray-500">hoặc</span>
-            </div>
-          </div>
-          <div
-            className="flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-md py-2 px-4 mb-4 cursor-pointer hover:bg-gray-100 transition"
-            onClick={handleLoginWithGoogle}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 640 640"
-              className="w-10 h-10"
-            >
-              <path d="M564 325.8C564 467.3 467.1 568 324 568C186.8 568 76 457.2 76 320C76 182.8 186.8 72 324 72C390.8 72 447 96.5 490.3 136.9L422.8 201.8C334.5 116.6 170.3 180.6 170.3 320C170.3 406.5 239.4 476.6 324 476.6C422.2 476.6 459 406.2 464.8 369.7L324 369.7L324 284.4L560.1 284.4C562.4 297.1 564 309.3 564 325.8z" />
-            </svg>
-            <span className="text-sm text-gray-700 font-medium">
-              Đăng nhập với Google
-            </span>
-          </div>
+          </Text>
         </form>
-      </div>
-      {isPendingLogin && (
-        <div>
-          <div className="absolute top-0 left-0 w-full h-full bg-black/40 flex justify-center items-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-400"></div>
-          </div>
-        </div>
-      )}
+      </Paper>
     </div>
   );
 }
