@@ -24,17 +24,16 @@ const navigations = [
 const AccountLayout: FunctionComponent<AccountLayoutProps> = ({ children }) => {
   return (
     <Box
-      className="flex min-h-full grow bg-gray-50"
-      style={{
-        minHeight: "calc(100vh - 64px)",
-      }}
+      className="flex max-w-5xl mx-auto"
+      style={{ minHeight: "calc(100vh - 64px)" }}
     >
       {/* Sidebar */}
-      <Box w={260} bg="white" className="border-r border-slate-400" p="md">
+      <Box w={260} p="md">
         <Stack gap="lg">
-          <Title order={5}>Tài khoản</Title>
+          <Title order={5} className="text-gray-800">
+            Quản lý tài khoản
+          </Title>
 
-          {/* Tách phần interactive thành Client Component riêng */}
           <NavigationMenu navigations={navigations} />
         </Stack>
       </Box>

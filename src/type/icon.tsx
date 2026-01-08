@@ -8,6 +8,7 @@ import { IoIosAddCircle, IoMdEye } from "react-icons/io";
 import {
   FaCheck,
   FaChevronDown,
+  FaChevronRight,
   FaGoogle,
   FaLock,
   FaSearch,
@@ -29,3 +30,4 @@ export const IconLock = FaLock;
 export const IconMail = IoMailSharp;
 export const IconGoogle = FaGoogle;
 export const IconUser = FaUser;
+export const IconArrowRight = FaChevronRight;

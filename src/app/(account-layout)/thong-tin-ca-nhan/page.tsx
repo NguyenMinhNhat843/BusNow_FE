@@ -1,22 +1,21 @@
 "use client";
 
 import { userApi } from "@/api/userApi";
+import { Breadcrumb } from "@/component/Breadscrumb";
 import { useUSer } from "@/hooks/useUser";
 import { updateProfile } from "@/redux/slice/authSlice";
 import { IconCheck, IconWarning } from "@/type/icon";
-import {
-  Avatar,
-  Button,
-  Card,
-  Center,
-  Group,
-  Stack,
-  Text,
-  TextInput,
-} from "@mantine/core";
+import { Avatar, Button, Card, Group, Text, TextInput } from "@mantine/core";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
+
+const profileFields = [
+  { label: "Họ và tên đệm", name: "firstName", editable: true },
+  { label: "Tên", name: "lastName", editable: true },
+  { label: "Email", name: "email" },
+  { label: "Số điện thoại", name: "phoneNumber", editable: true },
+];
 
 export default function PersonalInfoPage() {
   const dispatch = useDispatch();
@@ -139,117 +138,115 @@ export default function PersonalInfoPage() {
   }
 
   return (
-    <Card shadow="md" radius="md" padding="xl" maw={500} mx="auto" mt="xl">
-      <Stack gap="md">
-        {/* Avatar */}
-        <Center>
-          <Stack align="center" gap="xs">
-            <Avatar
-              src={avatarPreview || "/avatar_default.png"}
-              size={100}
-              radius={100}
-            />
-            <input
-              type="file"
-              accept="image/*"
-              hidden
-              ref={selectAvatarRef}
-              onChange={handleChangeFile}
-            />
-            {isUpdateMode && (
-              <Button size="xs" onClick={handleOpenFolder}>
-                Chọn avatar
-              </Button>
-            )}
-          </Stack>
-        </Center>
+    <div>
+      <Breadcrumb
+        items={[
+          { label: "Trang chủ", href: "/" },
+          { label: "Thông tin cá nhân" },
+        ]}
+      />
+      <div
+        className="
+            bg-white
+            rounded-lg
+            shadow-sm
+            p-6
+            transition-all
+            duration-300
+          "
+      >
+        <Card
+          padding="xl"
+          radius="lg"
+          className="max-w-3xl mx-auto mt-6 transition-all duration-300"
+        >
+          <div className="grid grid-cols-[200px_1fr] gap-8">
+            {/* Left - Avatar */}
+            <div className="flex flex-col items-center gap-3">
+              <Avatar
+                src={avatarPreview || "/avatar_default.png"}
+                size={120}
+                radius={120}
+                className="
+              bg-white
+              ring-2 ring-gray-200
+              shadow-md
+            "
+              />
 
-        {/* First name */}
-        <Group align="center" gap="lg">
-          <Text fw={600} w={150}>
-            Họ và tên đệm
-          </Text>
-          {!isUpdateMode ? (
-            <Text>{userInfo.firstName}</Text>
-          ) : (
-            <TextInput
-              value={userInfo.firstName}
-              name="firstName"
-              onChange={handleOnchangeInput}
-              className="flex-1"
-            />
-          )}
-        </Group>
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                ref={selectAvatarRef}
+                onChange={handleChangeFile}
+              />
 
-        {/* Last name */}
-        <Group align="center" gap="lg">
-          <Text fw={600} w={150}>
-            Tên
-          </Text>
-          {!isUpdateMode ? (
-            <Text>{userInfo.lastName}</Text>
-          ) : (
-            <TextInput
-              value={userInfo.lastName}
-              name="lastName"
-              onChange={handleOnchangeInput}
-              className="flex-1"
-            />
-          )}
-        </Group>
+              {isUpdateMode && (
+                <Button size="xs" variant="light" onClick={handleOpenFolder}>
+                  Chọn avatar
+                </Button>
+              )}
+            </div>
 
-        {/* Email */}
-        <Group align="center" gap="lg">
-          <Text fw={600} w={150}>
-            Email
-          </Text>
-          <Text>{userInfo.email}</Text>
-        </Group>
+            {/* Right - Info */}
+            <div className="space-y-4">
+              {profileFields.map((field) => (
+                <div
+                  key={field.name}
+                  className="grid grid-cols-[180px_1fr] items-center gap-4"
+                >
+                  <Text fw={600} className="text-gray-700">
+                    {field.label}
+                  </Text>
 
-        {/* Phone */}
-        <Group align="center" gap="lg">
-          <Text fw={600} w={150}>
-            Số điện thoại
-          </Text>
-          {!isUpdateMode ? (
-            <Text>{userInfo.phoneNumber}</Text>
-          ) : (
-            <TextInput
-              value={userInfo.phoneNumber}
-              name="phoneNumber"
-              onChange={handleOnchangeInput}
-              className="flex-1"
-            />
-          )}
-        </Group>
+                  {!isUpdateMode || !field.editable ? (
+                    <Text className="text-gray-800">
+                      {userInfo[field.name as keyof typeof userInfo] || "-"}
+                    </Text>
+                  ) : (
+                    <TextInput
+                      value={
+                        userInfo[field.name as keyof typeof userInfo] || ""
+                      }
+                      name={field.name}
+                      onChange={handleOnchangeInput}
+                      className="transition-all duration-300"
+                    />
+                  )}
+                </div>
+              ))}
 
-        {/* Actions */}
-        <Center pt="md">
-          {isUpdateMode ? (
-            <Group>
-              <Button
-                color="yellow"
-                leftSection={<IconCheck size={16} />}
-                onClick={handleSubmit}
-              >
-                Lưu thay đổi
-              </Button>
-              <Button
-                color="red"
-                variant="light"
-                leftSection={<IconWarning size={16} />}
-                onClick={onClickButtonCancle}
-              >
-                Hủy
-              </Button>
-            </Group>
-          ) : (
-            <Button color="yellow" onClick={() => setIsUpdateMode(true)}>
-              Chỉnh sửa
-            </Button>
-          )}
-        </Center>
-      </Stack>
-    </Card>
+              {/* Actions */}
+              <div className="pt-6 flex justify-end">
+                {isUpdateMode ? (
+                  <Group>
+                    <Button
+                      color="yellow"
+                      leftSection={<IconCheck size={16} />}
+                      onClick={handleSubmit}
+                    >
+                      Lưu thay đổi
+                    </Button>
+                    <Button
+                      color="red"
+                      variant="light"
+                      leftSection={<IconWarning size={16} />}
+                      onClick={onClickButtonCancle}
+                    >
+                      Hủy
+                    </Button>
+                  </Group>
+                ) : (
+                  <Button color="yellow" onClick={() => setIsUpdateMode(true)}>
+                    Chỉnh sửa
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
   );
 }
