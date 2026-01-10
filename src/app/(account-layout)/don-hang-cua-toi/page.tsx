@@ -1,11 +1,13 @@
 "use client";
 
+import { TicketControllerGetMyTicketStatusEnum } from "@/apiGen/generated";
+import NotFound from "@/component/NotFound";
 import TicketItem from "@/component/TicketItem";
 import { useTicket } from "@/hooks/useTicket";
 import { RootState } from "@/redux/store";
-import { Button, Center, Paper, Stack, Text } from "@mantine/core";
+import { Button, Center, Paper, Stack, Tabs, Text } from "@mantine/core";
 import { useRouter } from "next/navigation";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import { useSelector } from "react-redux";
 
 interface MyOrderProps {}
@@ -14,7 +16,16 @@ const MyOrder: FunctionComponent<MyOrderProps> = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
   const { useFetchMyTicket } = useTicket();
-  const { data: tickets } = useFetchMyTicket();
+
+  // State để track tab và status
+  const [status, setStatus] = useState<TicketControllerGetMyTicketStatusEnum>(
+    TicketControllerGetMyTicketStatusEnum.NotUsed
+  );
+
+  // Lấy dữ liệu theo status hiện tại
+  const { data } = useFetchMyTicket({ status });
+  const tickets = data?.data;
+
   if (!user) {
     return (
       <Center h="100%">
@@ -47,21 +58,62 @@ const MyOrder: FunctionComponent<MyOrderProps> = () => {
       <Text size="xl" fw={500} className="!mb-4">
         Đơn hàng của tôi
       </Text>
-      {tickets?.map((ticket: any) => {
-        return (
-          <div
-            key={ticket.ticketId}
-            className="mb-2 cursor-pointer"
-            onClick={() =>
-              router.push(
-                `/chi-tiet-don-hang?ticketId=${ticket.ticketId}&phone=${user.phoneNumber}`
-              )
-            }
-          >
-            <TicketItem ticket={ticket} />
-          </div>
-        );
-      })}
+
+      <Tabs
+        value={
+          status === TicketControllerGetMyTicketStatusEnum.NotUsed
+            ? "upcoming"
+            : "used"
+        }
+        onChange={(value) => {
+          if (value === "upcoming") {
+            setStatus(TicketControllerGetMyTicketStatusEnum.NotUsed);
+          } else {
+            setStatus(TicketControllerGetMyTicketStatusEnum.Used);
+          }
+        }}
+      >
+        <Tabs.List className="mb-4">
+          <Tabs.Tab value="upcoming">Lịch trình sắp tới</Tabs.Tab>
+          <Tabs.Tab value="used">Vé đã đi</Tabs.Tab>
+        </Tabs.List>
+
+        <Tabs.Panel value="upcoming">
+          {tickets && tickets.length > 0 ? (
+            tickets.map((ticket: any) => (
+              <div
+                key={ticket.ticketId}
+                className="mb-2 cursor-pointer"
+                onClick={() =>
+                  router.push(
+                    `/chi-tiet-don-hang?ticketId=${ticket.ticketId}&phone=${user.phoneNumber}`
+                  )
+                }
+              >
+                <TicketItem ticket={ticket} />
+              </div>
+            ))
+          ) : (
+            <NotFound message="Bạn chưa có vé nào" />
+          )}
+        </Tabs.Panel>
+
+        <Tabs.Panel value="used">
+          {tickets?.map((ticket: any) => (
+            <div
+              key={ticket.ticketId}
+              className="mb-2 cursor-pointer"
+              onClick={() =>
+                router.push(
+                  `/chi-tiet-don-hang?ticketId=${ticket.ticketId}&phone=${user.phoneNumber}`
+                )
+              }
+            >
+              <TicketItem ticket={ticket} />
+            </div>
+          ))}
+        </Tabs.Panel>
+      </Tabs>
     </div>
   );
 };

@@ -15,6 +15,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { FunctionComponent, useState } from "react";
 import BankingInfoModal from "./components/BankingInfoSection";
+import format from "@/utils/format";
 
 interface ChiTietDonHangProps {}
 
@@ -85,15 +86,15 @@ const ChiTietDonHang: FunctionComponent<ChiTietDonHangProps> = () => {
               },
               {
                 label: "Ngày khởi hành",
-                value: ticket?.trip?.departDate,
+                value: format.formatDate(ticket?.trip?.departDate),
               },
               {
                 label: "Biển số xe",
                 value: ticket?.trip?.vehicle?.code,
               },
               {
-                label: "Tổng số ghế",
-                value: ticket?.trip?.vehicle?.totalSeat,
+                label: "Ghế",
+                value: ticket?.seat?.seatCode,
               },
             ].map((item) => (
               <Stack key={item.label} gap={4}>
@@ -105,9 +106,11 @@ const ChiTietDonHang: FunctionComponent<ChiTietDonHangProps> = () => {
             ))}
           </SimpleGrid>
 
-          <div className="flex justify-center" onClick={handleCancleTicket}>
-            <Button className="!bg-red-500 !w-full mt-4">Hủy vé</Button>
-          </div>
+          {!ticket?.used && (
+            <div className="flex justify-center" onClick={handleCancleTicket}>
+              <Button className="!bg-red-500 !w-full mt-4">Hủy vé</Button>
+            </div>
+          )}
         </Card>
       </Grid.Col>
 

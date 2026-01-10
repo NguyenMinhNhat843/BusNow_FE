@@ -333,11 +333,30 @@ import {
 const configuration = new Configuration();
 const apiInstance = new TicketApi(configuration);
 
-const { status, data } = await apiInstance.ticketControllerGetMyTicket();
+let ticketId: string; // (optional) (default to undefined)
+let page: number; // (optional) (default to undefined)
+let limit: number; // (optional) (default to undefined)
+let phone: string; // (optional) (default to undefined)
+let status: 'USED' | 'NOT_USED'; // (optional) (default to undefined)
+
+const { status, data } = await apiInstance.ticketControllerGetMyTicket(
+    ticketId,
+    page,
+    limit,
+    phone,
+    status
+);
 ```
 
 ### Parameters
-This endpoint does not have any parameters.
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **ticketId** | [**string**] |  | (optional) defaults to undefined|
+| **page** | [**number**] |  | (optional) defaults to undefined|
+| **limit** | [**number**] |  | (optional) defaults to undefined|
+| **phone** | [**string**] |  | (optional) defaults to undefined|
+| **status** | [**&#39;USED&#39; | &#39;NOT_USED&#39;**]**Array<&#39;USED&#39; &#124; &#39;NOT_USED&#39;>** |  | (optional) defaults to undefined|
 
 
 ### Return type

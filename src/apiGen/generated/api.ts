@@ -217,7 +217,17 @@ export interface SearchTicketDTO {
     'ticketId'?: string;
     'page'?: number;
     'limit'?: number;
+    'phone'?: string;
+    'status'?: SearchTicketDTOStatusEnum;
 }
+
+export const SearchTicketDTOStatusEnum = {
+    Used: 'USED',
+    NotUsed: 'NOT_USED'
+} as const;
+
+export type SearchTicketDTOStatusEnum = typeof SearchTicketDTOStatusEnum[keyof typeof SearchTicketDTOStatusEnum];
+
 export interface UpdateBusCompanyRequestDTO {
     'id': number;
     'status': UpdateBusCompanyRequestDTOStatusEnum;
@@ -2720,10 +2730,15 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @param {string} [ticketId] 
+         * @param {number} [page] 
+         * @param {number} [limit] 
+         * @param {string} [phone] 
+         * @param {TicketControllerGetMyTicketStatusEnum} [status] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        ticketControllerGetMyTicket: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        ticketControllerGetMyTicket: async (ticketId?: string, page?: number, limit?: number, phone?: string, status?: TicketControllerGetMyTicketStatusEnum, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/ticket/my-ticket`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2735,6 +2750,26 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (ticketId !== undefined) {
+                localVarQueryParameter['ticketId'] = ticketId;
+            }
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (phone !== undefined) {
+                localVarQueryParameter['phone'] = phone;
+            }
+
+            if (status !== undefined) {
+                localVarQueryParameter['status'] = status;
+            }
 
 
     
@@ -2933,11 +2968,16 @@ export const TicketApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {string} [ticketId] 
+         * @param {number} [page] 
+         * @param {number} [limit] 
+         * @param {string} [phone] 
+         * @param {TicketControllerGetMyTicketStatusEnum} [status] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async ticketControllerGetMyTicket(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerGetMyTicket(options);
+        async ticketControllerGetMyTicket(ticketId?: string, page?: number, limit?: number, phone?: string, status?: TicketControllerGetMyTicketStatusEnum, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerGetMyTicket(ticketId, page, limit, phone, status, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['TicketApi.ticketControllerGetMyTicket']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -3043,11 +3083,16 @@ export const TicketApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
+         * @param {string} [ticketId] 
+         * @param {number} [page] 
+         * @param {number} [limit] 
+         * @param {string} [phone] 
+         * @param {TicketControllerGetMyTicketStatusEnum} [status] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        ticketControllerGetMyTicket(options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.ticketControllerGetMyTicket(options).then((request) => request(axios, basePath));
+        ticketControllerGetMyTicket(ticketId?: string, page?: number, limit?: number, phone?: string, status?: TicketControllerGetMyTicketStatusEnum, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.ticketControllerGetMyTicket(ticketId, page, limit, phone, status, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3145,11 +3190,16 @@ export class TicketApi extends BaseAPI {
 
     /**
      * 
+     * @param {string} [ticketId] 
+     * @param {number} [page] 
+     * @param {number} [limit] 
+     * @param {string} [phone] 
+     * @param {TicketControllerGetMyTicketStatusEnum} [status] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public ticketControllerGetMyTicket(options?: RawAxiosRequestConfig) {
-        return TicketApiFp(this.configuration).ticketControllerGetMyTicket(options).then((request) => request(this.axios, this.basePath));
+    public ticketControllerGetMyTicket(ticketId?: string, page?: number, limit?: number, phone?: string, status?: TicketControllerGetMyTicketStatusEnum, options?: RawAxiosRequestConfig) {
+        return TicketApiFp(this.configuration).ticketControllerGetMyTicket(ticketId, page, limit, phone, status, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3183,6 +3233,11 @@ export class TicketApi extends BaseAPI {
     }
 }
 
+export const TicketControllerGetMyTicketStatusEnum = {
+    Used: 'USED',
+    NotUsed: 'NOT_USED'
+} as const;
+export type TicketControllerGetMyTicketStatusEnum = typeof TicketControllerGetMyTicketStatusEnum[keyof typeof TicketControllerGetMyTicketStatusEnum];
 
 
 /**

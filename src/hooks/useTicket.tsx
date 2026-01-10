@@ -21,11 +21,17 @@ export const useTicket = () => {
     });
   };
 
-  const useFetchMyTicket = () => {
+  const useFetchMyTicket = (params: any) => {
     return useQuery<any>({
-      queryKey: ["tickets", "me"],
+      queryKey: ["tickets", "me", params],
       queryFn: async () => {
-        const response = await ticketApi.ticketControllerGetMyTicket();
+        const response = await ticketApi.ticketControllerGetMyTicket(
+          params.ticketId,
+          params.page,
+          params.limit,
+          params.phone,
+          params.status
+        );
         return response.data;
       },
       refetchOnWindowFocus: false,

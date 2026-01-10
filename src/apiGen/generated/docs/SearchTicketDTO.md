@@ -8,6 +8,8 @@ Name | Type | Description | Notes
 **ticketId** | **string** |  | [optional] [default to undefined]
 **page** | **number** |  | [optional] [default to undefined]
 **limit** | **number** |  | [optional] [default to undefined]
+**phone** | **string** |  | [optional] [default to undefined]
+**status** | **string** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -18,6 +20,8 @@ const instance: SearchTicketDTO = {
     ticketId,
     page,
     limit,
+    phone,
+    status,
 };
 ```
 
