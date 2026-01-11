@@ -1,5 +1,5 @@
 import { useTrip } from "@/hooks/useTrip";
-import { Button, Card, Grid, Text } from "@mantine/core";
+import { Button, Card, Grid, Input, Text } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { FunctionComponent, useState } from "react";
 
@@ -13,6 +13,7 @@ const GenTripSection: FunctionComponent<GenTripSectionProps> = ({
   const { useGenTrip } = useTrip();
   const { mutate: genTrip, isPending: isPendingGenTrip } = useGenTrip();
 
+  const [price, setPrice] = useState<number | undefined>();
   const [startTime, setStartTime] = useState(new Date().toISOString());
   const [endTime, setEndTime] = useState("");
 
@@ -25,7 +26,7 @@ const GenTripSection: FunctionComponent<GenTripSectionProps> = ({
 
       <Grid align="end">
         {/* Từ ngày */}
-        <Grid.Col span={{ base: 12, sm: 4 }}>
+        <Grid.Col span={{ base: 12, sm: 3 }}>
           <DateInput
             label="Từ ngày"
             placeholder="Chọn ngày bắt đầu"
@@ -39,7 +40,7 @@ const GenTripSection: FunctionComponent<GenTripSectionProps> = ({
         </Grid.Col>
 
         {/* Đến ngày */}
-        <Grid.Col span={{ base: 12, sm: 4 }}>
+        <Grid.Col span={{ base: 12, sm: 3 }}>
           <DateInput
             label="Đến ngày"
             placeholder="Chọn ngày kết thúc"
@@ -51,8 +52,22 @@ const GenTripSection: FunctionComponent<GenTripSectionProps> = ({
           />
         </Grid.Col>
 
+        {/* Giá tiền */}
+        <Grid.Col span={{ base: 12, sm: 3 }}>
+          <Input
+            placeholder="Giá tiền"
+            value={price}
+            onChange={(e) => {
+              const value = Number(e.currentTarget.value);
+
+              if (Number.isNaN(value)) return;
+              if (value > 0) return setPrice(value);
+            }}
+          />
+        </Grid.Col>
+
         {/* Submit */}
-        <Grid.Col span={{ base: 12, sm: 4 }}>
+        <Grid.Col span={{ base: 12, sm: 3 }}>
           <Button
             fullWidth
             loading={isPendingGenTrip}
@@ -62,7 +77,7 @@ const GenTripSection: FunctionComponent<GenTripSectionProps> = ({
                   vehicleId,
                   startTime,
                   endTime,
-                  price: 250000,
+                  price: price,
                 },
                 {
                   onSuccess: () => alert("Gen chuyến đi thành công"),

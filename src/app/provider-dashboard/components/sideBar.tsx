@@ -1,7 +1,8 @@
 "use client";
 
-import { NavLink } from "@mantine/core";
-import { usePathname, useRouter } from "next/navigation";
+import clsx from "clsx";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const sideBarItems = [
   {
@@ -28,21 +29,23 @@ const sideBarItems = [
 
 export default function SideBar() {
   const pathname = usePathname();
-  const router = useRouter();
   return (
     <div className="flex flex-col justify-around">
       {sideBarItems.map((item) => {
+        const isActive = pathname === item.link;
+
         return (
-          <NavLink
+          <Link
             key={item.value}
-            label={item.name}
-            active={pathname === item.link}
-            onClick={() => {
-              router.push(item.link);
-            }}
-            color="yellow"
-            variant="light"
-          />
+            href={item.link}
+            className={clsx(
+              "px-4 py-2 transition-colors",
+              "hover:bg-yellow-400",
+              isActive && "bg-yellow-400 font-semibold text-slate-700"
+            )}
+          >
+            {item.name}
+          </Link>
         );
       })}
     </div>

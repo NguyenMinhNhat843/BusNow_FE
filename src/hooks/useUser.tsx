@@ -10,6 +10,7 @@ export const useUSer = () => {
         return res.data;
       },
       retry: false,
+      refetchOnWindowFocus: false,
     });
   };
 

@@ -61,6 +61,7 @@ export default function Header() {
     bg-white
     border-b border-gray-100
     transition-shadow duration-300
+    shadow-lg
   "
       style={{
         display: "flex",
