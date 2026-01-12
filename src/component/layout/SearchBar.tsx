@@ -42,6 +42,7 @@ export default function SearchBar() {
   const searchParams = useSearchParams();
   const fromId = searchParams.get("from");
   const toId = searchParams.get("to");
+  const dateParam = searchParams.get("date");
   const fromObject = locations?.find((l: any) => l.locationId === fromId);
   const toObject = locations?.find((l: any) => l.locationId === toId);
   // state
@@ -54,6 +55,26 @@ export default function SearchBar() {
     toId: toId || "",
     to: toObject?.name || "",
   });
+
+  useEffect(() => {
+    if (!locations) return;
+
+    const from = locations.find((l: any) => l.locationId === fromId);
+    const to = locations.find((l: any) => l.locationId === toId);
+
+    setLocationSelected({
+      fromId: fromId || "",
+      from: from?.name || "",
+      toId: toId || "",
+      to: to?.name || "",
+    });
+  }, [locations, fromId, toId]);
+
+  useEffect(() => {
+    if (dateParam) {
+      setStartDate(new Date(dateParam));
+    }
+  }, [dateParam]);
 
   // handle select location
   const handleSeletLocationFrom = (location: any) => {
