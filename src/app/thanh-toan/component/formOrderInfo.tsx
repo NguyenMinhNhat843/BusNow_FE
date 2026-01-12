@@ -41,9 +41,9 @@ export default function FormOrderInfo() {
   });
 
   //redux
-  const dataTrip = useSelector(
-    (state: RootState) => state.trip.tripItemSelected
-  );
+  // const dataTrip = useSelector(
+  //   (state: RootState) => state.trip.tripItemSelected
+  // );
   useEffect(() => {
     const storedUser = localStorage.getItem("guest");
     const user = userRedux
@@ -52,13 +52,12 @@ export default function FormOrderInfo() {
       ? JSON.parse(storedUser)
       : null;
 
-    if (user || dataTrip) {
+    if (user) {
       const mergedData = {
         firstName: user?.firstName || "",
         lastName: user?.lastName || "",
         email: user?.email || "",
         phoneNumber: user?.phoneNumber || "",
-        ...dataTrip, // merge sau để ghi đè những gì cần từ trip
       };
 
       setFormData((prev) => ({

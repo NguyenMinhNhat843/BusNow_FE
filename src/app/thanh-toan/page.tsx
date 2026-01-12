@@ -25,8 +25,7 @@ function PaymentPageContent() {
   }
 
   if (!bookingInfo.tripId) {
-    router.push("/");
-    return;
+    return <div>Vui lòng đặt lại</div>;
   }
 
   return (

@@ -77,11 +77,11 @@ const GenTripSection: FunctionComponent<GenTripSectionProps> = ({
                   vehicleId,
                   startTime,
                   endTime,
-                  price: price,
+                  price: Number(price),
                 },
                 {
-                  onSuccess: () => alert("Gen chuyến đi thành công"),
-                  onError: () => alert("Có lỗi xảy ra"),
+                  onSuccess: () => alert("✅ Gen chuyến đi thành công"),
+                  onError: () => alert("❌ Có lỗi xảy ra"),
                 }
               )
             }

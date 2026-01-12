@@ -1,6 +1,6 @@
 const format = {
   formatMoneyVND(amount: number): string {
-    return Intl.NumberFormat("vi-VN").format(amount);
+    return Intl.NumberFormat("vi-VN").format(amount) + " đ";
   },
 
   formatDate(dateStr: string): string {

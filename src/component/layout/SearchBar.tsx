@@ -89,6 +89,10 @@ export default function SearchBar() {
   // handle click button search
   const handleSearch = () => {
     const startDateFormatted = startDate.toISOString().split("T")[0];
+    if (!locationSelected.fromId || !locationSelected.toId) {
+      alert("Vui lòng chọn đầy đủ nơi đi và nơi đến.");
+      return;
+    }
     try {
       router.push(
         "/ket-qua-tim-kiem?from=" +

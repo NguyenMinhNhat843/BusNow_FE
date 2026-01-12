@@ -5,7 +5,16 @@ import NotFound from "@/component/NotFound";
 import TicketItem from "@/component/TicketItem";
 import { useTicket } from "@/hooks/useTicket";
 import { RootState } from "@/redux/store";
-import { Button, Center, Paper, Stack, Tabs, Text } from "@mantine/core";
+import {
+  Button,
+  Center,
+  LoadingOverlay,
+  Pagination,
+  Paper,
+  Stack,
+  Tabs,
+  Text,
+} from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { FunctionComponent, useState } from "react";
 import { useSelector } from "react-redux";
@@ -16,6 +25,8 @@ const MyOrder: FunctionComponent<MyOrderProps> = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const router = useRouter();
   const { useFetchMyTicket } = useTicket();
+  const [page, setPage] = useState(1);
+  const limitPerPage = 5;
 
   // State để track tab và status
   const [status, setStatus] = useState<TicketControllerGetMyTicketStatusEnum>(
@@ -23,8 +34,13 @@ const MyOrder: FunctionComponent<MyOrderProps> = () => {
   );
 
   // Lấy dữ liệu theo status hiện tại
-  const { data } = useFetchMyTicket({ status });
+  const { data, isLoading } = useFetchMyTicket({
+    status,
+    page,
+    limit: limitPerPage,
+  });
   const tickets = data?.data;
+  const total = data?.total;
 
   if (!user) {
     return (
@@ -53,6 +69,40 @@ const MyOrder: FunctionComponent<MyOrderProps> = () => {
     );
   }
 
+  const ticketList = (
+    <div className="relative">
+      <LoadingOverlay
+        visible={isLoading}
+        zIndex={1000}
+        overlayProps={{ radius: "sm", blur: 2 }}
+      />
+      {!isLoading && tickets && tickets.length > 0 ? (
+        <>
+          {tickets?.map((ticket: any) => (
+            <TicketItem
+              key={ticket.ticketId}
+              ticket={ticket}
+              className="mb-4"
+              onClick={() =>
+                router.push(
+                  `/chi-tiet-don-hang?ticketId=${ticket.ticketId}&phone=${user.phoneNumber}`
+                )
+              }
+            />
+          ))}
+          <Pagination
+            value={page}
+            total={Math.ceil(total / limitPerPage)}
+            onChange={setPage}
+            className="mt-4 flex justify-center"
+          />
+        </>
+      ) : (
+        <NotFound message="Bạn chưa có vé nào" />
+      )}
+    </div>
+  );
+
   return (
     <div>
       <Text size="xl" fw={500} className="!mb-4">
@@ -60,13 +110,9 @@ const MyOrder: FunctionComponent<MyOrderProps> = () => {
       </Text>
 
       <Tabs
-        value={
-          status === TicketControllerGetMyTicketStatusEnum.NotUsed
-            ? "upcoming"
-            : "used"
-        }
+        value={status}
         onChange={(value) => {
-          if (value === "upcoming") {
+          if (value === TicketControllerGetMyTicketStatusEnum.NotUsed) {
             setStatus(TicketControllerGetMyTicketStatusEnum.NotUsed);
           } else {
             setStatus(TicketControllerGetMyTicketStatusEnum.Used);
@@ -74,44 +120,20 @@ const MyOrder: FunctionComponent<MyOrderProps> = () => {
         }}
       >
         <Tabs.List className="mb-4">
-          <Tabs.Tab value="upcoming">Lịch trình sắp tới</Tabs.Tab>
-          <Tabs.Tab value="used">Vé đã đi</Tabs.Tab>
+          <Tabs.Tab value={TicketControllerGetMyTicketStatusEnum.NotUsed}>
+            Lịch trình sắp tới
+          </Tabs.Tab>
+          <Tabs.Tab value={TicketControllerGetMyTicketStatusEnum.Used}>
+            Vé đã đi
+          </Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Panel value="upcoming">
-          {tickets && tickets.length > 0 ? (
-            tickets.map((ticket: any) => (
-              <div
-                key={ticket.ticketId}
-                className="mb-2 cursor-pointer"
-                onClick={() =>
-                  router.push(
-                    `/chi-tiet-don-hang?ticketId=${ticket.ticketId}&phone=${user.phoneNumber}`
-                  )
-                }
-              >
-                <TicketItem ticket={ticket} />
-              </div>
-            ))
-          ) : (
-            <NotFound message="Bạn chưa có vé nào" />
-          )}
+        <Tabs.Panel value={TicketControllerGetMyTicketStatusEnum.NotUsed}>
+          {ticketList}
         </Tabs.Panel>
 
-        <Tabs.Panel value="used">
-          {tickets?.map((ticket: any) => (
-            <div
-              key={ticket.ticketId}
-              className="mb-2 cursor-pointer"
-              onClick={() =>
-                router.push(
-                  `/chi-tiet-don-hang?ticketId=${ticket.ticketId}&phone=${user.phoneNumber}`
-                )
-              }
-            >
-              <TicketItem ticket={ticket} />
-            </div>
-          ))}
+        <Tabs.Panel value={TicketControllerGetMyTicketStatusEnum.Used}>
+          {ticketList}
         </Tabs.Panel>
       </Tabs>
     </div>

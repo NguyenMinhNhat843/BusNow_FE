@@ -11,6 +11,7 @@ import {
   FaChevronRight,
   FaGoogle,
   FaLock,
+  FaLongArrowAltRight,
   FaSearch,
   FaUser,
 } from "react-icons/fa";
@@ -31,3 +32,4 @@ export const IconMail = IoMailSharp;
 export const IconGoogle = FaGoogle;
 export const IconUser = FaUser;
 export const IconArrowRight = FaChevronRight;
+export const IconRightDirection = FaLongArrowAltRight;

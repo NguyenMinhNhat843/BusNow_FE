@@ -36,7 +36,11 @@ export default function Header() {
   };
 
   const handleLogout = () => {
-    logout();
+    logout(undefined, {
+      onSuccess: () => {
+        router.push("/");
+      },
+    });
   };
 
   const headerNavigation = [

@@ -1,18 +1,36 @@
 import { Badge, Group, Paper, Stack, Text } from "@mantine/core";
+import clsx from "clsx";
 import { FunctionComponent } from "react";
 
 interface TicketItemProps {
   ticket?: any;
+  onClick?: () => void;
+  className?: string;
 }
 
-const TicketItem: FunctionComponent<TicketItemProps> = ({ ticket }) => {
+const TicketItem: FunctionComponent<TicketItemProps> = ({
+  ticket,
+  onClick,
+  className,
+}) => {
   if (!ticket) return;
   const { status, trip, seat } = ticket;
   const { vehicle } = trip;
   const { route } = vehicle;
   const { origin, destination } = route;
   return (
-    <Paper key={ticket.ticketId} shadow="sm" radius="md" p="md" withBorder>
+    <Paper
+      key={ticket.ticketId}
+      shadow="sm"
+      radius="md"
+      p="md"
+      withBorder
+      onClick={onClick}
+      className={clsx(
+        "hover:shadow-lg transition-shadow cursor-pointer",
+        className
+      )}
+    >
       <Group justify="space-between" align="flex-start">
         {/* BÊN TRÁI: thông tin chính */}
         <Stack gap={6}>

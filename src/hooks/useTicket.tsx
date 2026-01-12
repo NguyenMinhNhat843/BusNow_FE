@@ -51,12 +51,12 @@ export const useTicket = () => {
     });
   };
 
-  const useGetTicketByTrip = (tripId: string) => {
+  const useGetTicketByTrip = (tripId: string | undefined) => {
     return useQuery<any>({
       queryKey: ["tickets", tripId],
       queryFn: async () => {
         const response = await ticketApi.ticketControllerGetTicketsByTrip(
-          tripId
+          tripId!
         );
         return response.data;
       },

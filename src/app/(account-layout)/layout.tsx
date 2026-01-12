@@ -24,7 +24,7 @@ const navigations = [
 const AccountLayout: FunctionComponent<AccountLayoutProps> = ({ children }) => {
   return (
     <Box
-      className="flex max-w-5xl mx-auto"
+      className="flex max-w-5xl mx-auto mb-6"
       style={{ minHeight: "calc(100vh - 64px)" }}
     >
       {/* Sidebar */}
