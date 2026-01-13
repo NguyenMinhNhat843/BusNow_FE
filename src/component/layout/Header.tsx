@@ -4,10 +4,11 @@ import logo from "../../../public/logo.webp";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { RoleEnum } from "@/api/Enum/RoleEnum";
-import { Avatar, Box, Button, Group, Menu, Text } from "@mantine/core";
+import { Avatar, Box, Button, Menu } from "@mantine/core";
 import { IconBack, IconDown } from "@/type/icon";
 import { useUSer } from "@/hooks/useUser";
 import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/app/AuthContext";
 
 const tabMenuUser = [
   {
@@ -27,9 +28,8 @@ const tabMenuUser = [
 export default function Header() {
   // common
   const router = useRouter();
-  const { useGetProfileMe } = useUSer();
   const { logout } = useAuth();
-  const { data: user } = useGetProfileMe();
+  const { user, isError, isLoading } = useAuthContext();
 
   const handleNaviagteLogin = () => {
     router.push("/dang-nhap");

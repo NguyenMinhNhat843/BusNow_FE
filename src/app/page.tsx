@@ -3,28 +3,33 @@
 import { RoleEnum } from "@/api/Enum/RoleEnum";
 import HomePage from "../app/home/HomePage";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { Loader } from "@mantine/core";
+import { useAuthContext } from "./AuthContext";
 
 export default function Page() {
+  const { user, isError, isLoading } = useAuthContext();
   const router = useRouter();
-  const [shouldShowHomePage, setShouldShowHomePage] = useState(false);
+  console.log(user);
 
   useEffect(() => {
-    const userLocal = localStorage.getItem("user");
-
-    if (!userLocal) {
-      setShouldShowHomePage(true);
-      return;
-    }
-
-    const user = JSON.parse(userLocal);
-
-    if (user.role === RoleEnum.ADMIN || user.role === RoleEnum.PROVIDER) {
+    if (!isLoading && user?.role === RoleEnum.PROVIDER) {
       router.push("/provider-dashboard");
-    } else {
-      setShouldShowHomePage(true);
     }
-  }, []);
+  }, [user, isLoading, router]);
 
-  return shouldShowHomePage ? <HomePage /> : null;
+  if (isLoading) {
+    return (
+      <div className="flex justify-center mt-44">
+        <Loader size={50} />
+      </div>
+    );
+  }
+
+  if (isError || !user || user.role === RoleEnum.PROVIDER) {
+    if (user?.role === RoleEnum.PROVIDER) return null;
+    return <HomePage />;
+  }
+
+  return <HomePage />;
 }
