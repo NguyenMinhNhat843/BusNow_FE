@@ -2827,6 +2827,40 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @param {string} [ticketId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        ticketControllerGetPaymentHistoryTicket: async (ticketId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/ticket/payment-history`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (ticketId !== undefined) {
+                localVarQueryParameter['ticketId'] = ticketId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {string} tripId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3033,6 +3067,18 @@ export const TicketApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {string} [ticketId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async ticketControllerGetPaymentHistoryTicket(ticketId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerGetPaymentHistoryTicket(ticketId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['TicketApi.ticketControllerGetPaymentHistoryTicket']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {string} tripId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3151,6 +3197,15 @@ export const TicketApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
+         * @param {string} [ticketId] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        ticketControllerGetPaymentHistoryTicket(ticketId?: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.ticketControllerGetPaymentHistoryTicket(ticketId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {string} tripId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3261,6 +3316,16 @@ export class TicketApi extends BaseAPI {
      */
     public ticketControllerGetMyTicket(ticketId?: string, providerId?: string, providerPhone?: string, page?: number, limit?: number, phone?: string, status?: TicketControllerGetMyTicketStatusEnum, vehicleId?: string, vehicleCode?: string, tripId?: string, statusPayment?: TicketControllerGetMyTicketStatusPaymentEnum, options?: RawAxiosRequestConfig) {
         return TicketApiFp(this.configuration).ticketControllerGetMyTicket(ticketId, providerId, providerPhone, page, limit, phone, status, vehicleId, vehicleCode, tripId, statusPayment, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} [ticketId] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public ticketControllerGetPaymentHistoryTicket(ticketId?: string, options?: RawAxiosRequestConfig) {
+        return TicketApiFp(this.configuration).ticketControllerGetPaymentHistoryTicket(ticketId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

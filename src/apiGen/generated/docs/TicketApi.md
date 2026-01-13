@@ -11,6 +11,7 @@ All URIs are relative to *http://localhost*
 |[**ticketControllerFilterTicket**](#ticketcontrollerfilterticket) | **POST** /ticket/filter-ticket | |
 |[**ticketControllerFindTicketByPhone**](#ticketcontrollerfindticketbyphone) | **GET** /ticket/by-phone/{phone} | |
 |[**ticketControllerGetMyTicket**](#ticketcontrollergetmyticket) | **GET** /ticket/my-ticket | |
+|[**ticketControllerGetPaymentHistoryTicket**](#ticketcontrollergetpaymenthistoryticket) | **GET** /ticket/payment-history | |
 |[**ticketControllerGetTicketsByTrip**](#ticketcontrollergetticketsbytrip) | **GET** /ticket/by-trip/{tripId} | |
 |[**ticketControllerSearchTicket**](#ticketcontrollersearchticket) | **POST** /ticket/search | |
 |[**ticketControllerUpdateTicket**](#ticketcontrollerupdateticket) | **PUT** /ticket | |
@@ -375,6 +376,56 @@ const { status, data } = await apiInstance.ticketControllerGetMyTicket(
 | **vehicleCode** | [**string**] |  | (optional) defaults to undefined|
 | **tripId** | [**string**] |  | (optional) defaults to undefined|
 | **statusPayment** | [**&#39;PAID&#39; | &#39;UNPAID&#39; | &#39;CANCELLED&#39;**]**Array<&#39;PAID&#39; &#124; &#39;UNPAID&#39; &#124; &#39;CANCELLED&#39;>** |  | (optional) defaults to undefined|
+
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** |  |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **ticketControllerGetPaymentHistoryTicket**
+> ticketControllerGetPaymentHistoryTicket()
+
+
+### Example
+
+```typescript
+import {
+    TicketApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new TicketApi(configuration);
+
+let ticketId: string; // (optional) (default to undefined)
+
+const { status, data } = await apiInstance.ticketControllerGetPaymentHistoryTicket(
+    ticketId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **ticketId** | [**string**] |  | (optional) defaults to undefined|
 
 
 ### Return type

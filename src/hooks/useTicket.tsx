@@ -3,6 +3,7 @@ import {
   ConfirmCancleTicketDTO,
   CreateTIcketDTO,
   SearchTicketDTO,
+  UpdateTicketDTO,
 } from "@/apiGen/generated";
 import { ticketApi } from "@/apiGen/ticketApi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -111,6 +112,18 @@ export const useTicket = () => {
     });
   };
 
+  const { mutate: updateTicket, isPending: isPendingUpdateTicket } =
+    useMutation({
+      mutationFn: async (payload: UpdateTicketDTO) => {
+        const response = await ticketApi.ticketControllerUpdateTicket(payload);
+        return response.data;
+      },
+      onSuccess: () => {
+        alert("Cập nhật vé thành công");
+        queryClient.invalidateQueries({ queryKey: ["tickets"] });
+      },
+    });
+
   return {
     useFetchMyTicket,
     useFetchTicketByPhone,
@@ -120,5 +133,7 @@ export const useTicket = () => {
     useDeleteTicket,
     useGetTicketByTrip,
     useCreateTicket,
+    updateTicket,
+    isPendingUpdateTicket,
   };
 };

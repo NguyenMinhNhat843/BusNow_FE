@@ -2,36 +2,33 @@
 
 import { useTicket } from "@/hooks/useTicket";
 import {
+  Badge,
   Button,
-  Card,
-  Divider,
   Loader,
   Select,
   Table,
   TableData,
   TextInput,
 } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   SearchTicketDTO,
   SearchTicketDTOStatusPaymentEnum,
 } from "@/apiGen/generated";
 import { useForm } from "@mantine/form";
 import format from "@/utils/format";
-import { useUSer } from "@/hooks/useUser";
 import { RoleEnum } from "@/api/Enum/RoleEnum";
+import { useAuthContext } from "@/app/AuthContext";
+import { useDisclosure } from "@mantine/hooks";
+import PaymentModal from "./components/PaymentModal";
 
 const QuanLyVe = () => {
-  const { useGetProfileMe } = useUSer();
-  const { data: profile } = useGetProfileMe();
+  const { user: profile } = useAuthContext();
   const { useSearchTicket } = useTicket();
+  const [opened, { open, close }] = useDisclosure(false);
+  const [selectedTicket, setSelectedTicket] = useState<any>(null);
 
-  const [payload, setPayload] = useState<SearchTicketDTO | null>({
-    page: 1,
-    limit: 10,
-    providerId:
-      profile?.role === RoleEnum.PROVIDER ? profile?.userId : undefined,
-  });
+  const [payload, setPayload] = useState<SearchTicketDTO | null>(null);
 
   const form = useForm<SearchTicketDTO>({
     initialValues: {
@@ -42,7 +39,30 @@ const QuanLyVe = () => {
     },
   });
 
+  useEffect(() => {
+    if (profile) {
+      const pId =
+        profile.role === RoleEnum.PROVIDER ? profile.userId : undefined;
+
+      const initialPayload = {
+        page: 1,
+        limit: 10,
+        providerId: pId,
+      };
+
+      form.setValues(initialPayload);
+      setPayload(initialPayload);
+    }
+  }, [profile]); // Chạy khi profile từ null -> có data
+
   const { data, isLoading } = useSearchTicket(payload as SearchTicketDTO);
+
+  const handleRowClick = (ticket: any) => {
+    if (ticket.status === "UNPAID") {
+      setSelectedTicket(ticket);
+      open();
+    }
+  };
 
   const dataTicketTable: TableData = {
     head: [
@@ -60,8 +80,22 @@ const QuanLyVe = () => {
         ticket.trip.vehicle.route.origin.name +
         " - " +
         ticket.trip.vehicle.route.destination.name;
+
+      const statusBadge =
+        ticket.status === "UNPAID" ? (
+          <Badge
+            color="red"
+            variant="light"
+            style={{ cursor: "pointer" }}
+            onClick={() => handleRowClick(ticket)}
+          >
+            Chờ thanh toán (Bấm để xác nhận)
+          </Badge>
+        ) : (
+          <Badge color="green">{ticket.status}</Badge>
+        );
       return [
-        ticket.status,
+        statusBadge,
         `${ticket.user.firstName} ${ticket.user.lastName}`,
         ticket.user.phoneNumber,
         ticket.trip.vehicle.code,
@@ -82,6 +116,9 @@ const QuanLyVe = () => {
 
   return (
     <div className="m-4">
+      {/* Cấu trúc Modal */}
+      <PaymentModal onClose={close} opened={opened} ticket={selectedTicket} />
+
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <TextInput
