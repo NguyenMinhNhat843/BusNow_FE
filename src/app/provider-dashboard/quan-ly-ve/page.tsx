@@ -1,45 +1,143 @@
 "use client";
 
 import { useTicket } from "@/hooks/useTicket";
-import { Button, Input } from "@mantine/core";
-import { FunctionComponent, useState } from "react";
-import ListTicket from "./components/ListTicket";
+import {
+  Button,
+  Card,
+  Divider,
+  Loader,
+  Select,
+  Table,
+  TableData,
+  TextInput,
+} from "@mantine/core";
+import { useState } from "react";
+import {
+  SearchTicketDTO,
+  SearchTicketDTOStatusPaymentEnum,
+} from "@/apiGen/generated";
+import { useForm } from "@mantine/form";
+import format from "@/utils/format";
+import { useUSer } from "@/hooks/useUser";
+import { RoleEnum } from "@/api/Enum/RoleEnum";
 
-interface QuanLyVeProps {}
+const QuanLyVe = () => {
+  const { useGetProfileMe } = useUSer();
+  const { data: profile } = useGetProfileMe();
+  const { useSearchTicket } = useTicket();
 
-const QuanLyVe: FunctionComponent<QuanLyVeProps> = () => {
-  const [phone, setPhone] = useState("");
-  const { useFetchTicketByPhone } = useTicket();
-  const { mutate: fetchTicketByPhone, data: tickets = [] } =
-    useFetchTicketByPhone();
+  const [payload, setPayload] = useState<SearchTicketDTO | null>({
+    page: 1,
+    limit: 10,
+    providerId:
+      profile?.role === RoleEnum.PROVIDER ? profile?.userId : undefined,
+  });
+
+  const form = useForm<SearchTicketDTO>({
+    initialValues: {
+      page: 1,
+      limit: 10,
+      providerId:
+        profile?.role === RoleEnum.PROVIDER ? profile?.userId : undefined,
+    },
+  });
+
+  const { data, isLoading } = useSearchTicket(payload as SearchTicketDTO);
+
+  const dataTicketTable: TableData = {
+    head: [
+      "Trạng thái",
+      "Hành khách",
+      "Số điện thoại",
+      "Biển số xe",
+      "Tuyến đường",
+      "Giờ xuất phát",
+      "Nhà xe",
+      "Ghế",
+    ],
+    body: data?.data?.map((ticket: any) => {
+      const routeDisplayName =
+        ticket.trip.vehicle.route.origin.name +
+        " - " +
+        ticket.trip.vehicle.route.destination.name;
+      return [
+        ticket.status,
+        `${ticket.user.firstName} ${ticket.user.lastName}`,
+        ticket.user.phoneNumber,
+        ticket.trip.vehicle.code,
+        routeDisplayName,
+        format.formatDate(ticket.trip.departDate),
+        ticket.trip.vehicle.provider.lastName,
+        ticket.seat.seatCode,
+      ];
+    }),
+  };
+
+  const handleSubmit = (values: SearchTicketDTO) => {
+    setPayload({
+      ...values,
+      page: 1,
+    });
+  };
 
   return (
     <div className="m-4">
-      <form
-        className="flex justify-between items-center"
-        onSubmit={(e) => {
-          e.preventDefault(); // tránh reload page
-          fetchTicketByPhone(
-            { phone },
-            {
-              onError: () => alert("Có lỗi khi lấy ticket"),
-            }
-          );
-        }}
-      >
-        <Input
-          placeholder="Nhập số điện thoại"
-          className="grow"
-          value={phone}
-          onChange={(e) => setPhone(e.currentTarget.value)}
-        />
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <TextInput
+            label="Số điện thoại"
+            placeholder="Nhập số điện thoại"
+            {...form.getInputProps("phone")}
+          />
 
-        <Button type="submit" w={100} className="ms-4">
-          Tìm
-        </Button>
+          <TextInput
+            label="Mã xe"
+            placeholder="VD: XE123"
+            {...form.getInputProps("vehicleCode")}
+          />
+
+          <TextInput
+            label="Trip ID"
+            placeholder="Nhập tripId"
+            {...form.getInputProps("tripId")}
+          />
+
+          <Select
+            label="Trạng thái thanh toán"
+            placeholder="Tất cả"
+            clearable
+            data={[
+              {
+                value: SearchTicketDTOStatusPaymentEnum.Paid,
+                label: "Đã thanh toán",
+              },
+              {
+                value: SearchTicketDTOStatusPaymentEnum.Unpaid,
+                label: "Chưa thanh toán",
+              },
+              {
+                value: SearchTicketDTOStatusPaymentEnum.Cancelled,
+                label: "Đã hủy",
+              },
+            ]}
+            {...form.getInputProps("statusPayment")}
+          />
+          <div className="flex items-end">
+            <Button type="submit" loading={isLoading} className="grow">
+              Tìm kiếm
+            </Button>
+          </div>
+        </div>
       </form>
-      <div className="mt-4">
-        <ListTicket tickets={tickets} />
+
+      <div className="mt-6">
+        {isLoading ? (
+          <div className="flex justify-center items-center mt-20">
+            <Loader size={30} />
+          </div>
+        ) : (
+          <Table data={dataTicketTable} />
+        )}
       </div>
     </div>
   );

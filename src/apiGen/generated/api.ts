@@ -215,10 +215,16 @@ export type SearchRefundRequestDTOStatusEnum = typeof SearchRefundRequestDTOStat
 
 export interface SearchTicketDTO {
     'ticketId'?: string;
+    'providerId'?: string;
+    'providerPhone'?: string;
     'page'?: number;
     'limit'?: number;
     'phone'?: string;
     'status'?: SearchTicketDTOStatusEnum;
+    'vehicleId'?: string;
+    'vehicleCode'?: string;
+    'tripId'?: string;
+    'statusPayment'?: SearchTicketDTOStatusPaymentEnum;
 }
 
 export const SearchTicketDTOStatusEnum = {
@@ -227,6 +233,13 @@ export const SearchTicketDTOStatusEnum = {
 } as const;
 
 export type SearchTicketDTOStatusEnum = typeof SearchTicketDTOStatusEnum[keyof typeof SearchTicketDTOStatusEnum];
+export const SearchTicketDTOStatusPaymentEnum = {
+    Paid: 'PAID',
+    Unpaid: 'UNPAID',
+    Cancelled: 'CANCELLED'
+} as const;
+
+export type SearchTicketDTOStatusPaymentEnum = typeof SearchTicketDTOStatusPaymentEnum[keyof typeof SearchTicketDTOStatusPaymentEnum];
 
 export interface UpdateBusCompanyRequestDTO {
     'id': number;
@@ -2731,14 +2744,20 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
         /**
          * 
          * @param {string} [ticketId] 
+         * @param {string} [providerId] 
+         * @param {string} [providerPhone] 
          * @param {number} [page] 
          * @param {number} [limit] 
          * @param {string} [phone] 
          * @param {TicketControllerGetMyTicketStatusEnum} [status] 
+         * @param {string} [vehicleId] 
+         * @param {string} [vehicleCode] 
+         * @param {string} [tripId] 
+         * @param {TicketControllerGetMyTicketStatusPaymentEnum} [statusPayment] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        ticketControllerGetMyTicket: async (ticketId?: string, page?: number, limit?: number, phone?: string, status?: TicketControllerGetMyTicketStatusEnum, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        ticketControllerGetMyTicket: async (ticketId?: string, providerId?: string, providerPhone?: string, page?: number, limit?: number, phone?: string, status?: TicketControllerGetMyTicketStatusEnum, vehicleId?: string, vehicleCode?: string, tripId?: string, statusPayment?: TicketControllerGetMyTicketStatusPaymentEnum, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/ticket/my-ticket`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2755,6 +2774,14 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
                 localVarQueryParameter['ticketId'] = ticketId;
             }
 
+            if (providerId !== undefined) {
+                localVarQueryParameter['providerId'] = providerId;
+            }
+
+            if (providerPhone !== undefined) {
+                localVarQueryParameter['providerPhone'] = providerPhone;
+            }
+
             if (page !== undefined) {
                 localVarQueryParameter['page'] = page;
             }
@@ -2769,6 +2796,22 @@ export const TicketApiAxiosParamCreator = function (configuration?: Configuratio
 
             if (status !== undefined) {
                 localVarQueryParameter['status'] = status;
+            }
+
+            if (vehicleId !== undefined) {
+                localVarQueryParameter['vehicleId'] = vehicleId;
+            }
+
+            if (vehicleCode !== undefined) {
+                localVarQueryParameter['vehicleCode'] = vehicleCode;
+            }
+
+            if (tripId !== undefined) {
+                localVarQueryParameter['tripId'] = tripId;
+            }
+
+            if (statusPayment !== undefined) {
+                localVarQueryParameter['statusPayment'] = statusPayment;
             }
 
 
@@ -2969,15 +3012,21 @@ export const TicketApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {string} [ticketId] 
+         * @param {string} [providerId] 
+         * @param {string} [providerPhone] 
          * @param {number} [page] 
          * @param {number} [limit] 
          * @param {string} [phone] 
          * @param {TicketControllerGetMyTicketStatusEnum} [status] 
+         * @param {string} [vehicleId] 
+         * @param {string} [vehicleCode] 
+         * @param {string} [tripId] 
+         * @param {TicketControllerGetMyTicketStatusPaymentEnum} [statusPayment] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async ticketControllerGetMyTicket(ticketId?: string, page?: number, limit?: number, phone?: string, status?: TicketControllerGetMyTicketStatusEnum, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerGetMyTicket(ticketId, page, limit, phone, status, options);
+        async ticketControllerGetMyTicket(ticketId?: string, providerId?: string, providerPhone?: string, page?: number, limit?: number, phone?: string, status?: TicketControllerGetMyTicketStatusEnum, vehicleId?: string, vehicleCode?: string, tripId?: string, statusPayment?: TicketControllerGetMyTicketStatusPaymentEnum, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.ticketControllerGetMyTicket(ticketId, providerId, providerPhone, page, limit, phone, status, vehicleId, vehicleCode, tripId, statusPayment, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['TicketApi.ticketControllerGetMyTicket']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -3084,15 +3133,21 @@ export const TicketApiFactory = function (configuration?: Configuration, basePat
         /**
          * 
          * @param {string} [ticketId] 
+         * @param {string} [providerId] 
+         * @param {string} [providerPhone] 
          * @param {number} [page] 
          * @param {number} [limit] 
          * @param {string} [phone] 
          * @param {TicketControllerGetMyTicketStatusEnum} [status] 
+         * @param {string} [vehicleId] 
+         * @param {string} [vehicleCode] 
+         * @param {string} [tripId] 
+         * @param {TicketControllerGetMyTicketStatusPaymentEnum} [statusPayment] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        ticketControllerGetMyTicket(ticketId?: string, page?: number, limit?: number, phone?: string, status?: TicketControllerGetMyTicketStatusEnum, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.ticketControllerGetMyTicket(ticketId, page, limit, phone, status, options).then((request) => request(axios, basePath));
+        ticketControllerGetMyTicket(ticketId?: string, providerId?: string, providerPhone?: string, page?: number, limit?: number, phone?: string, status?: TicketControllerGetMyTicketStatusEnum, vehicleId?: string, vehicleCode?: string, tripId?: string, statusPayment?: TicketControllerGetMyTicketStatusPaymentEnum, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.ticketControllerGetMyTicket(ticketId, providerId, providerPhone, page, limit, phone, status, vehicleId, vehicleCode, tripId, statusPayment, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3191,15 +3246,21 @@ export class TicketApi extends BaseAPI {
     /**
      * 
      * @param {string} [ticketId] 
+     * @param {string} [providerId] 
+     * @param {string} [providerPhone] 
      * @param {number} [page] 
      * @param {number} [limit] 
      * @param {string} [phone] 
      * @param {TicketControllerGetMyTicketStatusEnum} [status] 
+     * @param {string} [vehicleId] 
+     * @param {string} [vehicleCode] 
+     * @param {string} [tripId] 
+     * @param {TicketControllerGetMyTicketStatusPaymentEnum} [statusPayment] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public ticketControllerGetMyTicket(ticketId?: string, page?: number, limit?: number, phone?: string, status?: TicketControllerGetMyTicketStatusEnum, options?: RawAxiosRequestConfig) {
-        return TicketApiFp(this.configuration).ticketControllerGetMyTicket(ticketId, page, limit, phone, status, options).then((request) => request(this.axios, this.basePath));
+    public ticketControllerGetMyTicket(ticketId?: string, providerId?: string, providerPhone?: string, page?: number, limit?: number, phone?: string, status?: TicketControllerGetMyTicketStatusEnum, vehicleId?: string, vehicleCode?: string, tripId?: string, statusPayment?: TicketControllerGetMyTicketStatusPaymentEnum, options?: RawAxiosRequestConfig) {
+        return TicketApiFp(this.configuration).ticketControllerGetMyTicket(ticketId, providerId, providerPhone, page, limit, phone, status, vehicleId, vehicleCode, tripId, statusPayment, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3238,6 +3299,12 @@ export const TicketControllerGetMyTicketStatusEnum = {
     NotUsed: 'NOT_USED'
 } as const;
 export type TicketControllerGetMyTicketStatusEnum = typeof TicketControllerGetMyTicketStatusEnum[keyof typeof TicketControllerGetMyTicketStatusEnum];
+export const TicketControllerGetMyTicketStatusPaymentEnum = {
+    Paid: 'PAID',
+    Unpaid: 'UNPAID',
+    Cancelled: 'CANCELLED'
+} as const;
+export type TicketControllerGetMyTicketStatusPaymentEnum = typeof TicketControllerGetMyTicketStatusPaymentEnum[keyof typeof TicketControllerGetMyTicketStatusPaymentEnum];
 
 
 /**

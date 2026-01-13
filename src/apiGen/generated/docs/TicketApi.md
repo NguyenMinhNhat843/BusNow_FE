@@ -334,17 +334,29 @@ const configuration = new Configuration();
 const apiInstance = new TicketApi(configuration);
 
 let ticketId: string; // (optional) (default to undefined)
+let providerId: string; // (optional) (default to undefined)
+let providerPhone: string; // (optional) (default to undefined)
 let page: number; // (optional) (default to undefined)
 let limit: number; // (optional) (default to undefined)
 let phone: string; // (optional) (default to undefined)
 let status: 'USED' | 'NOT_USED'; // (optional) (default to undefined)
+let vehicleId: string; // (optional) (default to undefined)
+let vehicleCode: string; // (optional) (default to undefined)
+let tripId: string; // (optional) (default to undefined)
+let statusPayment: 'PAID' | 'UNPAID' | 'CANCELLED'; // (optional) (default to undefined)
 
 const { status, data } = await apiInstance.ticketControllerGetMyTicket(
     ticketId,
+    providerId,
+    providerPhone,
     page,
     limit,
     phone,
-    status
+    status,
+    vehicleId,
+    vehicleCode,
+    tripId,
+    statusPayment
 );
 ```
 
@@ -353,10 +365,16 @@ const { status, data } = await apiInstance.ticketControllerGetMyTicket(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **ticketId** | [**string**] |  | (optional) defaults to undefined|
+| **providerId** | [**string**] |  | (optional) defaults to undefined|
+| **providerPhone** | [**string**] |  | (optional) defaults to undefined|
 | **page** | [**number**] |  | (optional) defaults to undefined|
 | **limit** | [**number**] |  | (optional) defaults to undefined|
 | **phone** | [**string**] |  | (optional) defaults to undefined|
 | **status** | [**&#39;USED&#39; | &#39;NOT_USED&#39;**]**Array<&#39;USED&#39; &#124; &#39;NOT_USED&#39;>** |  | (optional) defaults to undefined|
+| **vehicleId** | [**string**] |  | (optional) defaults to undefined|
+| **vehicleCode** | [**string**] |  | (optional) defaults to undefined|
+| **tripId** | [**string**] |  | (optional) defaults to undefined|
+| **statusPayment** | [**&#39;PAID&#39; | &#39;UNPAID&#39; | &#39;CANCELLED&#39;**]**Array<&#39;PAID&#39; &#124; &#39;UNPAID&#39; &#124; &#39;CANCELLED&#39;>** |  | (optional) defaults to undefined|
 
 
 ### Return type

@@ -48,6 +48,7 @@ export const useTicket = () => {
       enabled: Boolean(payload),
       refetchOnWindowFocus: false,
       staleTime: 15 * 60 * 1000,
+      retry: false,
     });
   };
 

@@ -52,7 +52,7 @@ export default function Header() {
     {
       label: "Hợp tác với chúng tôi",
       route: "hop-tac-voi-chung-toi",
-      role: true,
+      role: user?.role ? [String(RoleEnum.USER)].includes(user?.role) : true,
     },
   ];
 
