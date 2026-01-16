@@ -53,6 +53,15 @@ export const useTicket = () => {
     });
   };
 
+  // searchMutation
+  const { mutate: searchTicket, isPending: isPendingSearchTicket } =
+    useMutation({
+      mutationFn: async (payload: SearchTicketDTO) => {
+        const response = await ticketApi.ticketControllerSearchTicket(payload);
+        return response.data;
+      },
+    });
+
   const useGetTicketByTrip = (tripId: string | undefined) => {
     return useQuery<any>({
       queryKey: ["tickets", tripId],
@@ -135,5 +144,7 @@ export const useTicket = () => {
     useCreateTicket,
     updateTicket,
     isPendingUpdateTicket,
+    searchTicket,
+    isPendingSearchTicket,
   };
 };

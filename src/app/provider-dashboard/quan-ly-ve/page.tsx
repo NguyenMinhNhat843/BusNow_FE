@@ -10,58 +10,46 @@ import {
   TableData,
   TextInput,
 } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   SearchTicketDTO,
   SearchTicketDTOStatusPaymentEnum,
 } from "@/apiGen/generated";
 import { useForm } from "@mantine/form";
 import format from "@/utils/format";
-import { RoleEnum } from "@/api/Enum/RoleEnum";
-import { useAuthContext } from "@/app/AuthContext";
 import { useDisclosure } from "@mantine/hooks";
 import PaymentModal from "./components/PaymentModal";
 
 const QuanLyVe = () => {
-  const { user: profile } = useAuthContext();
   const { useSearchTicket } = useTicket();
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedTicket, setSelectedTicket] = useState<any>(null);
+  const [modalMode, setModalMode] = useState<"confirm" | "view">("confirm");
 
-  const [payload, setPayload] = useState<SearchTicketDTO | null>(null);
+  const [payload, setPayload] = useState<SearchTicketDTO | null>({
+    page: 1,
+    limit: 10,
+  });
 
   const form = useForm<SearchTicketDTO>({
     initialValues: {
       page: 1,
       limit: 10,
-      providerId:
-        profile?.role === RoleEnum.PROVIDER ? profile?.userId : undefined,
     },
   });
 
-  useEffect(() => {
-    if (profile) {
-      const pId =
-        profile.role === RoleEnum.PROVIDER ? profile.userId : undefined;
-
-      const initialPayload = {
-        page: 1,
-        limit: 10,
-        providerId: pId,
-      };
-
-      form.setValues(initialPayload);
-      setPayload(initialPayload);
-    }
-  }, [profile]); // Chạy khi profile từ null -> có data
-
   const { data, isLoading } = useSearchTicket(payload as SearchTicketDTO);
 
-  const handleRowClick = (ticket: any) => {
+  const handleStatusClick = (ticket: any) => {
+    setSelectedTicket(ticket);
+
     if (ticket.status === "UNPAID") {
-      setSelectedTicket(ticket);
-      open();
+      setModalMode("confirm");
+    } else if (ticket.status === "PAID") {
+      setModalMode("view");
     }
+
+    open();
   };
 
   const dataTicketTable: TableData = {
@@ -87,12 +75,19 @@ const QuanLyVe = () => {
             color="red"
             variant="light"
             style={{ cursor: "pointer" }}
-            onClick={() => handleRowClick(ticket)}
+            onClick={() => handleStatusClick(ticket)}
           >
             Chờ thanh toán (Bấm để xác nhận)
           </Badge>
         ) : (
-          <Badge color="green">{ticket.status}</Badge>
+          <Badge
+            color="green"
+            variant="light"
+            style={{ cursor: "pointer" }}
+            onClick={() => handleStatusClick(ticket)}
+          >
+            Đã thanh toán
+          </Badge>
         );
       return [
         statusBadge,
@@ -117,7 +112,12 @@ const QuanLyVe = () => {
   return (
     <div className="m-4">
       {/* Cấu trúc Modal */}
-      <PaymentModal onClose={close} opened={opened} ticket={selectedTicket} />
+      <PaymentModal
+        onClose={close}
+        opened={opened}
+        ticket={selectedTicket}
+        mode={modalMode}
+      />
 
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">

@@ -9,10 +9,10 @@ interface PaymentModalProps {
   opened: boolean;
   onClose: () => void;
   ticket: any;
-  onConfirmPayment?: any;
+  mode: "confirm" | "view";
 }
 
-const PaymentModal = ({ opened, onClose, ticket }: PaymentModalProps) => {
+const PaymentModal = ({ opened, onClose, ticket, mode }: PaymentModalProps) => {
   const { updateTicket, isPendingUpdateTicket } = useTicket();
   if (!ticket) return null;
 
@@ -22,8 +22,14 @@ const PaymentModal = ({ opened, onClose, ticket }: PaymentModalProps) => {
     <Modal
       opened={opened}
       onClose={onClose}
-      title={<Text fw={700}>Xác nhận thanh toán tại quầy</Text>}
       centered
+      title={
+        <Text fw={700}>
+          {mode === "confirm"
+            ? "Xác nhận thanh toán tại quầy"
+            : "Thông tin thanh toán"}
+        </Text>
+      }
     >
       <Stack gap="md">
         <Divider label="Thông tin khách hàng" labelPosition="center" />
@@ -70,28 +76,30 @@ const PaymentModal = ({ opened, onClose, ticket }: PaymentModalProps) => {
               {new Intl.NumberFormat("vi-VN", {
                 style: "currency",
                 currency: "VND",
-              }).format(ticket.price || 0)}
+              }).format(ticket.payment.amount || 0)}
             </Text>
           </Group>
         </div>
 
-        <Group justify="flex-end" mt="md">
-          <Button variant="subtle" color="gray" onClick={onClose}>
-            Hủy
-          </Button>
-          <Button
-            color="green"
-            onClick={() =>
-              updateTicket({
-                ticketId: ticket.ticketId,
-                status: SearchTicketDTOStatusPaymentEnum.Paid,
-              })
-            }
-            loading={isPendingUpdateTicket}
-          >
-            Xác nhận đã thu tiền
-          </Button>
-        </Group>
+        {mode === "confirm" && (
+          <Group justify="flex-end" mt="md">
+            <Button variant="subtle" color="gray" onClick={onClose}>
+              Hủy
+            </Button>
+            <Button
+              color="green"
+              onClick={() =>
+                updateTicket({
+                  ticketId: ticket.ticketId,
+                  status: SearchTicketDTOStatusPaymentEnum.Paid,
+                })
+              }
+              loading={isPendingUpdateTicket}
+            >
+              Xác nhận đã thu tiền
+            </Button>
+          </Group>
+        )}
       </Stack>
     </Modal>
   );
