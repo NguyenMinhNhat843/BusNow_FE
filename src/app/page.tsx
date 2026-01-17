@@ -10,7 +10,6 @@ import { useAuthContext } from "./AuthContext";
 export default function Page() {
   const { user, isError, isLoading } = useAuthContext();
   const router = useRouter();
-  console.log(user);
 
   useEffect(() => {
     if (!isLoading && user?.role === RoleEnum.PROVIDER) {

@@ -15,6 +15,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { useGetProfileMe } = useUSer();
   const { data, isLoading, isError } = useGetProfileMe();
+  console.log("AuthProvider user data:", data);
 
   return (
     <AuthContext.Provider value={{ user: data, isLoading, isError }}>

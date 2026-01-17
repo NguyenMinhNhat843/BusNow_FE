@@ -1,6 +1,10 @@
+"use client";
+
 import { Box, Stack, Title } from "@mantine/core";
 import React, { FunctionComponent } from "react";
 import { NavigationMenu } from "./NavigationMenu";
+import { useAuthContext } from "../AuthContext";
+import NotificationCard from "@/component/NotifyCard";
 
 interface AccountLayoutProps {
   children: React.ReactNode;
@@ -22,6 +26,15 @@ const navigations = [
 ] as const;
 
 const AccountLayout: FunctionComponent<AccountLayoutProps> = ({ children }) => {
+  const { user } = useAuthContext();
+  if (!user) {
+    return (
+      <NotificationCard
+        message="Bạn cần đăng nhập để truy cập trang này."
+        className="mt-20"
+      />
+    );
+  }
   return (
     <Box
       className="flex max-w-5xl mx-auto mb-6"

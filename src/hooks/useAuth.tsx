@@ -16,6 +16,11 @@ export const useAuth = () => {
       const response = await authApi.authControllerLogin(password, email);
       return response.data;
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["profile-me"],
+      });
+    },
   });
 
   const { mutate: logout, isPending: isPendingLogout } = useMutation({
@@ -23,9 +28,7 @@ export const useAuth = () => {
       await authApi.authControllerLogout();
     },
     onSuccess: () => {
-      queryClient.removeQueries({
-        queryKey: ["profile-me"],
-      });
+      queryClient.setQueryData(["profile-me"], null);
     },
   });
 

@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { RoleEnum } from "@/api/Enum/RoleEnum";
 import { Avatar, Box, Button, Menu } from "@mantine/core";
 import { IconBack, IconDown } from "@/type/icon";
-import { useUSer } from "@/hooks/useUser";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthContext } from "@/app/AuthContext";
 
@@ -29,7 +28,7 @@ export default function Header() {
   // common
   const router = useRouter();
   const { logout } = useAuth();
-  const { user, isError, isLoading } = useAuthContext();
+  const { user } = useAuthContext();
 
   const handleNaviagteLogin = () => {
     router.push("/dang-nhap");
